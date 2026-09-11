@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+echo "==> prettier"
+pnpm exec prettier --check .
+
+echo "==> eslint"
+pnpm exec eslint
+
+echo "==> tsc"
+pnpm exec tsc --noEmit
+
+echo "==> next build"
+pnpm exec next build
