@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+# Playwright's Chromium links against these on Linux. Installing them needs
+# sudo, so setup only checks and says what to run.
+if [ "$(uname -s)" = Linux ]; then
+  echo "==> preflight"
+  # Captured first: piping into grep -q can SIGPIPE ldconfig under pipefail.
+  installed=$(ldconfig -p)
+  missing=()
+  for lib in libnss3.so libnssutil3.so libnspr4.so libasound.so.2; do
+    if ! grep -q "[[:space:]]$lib " <<<"$installed"; then
+      missing+=("$lib")
+    fi
+  done
+  if [ ${#missing[@]} -gt 0 ]; then
+    echo "Playwright's Chromium needs system libraries that are missing: ${missing[*]}" >&2
+    echo "Install the packages libnss3 libnspr4 libasound2t64, then re-run bin/setup:" >&2
+    echo "  sudo apt-get install -y libnss3 libnspr4 libasound2t64" >&2
+    exit 1
+  fi
+fi
+
+if [ ! -f .env ]; then
+  echo "==> creating .env from .env.example"
+  cp .env.example .env
+fi
+set -a
+. ./.env
+set +a
+
+echo "==> database"
+docker compose up --wait
+
+echo "==> test database"
+exists=$(docker compose exec -T db psql -U postgres -tAc \
+  "SELECT 1 FROM pg_database WHERE datname = 'rotom_test'")
+if [ "$exists" != "1" ]; then
+  docker compose exec -T db createdb -U postgres rotom_test
+fi
+
+echo "==> dependencies"
+pnpm install --frozen-lockfile
+pnpm exec playwright install chromium
+
+echo "==> migrations"
+pnpm exec drizzle-kit migrate
+DATABASE_URL="$TEST_DATABASE_URL" pnpm exec drizzle-kit migrate

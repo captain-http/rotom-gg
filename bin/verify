@@ -12,5 +12,11 @@ pnpm exec eslint
 echo "==> tsc"
 pnpm exec tsc --noEmit
 
+echo "==> vitest"
+pnpm exec vitest run
+
+echo "==> playwright"
+pnpm exec playwright test
+
 echo "==> next build"
 pnpm exec next build
