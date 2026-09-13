@@ -18,6 +18,44 @@
   "listOpponentPlayedPokemon": ["Team Rocket's Sneasel", "Scraggy", "Toxel"],
   "findViewerMaxDamage": 260,
   "findOpponentMaxDamage": 20,
+  "getViewerCards": {
+    "pokemon": [
+      "Makuhita",
+      "Mega Lucario ex",
+      "Lunatone",
+      "Solrock",
+      "Riolu",
+      "Meowth ex",
+      "Hariyama"
+    ],
+    "trainers": [
+      "Switch",
+      "Poké Pad",
+      "Premium Power Pro",
+      "Boss's Orders",
+      "Lillie's Determination",
+      "Ultra Ball",
+      "Special Red Card",
+      "Gravity Mountain",
+      "Fighting Gong",
+      "Air Balloon",
+      "Secret Box"
+    ],
+    "energy": ["Basic Fighting Energy"],
+    "unknown": []
+  },
+  "getOpponentCards": {
+    "pokemon": ["Toxtricity", "Team Rocket's Sneasel", "Scraggy", "Toxel"],
+    "trainers": [
+      "Lillie's Determination",
+      "Night Stretcher",
+      "Punk Helmet",
+      "Dusk Ball",
+      "Buddy-Buddy Poffin"
+    ],
+    "energy": ["Basic Darkness Energy"],
+    "unknown": []
+  },
   "summarize": {
     "result": "win",
     "wonCoinToss": false,

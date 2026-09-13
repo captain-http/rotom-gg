@@ -6,8 +6,35 @@
  * doesn't say.
  */
 
+import cardIndex from "./card-index.json";
+
 export type Result = "win" | "loss";
 export type TurnOrder = "first" | "second";
+
+/** Card names a player was seen with, by kind, in order of first appearance. */
+export type Cards = {
+  pokemon: string[];
+  trainers: string[];
+  energy: string[];
+  // Names the card index doesn't know.
+  unknown: string[];
+};
+
+type CardEntry = {
+  category: "pokemon" | "trainer" | "energy";
+  type: string | null;
+};
+
+const CARD_INDEX: Record<string, CardEntry | undefined> = cardIndex as Record<
+  string,
+  CardEntry
+>;
+
+const KINDS = {
+  pokemon: "pokemon",
+  trainer: "trainers",
+  energy: "energy",
+} as const;
 
 /** The columns stored on a game, from the viewer's point of view. */
 export type Summary = {
@@ -209,9 +236,8 @@ export function findResult(log: string): Result | undefined {
  * @remarks
  * Only Pokémon that reached the board. Cards the log reveals but that were
  * never played — the opening hand, draws, discards, shuffles — aren't
- * included: those lists mix Pokémon with Trainers and Energy, and telling
- * them apart needs a card database. In the fixture, Hariyama is drawn but
- * never played, so it isn't listed.
+ * included — `getViewerCards` sorts those with the card index. In the
+ * fixture, Hariyama is drawn but never played, so it isn't listed here.
  *
  * @param log - The raw battle log.
  * @returns Pokémon names in order of first appearance, or an empty array when
@@ -231,10 +257,9 @@ export function listViewerPlayedPokemon(log: string): string[] {
  *
  * @remarks
  * Only Pokémon that reached the board. Cards revealed but never played —
- * a mulligan reveal, a searched card like Dusk Ball's — aren't included:
- * those lists mix Pokémon with Trainers and Energy, and telling them apart
- * needs a card database. In the fixture, Toxtricity is revealed by the
- * mulligan and drawn by Dusk Ball but never played, so it isn't listed.
+ * a mulligan reveal, a searched card like Dusk Ball's — aren't included;
+ * `getOpponentCards` covers those. In the fixture, Toxtricity is revealed by
+ * the mulligan and drawn by Dusk Ball but never played, so it isn't listed.
  *
  * @param log - The raw battle log.
  * @returns Pokémon names in order of first appearance, or an empty array when
@@ -338,6 +363,129 @@ function listPlayedPokemon(log: string, player: string): string[] {
     }
   });
   return [...found];
+}
+
+/**
+ * Every card the log shows the viewer with, played or only revealed, sorted
+ * into kinds with the card index.
+ *
+ * @remarks
+ * Reads cards the viewer drew by name, played, attached, evolved, discarded,
+ * took as a Prize, or had revealed in a list (opening hand, draws, shuffles,
+ * discards). Cards are sorted with `card-index.json`, generated from TCGdex by
+ * `scripts/build-card-index.ts`. A name missing from the index — a set newer
+ * than the index, or a parser mistake — lands in `unknown` rather than being
+ * dropped.
+ *
+ * @param log - The raw battle log.
+ * @returns Names per kind in order of first appearance; all empty when the
+ *   viewer can't be found.
+ * @example
+ * gameLog.getViewerCards(log).trainers;
+ * // ["Switch", "Poké Pad", "Premium Power Pro", "Boss's Orders", …]
+ */
+export function getViewerCards(log: string): Cards {
+  const viewer = findViewer(log);
+  return viewer ? getCards(log, viewer) : sortCards([]);
+}
+
+/**
+ * Every card the log shows the opponent with, played or only revealed.
+ *
+ * @remarks
+ * Same rules as `getViewerCards`. The opponent's hand stays hidden, so this
+ * is what they played plus what effects revealed: a mulligan, a searched
+ * card, discards. In the fixture, Toxtricity comes from the mulligan reveal
+ * and Dusk Ball, though it never reached the board.
+ *
+ * @param log - The raw battle log.
+ * @returns Names per kind in order of first appearance; all empty when the
+ *   opponent can't be found.
+ * @example
+ * gameLog.getOpponentCards(log).pokemon;
+ * // ["Toxtricity", "Team Rocket's Sneasel", "Scraggy", "Toxel"]
+ */
+export function getOpponentCards(log: string): Cards {
+  const opponent = findOpponent(log);
+  return opponent ? getCards(log, opponent) : sortCards([]);
+}
+
+function getCards(log: string, player: string): Cards {
+  const players = getPlayers(log);
+  const p = escapeRegExp(player);
+  const own = `${p}['’]s `;
+  const single = [
+    // "Red drew Lillie's Determination." — not "drew a card" or "drew 3 cards".
+    new RegExp(`^${p} drew (?!a card\\.)(?!\\d)(.+)\\.$`),
+    new RegExp(`^${p} played (.+?)(?: to the (?:Active Spot|Bench))?\\.$`),
+    new RegExp(`^${p} attached (.+?) to .+\\.$`),
+    new RegExp(
+      `^${p} evolved (.+?) to (.+?) (?:in the Active Spot|on the Bench)\\.$`,
+    ),
+    new RegExp(`^${p} discarded (?!\\d)(.+)\\.$`),
+    new RegExp(`^(.+) was added to ${own}hand\\.$`),
+    new RegExp(`^(.+) was discarded from ${own}.+\\.$`),
+    new RegExp(`^${own}(.+?) used `),
+    new RegExp(`^${own}(.+) is now in the Active Spot\\.$`),
+    new RegExp(`^${own}(.+) was Knocked Out!$`),
+  ];
+
+  // Whose line this is: "Red played …", "Red's Lunatone …", or "… from Red's".
+  const ownerOf = (text: string) =>
+    players.find(
+      (name) =>
+        text.startsWith(`${name} `) ||
+        new RegExp(
+          `^${escapeRegExp(name)}['’]s |from ${escapeRegExp(name)}['’]s `,
+        ).test(text),
+    );
+
+  const names: string[] = [];
+  let topOwner: string | undefined;
+  let subOwner: string | undefined;
+  let subText = "";
+  for (const line of lines(log)) {
+    const bullet = line.match(/^\s+• (.+)$/)?.[1];
+    if (bullet !== undefined) {
+      // A list belongs to the line above it ("- Red drew 8 cards."), or to
+      // the turn line above that ("Blue took a mulligan." over "- Cards
+      // revealed from Mulligan 1"). A damage breakdown isn't a card list.
+      const owner = subOwner ?? topOwner;
+      if (owner === player && !subText.endsWith("breakdown:")) {
+        names.push(...bullet.split(", "));
+      }
+      continue;
+    }
+
+    const sub = line.match(/^- (.+)$/)?.[1];
+    const text = sub ?? line;
+    if (sub === undefined) {
+      topOwner = ownerOf(text);
+      subOwner = undefined;
+      subText = "";
+    } else {
+      subOwner = ownerOf(text);
+      subText = text;
+    }
+    for (const pattern of single) {
+      names.push(...(text.match(pattern)?.slice(1) ?? []));
+    }
+  }
+  return sortCards(names);
+}
+
+function sortCards(names: string[]): Cards {
+  const cards: Cards = { pokemon: [], trainers: [], energy: [], unknown: [] };
+  for (const name of new Set(names)) {
+    const entry = CARD_INDEX[name.replaceAll("’", "'")];
+    const kind = entry
+      ? KINDS[entry.category]
+      : name.endsWith(" Energy")
+        ? "energy"
+        : "unknown";
+    cards[kind].push(name);
+  }
+  return cards;
 }
 
 // Player names go into the patterns above, and usernames can contain

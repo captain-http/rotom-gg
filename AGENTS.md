@@ -22,6 +22,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - `get*` always returns a value (or throws). `find*` may return undefined — the name tells callers to handle "not there". `list*` returns an array, possibly empty.
 - Modules of related pure functions are imported as a namespace (`import * as gameLog from "./game-log"`), so names stay short.
 - Every exported function in `lib/domain/` has a JSDoc comment.
+- `lib/domain/card-index.json` is generated: never edit it by hand. When a new set releases, or a real card lands in `unknown` from `gameLog.getViewerCards`/`getOpponentCards`, rerun `node scripts/build-card-index.ts` and commit the result.
 - Players in examples, tests, and fixtures are **Red** (the viewer, who exported the log) and **Blue** (the opponent); test Clerk ids are `user_red` and `user_blue`. Replace real usernames in fixtures before committing — the repo is public.
 
 - UI work follows the design language in `.claude/skills/rotom-design/SKILL.md`: read it before building or restyling anything in `app/`, and compare your work with `/styleguide`.
