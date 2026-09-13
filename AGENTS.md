@@ -24,7 +24,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Every exported function in `lib/domain/` has a JSDoc comment.
 - Players in examples, tests, and fixtures are **Red** (the viewer, who exported the log) and **Blue** (the opponent); test Clerk ids are `user_red` and `user_blue`. Replace real usernames in fixtures before committing — the repo is public.
 
-- UI work follows the design language in `.claude/skills/rotom-design/SKILL.md`: read it before building or restyling anything in `app/`.
+- UI work follows the design language in `.claude/skills/rotom-design/SKILL.md`: read it before building or restyling anything in `app/`, and compare your work with `/styleguide`.
+- Screenshot baselines in `test/e2e/visual.spec.ts-snapshots/` change only for an intended visual change, with every updated image reviewed. Never update them just to make `bin/verify` pass.
 
 # Adding a game log fixture
 

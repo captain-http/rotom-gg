@@ -11,8 +11,19 @@ paper grounds, soft ink, one amber accent, highlighter blocks, and a pixel
 font kept on its grid. Calm and technical, never glossy.
 
 Tokens and utilities live in `app/globals.css`. Primitives live in
-`app/components/ui/`. The reference pages are `app/page.tsx`,
-`app/decks/page.tsx`, and `app/decks/[id]/page.tsx` — copy their patterns.
+`app/components/ui/`. **`/styleguide`** (`app/styleguide/page.tsx`) renders
+every primitive and pattern from the real components — open it before
+building, and compare your work against it.
+
+Three checks back this document up, all in `bin/verify`:
+
+- **The theme only knows rotom.gg tokens.** Tailwind's default palette,
+  weights, radii, and shadows are removed, so `bg-white` or `font-bold`
+  render nothing.
+- **ESLint rejects off-system classes** (`eslint-rules/design-classes.js`)
+  with the reason and the token to use instead.
+- **Screenshot tests** (`test/e2e/visual.spec.ts`) compare `/` and
+  `/styleguide` in light, dark, mobile, and desktop against committed images.
 
 ## Typography
 
@@ -92,6 +103,14 @@ CSSProperties}` on each item.
 - `Mark tone="win" | "loss" | "neutral"` — a small uppercase highlighter
   block. Use `neutral` for unknowns and zero counts, so amber only appears
   when something was actually won.
+- `Heading` — a page title on a highlight block. `Caption` — uppercase
+  muted meta text; pass `as="h2" | "label" | "span"`.
+- `Reveal index={i}` — a list item that steps in on load.
+- `DeckCard`, `GameCard` — the deck and game sheets.
+
+Reach for a primitive before writing classes. A pattern used on two routes
+becomes a primitive in `app/components/ui/` and gets a section in
+`/styleguide`.
 
 ## Layout
 
@@ -110,3 +129,18 @@ py-6`.
 - Pure black or pure white text on the page ground.
 - Amber as decoration, or more than one accent color.
 - Client components for effects — motion is CSS.
+
+## Verify your work
+
+Before calling UI work done:
+
+1. `bin/verify` passes — lint catches off-system classes.
+2. Look at the page yourself: screenshot it with Playwright in light and dark,
+   at 390px and 1280px wide. Compare with `/styleguide`, and check it
+   against **Avoid**.
+3. Anything new and reusable is added to `/styleguide`.
+4. If the screenshot tests fail, open the diff in `playwright-report/`. A
+   change you didn't intend is a bug — fix it. A change you did intend:
+   run `pnpm exec playwright test test/e2e/visual.spec.ts
+--update-snapshots`, look at every updated image, and commit them with
+   the change. Never update snapshots just to make the test pass.

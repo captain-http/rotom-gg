@@ -1,12 +1,13 @@
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { CSSProperties } from "react";
 import { findDeck } from "@/lib/domain/decks";
-import { listGames, type Game } from "@/lib/domain/games";
+import { listGames } from "@/lib/domain/games";
 import { Button } from "../../components/ui/button";
 import { Textarea } from "../../components/ui/field";
-import { Mark } from "../../components/ui/mark";
+import { GameCard } from "../../components/ui/game-card";
+import { Reveal } from "../../components/ui/reveal";
+import { Caption, Heading } from "../../components/ui/text";
 import { createGameAction } from "./actions";
 
 export default async function DeckPage({
@@ -34,18 +35,13 @@ export default async function DeckPage({
       >
         &lt; Decks
       </Link>
-      <h1 className="self-start bg-highlight px-1 text-heading text-highlight-foreground">
-        {deck.title}
-      </h1>
+      <Heading>{deck.title}</Heading>
 
       <form action={createGameAction} className="flex flex-col gap-2">
         <input type="hidden" name="deckId" value={deck.id} />
-        <label
-          htmlFor="log"
-          className="text-meta tracking-wider text-muted uppercase"
-        >
+        <Caption as="label" htmlFor="log">
           File a battle log
-        </label>
+        </Caption>
         <Textarea
           id="log"
           name="log"
@@ -59,56 +55,18 @@ export default async function DeckPage({
         </Button>
       </form>
 
-      <h2 className="text-meta tracking-wider text-muted uppercase">
-        Games on file: {games.length}
-      </h2>
+      <Caption as="h2">Games on file: {games.length}</Caption>
       {games.length === 0 ? (
-        <p className="text-meta tracking-wider text-muted uppercase">
-          No games yet.
-        </p>
+        <Caption>No games yet.</Caption>
       ) : (
         <ul className="flex flex-col gap-2">
           {games.map((game, index) => (
-            <li
-              key={game.id}
-              className="notch animate-reveal bg-surface text-surface-foreground [animation-delay:calc(var(--i)*60ms)]"
-              style={{ "--i": index } as CSSProperties}
-            >
-              <details>
-                <summary className="flex cursor-pointer flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3">
-                  <span>Game #{game.id}</span>
-                  <ResultMark result={game.result} />
-                  <GameFacts game={game} />
-                </summary>
-                {/* The log as a printout: a ruled margin down the left edge. */}
-                <pre className="mx-4 mb-3 overflow-x-auto border-l-2 border-border pl-3 text-meta whitespace-pre-wrap">
-                  {game.log}
-                </pre>
-              </details>
-            </li>
+            <Reveal key={game.id} index={index}>
+              <GameCard game={game} />
+            </Reveal>
           ))}
         </ul>
       )}
     </main>
-  );
-}
-
-function ResultMark({ result }: { result: Game["result"] }) {
-  if (result === "win") return <Mark tone="win">Win</Mark>;
-  if (result === "loss") return <Mark tone="loss">Loss</Mark>;
-  return <Mark tone="neutral">Unknown</Mark>;
-}
-
-function GameFacts({ game }: { game: Game }) {
-  const facts = [
-    game.turnCount !== null && `${game.turnCount} turns`,
-    game.wentFirst !== null && (game.wentFirst ? "Went first" : "Went second"),
-  ].filter(Boolean);
-  if (facts.length === 0) return null;
-
-  return (
-    <span className="text-meta tracking-wider text-muted uppercase">
-      {facts.join(" · ")}
-    </span>
   );
 }
