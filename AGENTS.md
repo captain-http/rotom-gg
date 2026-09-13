@@ -15,3 +15,4 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Pushing to `main` deploys to production, including migrations.
 - Ask before a migration that drops, renames, or rewrites existing data — a revert can't undo it.
 - Never force-push or rewrite history.
+- Never add `minimumReleaseAgeExclude` entries. If pnpm rejects a version as too new, pin the newest one it accepts.
