@@ -79,6 +79,37 @@ export function findWinner(log: string): string | undefined {
 }
 
 /**
+ * The player who won the opening coin toss, from "<player> won the coin toss."
+ *
+ * @param log - The raw battle log.
+ * @returns The toss winner's name, or undefined when the log doesn't say.
+ * @example
+ * gameLog.findCoinTossWinner(log); // "Blue"
+ */
+export function findCoinTossWinner(log: string): string | undefined {
+  return getPlayers(log).find((player) =>
+    lines(log).includes(`${player} won the coin toss.`),
+  );
+}
+
+/**
+ * The player who took the first turn, from "<player> decided to go first."
+ *
+ * Only that wording is known so far; a toss winner who chooses to go second
+ * returns undefined until a real log shows how that reads.
+ *
+ * @param log - The raw battle log.
+ * @returns The first player's name, or undefined when the log doesn't say.
+ * @example
+ * gameLog.findFirstPlayer(log); // "Blue"
+ */
+export function findFirstPlayer(log: string): string | undefined {
+  return getPlayers(log).find((player) =>
+    lines(log).includes(`${player} decided to go first.`),
+  );
+}
+
+/**
  * Whether the viewer won or lost.
  *
  * @param log - The raw battle log.

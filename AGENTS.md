@@ -32,5 +32,5 @@ Real logs live in `test/fixtures/logs/`, each `<name>.txt` next to `<name>.json`
 2. **Find the viewer.** It's the player whose draws name the card (`X drew Lillie's Determination.`) — not whoever appears first or won the coin toss. The viewer becomes `Red`, the other player `Blue`.
 3. **Replace both usernames everywhere**, as whole words, including possessives with a straight `'` or curly `’` apostrophe. Don't touch card names that contain `Red` or `Blue`. Afterwards, grep the file for both original names: zero matches.
 4. **Change nothing else.** Keep whitespace, blank lines, `-` and `•` prefixes, and odd characters exactly as exported — they are what the parser has to handle.
-5. **Write the `.json`** as exactly what `gameLog.summarize` should return for that log, worked out by reading the log — never by running the parser and copying its output.
+5. **Write the `.json`**: one key per exported `gameLog` function, each set to what it should return for that log (`null` for undefined). Work the values out by reading the log — never by running the parser and copying its output. The test fails if a function is missing, so adding a function to `game-log.ts` means adding its key to every fixture.
 6. If the test fails, the parser is wrong, not the fixture: fix `lib/domain/game-log.ts`.

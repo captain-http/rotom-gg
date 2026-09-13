@@ -1,3 +1,9 @@
 {
-  "result": "win"
+  "getPlayers": ["Red", "Blue"],
+  "findViewer": "Red",
+  "findWinner": "Red",
+  "findCoinTossWinner": "Blue",
+  "findFirstPlayer": "Blue",
+  "findResult": "win",
+  "summarize": { "result": "win" }
 }
