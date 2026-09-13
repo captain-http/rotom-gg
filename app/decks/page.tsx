@@ -1,4 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
+import Link from "next/link";
 import { listDecks } from "@/lib/domain/decks";
 import { createDeckAction } from "./actions";
 
@@ -32,11 +33,13 @@ export default async function DecksPage() {
       ) : (
         <ul className="flex flex-col gap-2">
           {decks.map((deck) => (
-            <li
-              key={deck.id}
-              className="rounded border border-foreground/20 px-3 py-2"
-            >
-              {deck.title}
+            <li key={deck.id}>
+              <Link
+                href={`/decks/${deck.id}`}
+                className="block rounded border border-foreground/20 px-3 py-2"
+              >
+                {deck.title}
+              </Link>
             </li>
           ))}
         </ul>
