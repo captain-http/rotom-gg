@@ -48,6 +48,9 @@ export const games = pgTable(
     turnCount: integer("turn_count"),
     // Pokémon the opponent put on the board, in order of first appearance.
     opponentPokemon: text("opponent_pokemon").array(),
+    // Most damage from a single attack, Weakness included.
+    maxDamage: integer("max_damage"),
+    opponentMaxDamage: integer("opponent_max_damage"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),

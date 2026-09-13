@@ -47,6 +47,8 @@ test("createGame stores the facts summarized from the log", () =>
       wentFirst: false,
       turnCount: 8,
       opponentPokemon: ["Team Rocket's Sneasel", "Scraggy", "Toxel"],
+      maxDamage: 260,
+      opponentMaxDamage: 20,
     });
   }));
 

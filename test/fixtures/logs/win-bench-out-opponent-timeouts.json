@@ -16,12 +16,16 @@
     "Meowth ex"
   ],
   "listOpponentPlayedPokemon": ["Team Rocket's Sneasel", "Scraggy", "Toxel"],
+  "findViewerMaxDamage": 260,
+  "findOpponentMaxDamage": 20,
   "summarize": {
     "result": "win",
     "wonCoinToss": false,
     "coinTossChoice": "first",
     "wentFirst": false,
     "turnCount": 8,
-    "opponentPokemon": ["Team Rocket's Sneasel", "Scraggy", "Toxel"]
+    "opponentPokemon": ["Team Rocket's Sneasel", "Scraggy", "Toxel"],
+    "maxDamage": 260,
+    "opponentMaxDamage": 20
   }
 }

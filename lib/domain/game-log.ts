@@ -17,6 +17,8 @@ export type Summary = {
   wentFirst: boolean | null;
   turnCount: number | null;
   opponentPokemon: string[] | null;
+  maxDamage: number | null;
+  opponentMaxDamage: number | null;
 };
 
 /**
@@ -27,7 +29,8 @@ export type Summary = {
  * @example
  * gameLog.summarize(log);
  * // { result: "win", wonCoinToss: false, coinTossChoice: "first", wentFirst: false,
- * //   turnCount: 8, opponentPokemon: ["Team Rocket's Sneasel", "Scraggy", "Toxel"] }
+ * //   turnCount: 8, opponentPokemon: ["Team Rocket's Sneasel", "Scraggy", "Toxel"],
+ * //   maxDamage: 260, opponentMaxDamage: 20 }
  */
 export function summarize(log: string): Summary {
   const viewer = findViewer(log);
@@ -41,6 +44,8 @@ export function summarize(log: string): Summary {
     wentFirst: isViewer(findStartingPlayer(log)),
     turnCount: findTurnCount(log) ?? null,
     opponentPokemon: viewer ? listOpponentPlayedPokemon(log) : null,
+    maxDamage: findViewerMaxDamage(log) ?? null,
+    opponentMaxDamage: findOpponentMaxDamage(log) ?? null,
   };
 }
 
@@ -239,11 +244,63 @@ export function listViewerPlayedPokemon(log: string): string[] {
  * // ["Team Rocket's Sneasel", "Scraggy", "Toxel"]
  */
 export function listOpponentPlayedPokemon(log: string): string[] {
+  const opponent = findOpponent(log);
+  return opponent ? listPlayedPokemon(log, opponent) : [];
+}
+
+/**
+ * The most damage the viewer dealt with a single attack.
+ *
+ * @remarks
+ * Reads "<player>'s <Pokémon> used <attack> on <target> for <N> damage.",
+ * where N already includes Weakness and Resistance. Damage counters placed
+ * by effects ("put 4 damage counters on …") aren't attacks and don't count.
+ *
+ * @param log - The raw battle log.
+ * @returns The highest damage, or undefined when the viewer can't be found or
+ *   never dealt attack damage.
+ * @example
+ * gameLog.findViewerMaxDamage(log); // 260
+ */
+export function findViewerMaxDamage(log: string): number | undefined {
+  const viewer = findViewer(log);
+  return viewer ? findMaxDamage(log, viewer) : undefined;
+}
+
+/**
+ * The most damage the opponent dealt with a single attack.
+ *
+ * @remarks
+ * Same rules as `findViewerMaxDamage`.
+ *
+ * @param log - The raw battle log.
+ * @returns The highest damage, or undefined when the opponent can't be found
+ *   or never dealt attack damage.
+ * @example
+ * gameLog.findOpponentMaxDamage(log); // 20
+ */
+export function findOpponentMaxDamage(log: string): number | undefined {
+  const opponent = findOpponent(log);
+  return opponent ? findMaxDamage(log, opponent) : undefined;
+}
+
+// The player who isn't the viewer.
+function findOpponent(log: string): string | undefined {
   const viewer = findViewer(log);
   const others = getPlayers(log).filter((player) => player !== viewer);
-  return viewer && others.length === 1 && others[0]
-    ? listPlayedPokemon(log, others[0])
-    : [];
+  return viewer && others.length === 1 ? others[0] : undefined;
+}
+
+function findMaxDamage(log: string, player: string): number | undefined {
+  // Not anchored at the end: a Weakness note can follow on the same line.
+  const attack = new RegExp(
+    `^${escapeRegExp(player)}['’]s .+? used .+? for (\\d+) damage\\.`,
+  );
+  const damages = lines(log).flatMap((line) => {
+    const damage = line.match(attack)?.[1];
+    return damage ? [Number(damage)] : [];
+  });
+  return damages.length > 0 ? Math.max(...damages) : undefined;
 }
 
 // A player's Pokémon, from lines where that player acts with their own
