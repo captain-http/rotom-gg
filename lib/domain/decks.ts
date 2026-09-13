@@ -4,6 +4,13 @@ import { decks } from "../db/schema";
 
 export type Deck = typeof decks.$inferSelect;
 
+/**
+ * Creates a deck owned by a user.
+ *
+ * @param input - The owner's Clerk user id and the deck title.
+ * @param db - The database or a transaction; defaults to the shared client.
+ * @returns The stored deck.
+ */
 export async function createDeck(
   input: { userId: string; title: string },
   db: Db = defaultDb,
@@ -15,8 +22,15 @@ export async function createDeck(
   return deck;
 }
 
-// Undefined when the deck doesn't exist or belongs to someone else.
-export async function getDeck(
+/**
+ * A deck, if the user owns it.
+ *
+ * @param input - The Clerk user id and the deck id.
+ * @param db - The database or a transaction; defaults to the shared client.
+ * @returns The deck, or undefined when it doesn't exist or belongs to someone
+ *   else.
+ */
+export async function findDeck(
   input: { userId: string; deckId: number },
   db: Db = defaultDb,
 ): Promise<Deck | undefined> {
@@ -27,7 +41,13 @@ export async function getDeck(
   return deck;
 }
 
-// Newest first.
+/**
+ * All of a user's decks.
+ *
+ * @param userId - The owner's Clerk user id.
+ * @param db - The database or a transaction; defaults to the shared client.
+ * @returns The decks, newest first, or an empty array.
+ */
 export async function listDecks(
   userId: string,
   db: Db = defaultDb,

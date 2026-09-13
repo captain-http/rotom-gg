@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test } from "vitest";
 import { withRollback } from "../../test/db";
-import { createDeck, getDeck } from "./decks";
+import { createDeck, findDeck } from "./decks";
 import { createGame, listGames } from "./games";
 
 test("createGame stores the log on the user's deck", () =>
@@ -59,7 +59,7 @@ test("another user's deck can't be read or given games", () =>
     await createGame({ userId: "user_b", deckId: deck.id, log: "Theirs" }, db);
     const asUserA = { userId: "user_a", deckId: deck.id };
 
-    expect(await getDeck(asUserA, db)).toBeUndefined();
+    expect(await findDeck(asUserA, db)).toBeUndefined();
     expect(await createGame({ ...asUserA, log: "Mine" }, db)).toBeUndefined();
     expect(await listGames(asUserA, db)).toEqual([]);
     expect(

@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getDeck } from "@/lib/domain/decks";
+import { findDeck } from "@/lib/domain/decks";
 import { listGames } from "@/lib/domain/games";
 import { createGameAction } from "./actions";
 
@@ -18,7 +18,7 @@ export default async function DeckPage({
     notFound();
   }
 
-  const deck = await getDeck({ userId, deckId });
+  const deck = await findDeck({ userId, deckId });
   if (!deck) {
     notFound();
   }

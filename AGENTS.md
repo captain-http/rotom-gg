@@ -16,3 +16,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Ask before a migration that drops, renames, or rewrites existing data — a revert can't undo it.
 - Never force-push or rewrite history.
 - Never add `minimumReleaseAgeExclude` entries. If pnpm rejects a version as too new, pin the newest one it accepts.
+
+# Conventions
+
+- `get*` always returns a value (or throws). `find*` may return undefined — the name tells callers to handle "not there". `list*` returns an array, possibly empty.
+- Modules of related pure functions are imported as a namespace (`import * as gameLog from "./game-log"`), so names stay short.
+- Every exported function in `lib/domain/` has a JSDoc comment.
