@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { DeckWithRecord } from "@/lib/domain/decks";
 import type { Game } from "@/lib/domain/games";
-import { Button } from "../components/ui/button";
+import { Button, ButtonLink } from "../components/ui/button";
 import { DeckCard } from "../components/ui/deck-card";
 import { Input, Textarea } from "../components/ui/field";
 import { GameCard } from "../components/ui/game-card";
@@ -152,6 +152,9 @@ export default function StyleguidePage() {
           />
           <Button>+ New</Button>
         </div>
+        <ButtonLink href="/styleguide" className="self-start">
+          + Add game
+        </ButtonLink>
         <Textarea
           rows={3}
           placeholder="Paste a game log from Pokémon TCG Live"

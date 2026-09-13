@@ -1,8 +1,7 @@
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
-import { notFound } from "next/navigation";
-import { refresh } from "next/cache";
+import { notFound, redirect } from "next/navigation";
 import { z } from "zod";
 import { createGame } from "@/lib/domain/games";
 
@@ -22,5 +21,6 @@ export async function createGameAction(formData: FormData) {
   if (!game) {
     notFound();
   }
-  refresh();
+  // Back to the deck, where the new game is first in the list.
+  redirect(`/decks/${deckId}`);
 }

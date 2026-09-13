@@ -3,12 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { findDeck } from "@/lib/domain/decks";
 import { listGames } from "@/lib/domain/games";
-import { Button } from "../../components/ui/button";
-import { Textarea } from "../../components/ui/field";
+import { ButtonLink } from "../../components/ui/button";
 import { GameCard } from "../../components/ui/game-card";
 import { Reveal } from "../../components/ui/reveal";
 import { Caption, Heading } from "../../components/ui/text";
-import { createGameAction } from "./actions";
 
 export default async function DeckPage({
   params,
@@ -37,23 +35,9 @@ export default async function DeckPage({
       </Link>
       <Heading>{deck.title}</Heading>
 
-      <form action={createGameAction} className="flex flex-col gap-2">
-        <input type="hidden" name="deckId" value={deck.id} />
-        <Caption as="label" htmlFor="log">
-          File a battle log
-        </Caption>
-        <Textarea
-          id="log"
-          name="log"
-          required
-          rows={6}
-          placeholder="Paste a game log from Pokémon TCG Live"
-          className="text-meta"
-        />
-        <Button type="submit" className="self-start">
-          + Add game
-        </Button>
-      </form>
+      <ButtonLink href={`/decks/${deck.id}/games/new`} className="self-start">
+        + Add game
+      </ButtonLink>
 
       <Caption as="h2">Games on file: {games.length}</Caption>
       {games.length === 0 ? (

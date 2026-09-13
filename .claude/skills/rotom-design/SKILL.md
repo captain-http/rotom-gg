@@ -97,7 +97,9 @@ CSSProperties}` on each item.
 ## Primitives
 
 - `Button` — inverse panel, uppercase `text-body`. Spreads props, so Clerk
-  wrappers like `<SignInButton>` can use it as their child.
+  wrappers like `<SignInButton>` can use it as their child. `ButtonLink`
+  looks the same but navigates — for actions that open a page, like
+  `+ Add game` → `/decks/1/games/new`.
 - `Input`, `Textarea` — a paper sheet with a 2px border that turns amber on
   focus.
 - `Mark tone="win" | "loss" | "neutral"` — a small uppercase highlighter
