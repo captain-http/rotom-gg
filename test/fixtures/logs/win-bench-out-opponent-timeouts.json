@@ -5,11 +5,13 @@
   "findCoinTossWinner": "Blue",
   "findCoinTossChoice": "first",
   "findStartingPlayer": "Blue",
+  "findTurnCount": 8,
   "findResult": "win",
   "summarize": {
     "result": "win",
     "wonCoinToss": false,
     "coinTossChoice": "first",
-    "wentFirst": false
+    "wentFirst": false,
+    "turnCount": 8
   }
 }

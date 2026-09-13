@@ -45,6 +45,7 @@ test("createGame stores the facts summarized from the log", () =>
       wonCoinToss: false,
       coinTossChoice: "first",
       wentFirst: false,
+      turnCount: 8,
     });
   }));
 

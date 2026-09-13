@@ -4,6 +4,7 @@ import {
   boolean,
   check,
   index,
+  integer,
   pgTable,
   text,
   timestamp,
@@ -43,6 +44,8 @@ export const games = pgTable(
     // What the coin toss winner chose — the viewer or the opponent.
     coinTossChoice: text("coin_toss_choice", { enum: ["first", "second"] }),
     wentFirst: boolean("went_first"),
+    // Each player's turn counts separately.
+    turnCount: integer("turn_count"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),

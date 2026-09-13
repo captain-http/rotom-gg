@@ -22,6 +22,13 @@
       "when": 1789270755951,
       "tag": "0002_add_coin_toss_and_turn_order",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789271553964,
+      "tag": "0003_add_turn_count",
+      "breakpoints": true
     }
   ]
 }

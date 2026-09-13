@@ -15,6 +15,7 @@ export type Summary = {
   wonCoinToss: boolean | null;
   coinTossChoice: TurnOrder | null;
   wentFirst: boolean | null;
+  turnCount: number | null;
 };
 
 /**
@@ -24,7 +25,7 @@ export type Summary = {
  * @returns The stored facts, with null for anything the log doesn't say.
  * @example
  * gameLog.summarize(log);
- * // { result: "win", wonCoinToss: false, coinTossChoice: "first", wentFirst: false }
+ * // { result: "win", wonCoinToss: false, coinTossChoice: "first", wentFirst: false, turnCount: 8 }
  */
 export function summarize(log: string): Summary {
   const viewer = findViewer(log);
@@ -36,6 +37,7 @@ export function summarize(log: string): Summary {
     wonCoinToss: isViewer(findCoinTossWinner(log)),
     coinTossChoice: findCoinTossChoice(log) ?? null,
     wentFirst: isViewer(findStartingPlayer(log)),
+    turnCount: findTurnCount(log) ?? null,
   };
 }
 
@@ -155,6 +157,24 @@ export function findStartingPlayer(log: string): string | undefined {
   }
   const others = getPlayers(log).filter((player) => player !== tossWinner);
   return others.length === 1 ? others[0] : undefined;
+}
+
+/**
+ * How many turns the game took, counting each player's turn separately (as
+ * the game rules do), from the "<player>'s Turn" headers. Setup isn't a turn.
+ *
+ * @param log - The raw battle log.
+ * @returns The number of turns, or undefined when the log has no turn headers.
+ * @example
+ * gameLog.findTurnCount(log); // 8
+ */
+export function findTurnCount(log: string): number | undefined {
+  const headers = getPlayers(log).flatMap((player) => [
+    `${player}'s Turn`,
+    `${player}’s Turn`,
+  ]);
+  const count = lines(log).filter((line) => headers.includes(line)).length;
+  return count > 0 ? count : undefined;
 }
 
 /**
