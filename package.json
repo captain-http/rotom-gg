@@ -10,6 +10,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@clerk/nextjs": "7.9.2",
     "drizzle-orm": "0.45.2",
     "next": "16.3.4",
     "pg": "8.23.0",
