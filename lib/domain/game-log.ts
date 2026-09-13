@@ -201,6 +201,13 @@ export function findResult(log: string): Result | undefined {
 /**
  * The Pokémon the viewer put on the board.
  *
+ * @remarks
+ * Only Pokémon that reached the board. Cards the log reveals but that were
+ * never played — the opening hand, draws, discards, shuffles — aren't
+ * included: those lists mix Pokémon with Trainers and Energy, and telling
+ * them apart needs a card database. In the fixture, Hariyama is drawn but
+ * never played, so it isn't listed.
+ *
  * @param log - The raw battle log.
  * @returns Pokémon names in order of first appearance, or an empty array when
  *   the viewer can't be found. See `listPlayedPokemon` for what counts.
@@ -216,6 +223,13 @@ export function listViewerPlayedPokemon(log: string): string[] {
 /**
  * The Pokémon the opponent put on the board — the only ones the log reveals
  * for certain, since their hand and deck stay hidden.
+ *
+ * @remarks
+ * Only Pokémon that reached the board. Cards revealed but never played —
+ * a mulligan reveal, a searched card like Dusk Ball's — aren't included:
+ * those lists mix Pokémon with Trainers and Energy, and telling them apart
+ * needs a card database. In the fixture, Toxtricity is revealed by the
+ * mulligan and drawn by Dusk Ball but never played, so it isn't listed.
  *
  * @param log - The raw battle log.
  * @returns Pokémon names in order of first appearance, or an empty array when
