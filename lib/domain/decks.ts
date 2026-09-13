@@ -1,8 +1,11 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, sql } from "drizzle-orm";
 import { db as defaultDb, type Db } from "../db";
-import { decks } from "../db/schema";
+import { decks, games } from "../db/schema";
 
 export type Deck = typeof decks.$inferSelect;
+
+/** A deck with how many of its games were won and lost. */
+export type DeckWithRecord = Deck & { wins: number; losses: number };
 
 /**
  * Creates a deck owned by a user.
@@ -42,7 +45,9 @@ export async function findDeck(
 }
 
 /**
- * All of a user's decks.
+ * All of a user's decks, with their win–loss record.
+ *
+ * Games whose result couldn't be parsed count toward neither.
  *
  * @param userId - The owner's Clerk user id.
  * @param db - The database or a transaction; defaults to the shared client.
@@ -51,10 +56,20 @@ export async function findDeck(
 export async function listDecks(
   userId: string,
   db: Db = defaultDb,
-): Promise<Deck[]> {
+): Promise<DeckWithRecord[]> {
   return db
-    .select()
+    .select({
+      ...getTableColumns(decks),
+      wins: sql`count(*) filter (where ${games.result} = 'win')`.mapWith(
+        Number,
+      ),
+      losses: sql`count(*) filter (where ${games.result} = 'loss')`.mapWith(
+        Number,
+      ),
+    })
     .from(decks)
+    .leftJoin(games, eq(games.deckId, decks.id))
     .where(eq(decks.userId, userId))
+    .groupBy(decks.id)
     .orderBy(desc(decks.id));
 }

@@ -36,9 +36,12 @@ export default async function DecksPage() {
             <li key={deck.id}>
               <Link
                 href={`/decks/${deck.id}`}
-                className="block rounded border border-foreground/20 px-3 py-2"
+                className="flex justify-between gap-4 rounded border border-foreground/20 px-3 py-2"
               >
-                {deck.title}
+                <span>{deck.title}</span>
+                <span className="shrink-0">
+                  {deck.wins}W {deck.losses}L
+                </span>
               </Link>
             </li>
           ))}
