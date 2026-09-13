@@ -10,5 +10,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Workflow
 
-- Commit directly to `main` and push. No feature branches or PRs — there is one developer.
-- Only commit when asked. `bin/verify` must pass first.
+- Commit and push to `main` without asking, in small steps. No feature branches or PRs.
+- `bin/verify` must pass before every commit.
+- Pushing to `main` deploys to production, including migrations.
+- Ask before a migration that drops, renames, or rewrites existing data — a revert can't undo it.
+- Never force-push or rewrite history.
