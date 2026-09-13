@@ -7,10 +7,10 @@ import { createGame, listGames } from "./games";
 
 test("createGame stores the log on the user's deck", () =>
   withRollback(async (db) => {
-    const deck = await createDeck({ userId: "user_a", title: "Deck" }, db);
+    const deck = await createDeck({ userId: "user_red", title: "Deck" }, db);
 
     const game = await createGame(
-      { userId: "user_a", deckId: deck.id, log: "Turn 1" },
+      { userId: "user_red", deckId: deck.id, log: "Turn 1" },
       db,
     );
 
@@ -19,14 +19,14 @@ test("createGame stores the log on the user's deck", () =>
       log: "Turn 1",
       result: null,
     });
-    expect(await listGames({ userId: "user_a", deckId: deck.id }, db)).toEqual([
-      game,
-    ]);
+    expect(
+      await listGames({ userId: "user_red", deckId: deck.id }, db),
+    ).toEqual([game]);
   }));
 
 test("createGame stores the result parsed from the log", () =>
   withRollback(async (db) => {
-    const deck = await createDeck({ userId: "user_a", title: "Deck" }, db);
+    const deck = await createDeck({ userId: "user_red", title: "Deck" }, db);
     const log = readFileSync(
       join(
         import.meta.dirname,
@@ -36,7 +36,7 @@ test("createGame stores the result parsed from the log", () =>
     );
 
     const game = await createGame(
-      { userId: "user_a", deckId: deck.id, log },
+      { userId: "user_red", deckId: deck.id, log },
       db,
     );
 
@@ -45,8 +45,8 @@ test("createGame stores the result parsed from the log", () =>
 
 test("listGames returns newest first", () =>
   withRollback(async (db) => {
-    const deck = await createDeck({ userId: "user_a", title: "Deck" }, db);
-    const input = { userId: "user_a", deckId: deck.id };
+    const deck = await createDeck({ userId: "user_red", title: "Deck" }, db);
+    const input = { userId: "user_red", deckId: deck.id };
     const first = await createGame({ ...input, log: "First" }, db);
     const second = await createGame({ ...input, log: "Second" }, db);
 
@@ -55,14 +55,20 @@ test("listGames returns newest first", () =>
 
 test("another user's deck can't be read or given games", () =>
   withRollback(async (db) => {
-    const deck = await createDeck({ userId: "user_b", title: "Not yours" }, db);
-    await createGame({ userId: "user_b", deckId: deck.id, log: "Theirs" }, db);
-    const asUserA = { userId: "user_a", deckId: deck.id };
+    const deck = await createDeck(
+      { userId: "user_blue", title: "Not yours" },
+      db,
+    );
+    await createGame(
+      { userId: "user_blue", deckId: deck.id, log: "Theirs" },
+      db,
+    );
+    const asRed = { userId: "user_red", deckId: deck.id };
 
-    expect(await findDeck(asUserA, db)).toBeUndefined();
-    expect(await createGame({ ...asUserA, log: "Mine" }, db)).toBeUndefined();
-    expect(await listGames(asUserA, db)).toEqual([]);
+    expect(await findDeck(asRed, db)).toBeUndefined();
+    expect(await createGame({ ...asRed, log: "Mine" }, db)).toBeUndefined();
+    expect(await listGames(asRed, db)).toEqual([]);
     expect(
-      await listGames({ userId: "user_b", deckId: deck.id }, db),
+      await listGames({ userId: "user_blue", deckId: deck.id }, db),
     ).toHaveLength(1);
   }));

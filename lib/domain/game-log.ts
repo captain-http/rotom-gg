@@ -22,12 +22,12 @@ export function summarize(log: string): { result: Result | null } {
 
 /**
  * The names of the players, read from their opening-hand draws
- * ("http_party drew 7 cards for the opening hand.").
+ * ("Red drew 7 cards for the opening hand.").
  *
  * @param log - The raw battle log.
  * @returns Player names in the order they drew, or an empty array.
  * @example
- * gameLog.getPlayers(log); // ["http_party", "Opponent"]
+ * gameLog.getPlayers(log); // ["Red", "Blue"]
  */
 export function getPlayers(log: string): string[] {
   return lines(log).flatMap((line) => {
@@ -40,12 +40,12 @@ export function getPlayers(log: string): string[] {
  * The player who exported the log.
  *
  * The log never says who that is, but it only names the cards they draw:
- * "http_party drew Lillie's Determination." against "Opponent drew a card."
+ * "Red drew Lillie's Determination." against "Blue drew a card."
  *
  * @param log - The raw battle log.
  * @returns The one player with named draws, or undefined when zero or both do.
  * @example
- * gameLog.findViewer(log); // "http_party"
+ * gameLog.findViewer(log); // "Red"
  */
 export function findViewer(log: string): string | undefined {
   const withNamedDraws = getPlayers(log).filter((player) =>
@@ -62,12 +62,12 @@ export function findViewer(log: string): string | undefined {
 
 /**
  * The player who won, from a "<player> wins." line, which may follow the
- * reason ("No Benched Pokémon for backup. http_party wins.").
+ * reason ("No Benched Pokémon for backup. Red wins.").
  *
  * @param log - The raw battle log.
  * @returns The winner's name, or undefined when the log has no winner.
  * @example
- * gameLog.findWinner(log); // "http_party"
+ * gameLog.findWinner(log); // "Red"
  */
 export function findWinner(log: string): string | undefined {
   return getPlayers(log).find((player) =>

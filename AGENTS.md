@@ -22,3 +22,4 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - `get*` always returns a value (or throws). `find*` may return undefined — the name tells callers to handle "not there". `list*` returns an array, possibly empty.
 - Modules of related pure functions are imported as a namespace (`import * as gameLog from "./game-log"`), so names stay short.
 - Every exported function in `lib/domain/` has a JSDoc comment.
+- Players in examples, tests, and fixtures are **Red** (the viewer, who exported the log) and **Blue** (the opponent); test Clerk ids are `user_red` and `user_blue`. Replace real usernames in fixtures before committing — the repo is public.
