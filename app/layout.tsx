@@ -18,7 +18,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               rotom.gg
             </Link>
             <Show when="signed-out">
-              <SignInButton />
+              <SignInButton fallbackRedirectUrl="/decks">
+                <button
+                  type="button"
+                  className="rounded bg-foreground px-3 py-2 text-background"
+                >
+                  Sign in
+                </button>
+              </SignInButton>
             </Show>
             <Show when="signed-in">
               <nav className="flex items-center gap-4">
