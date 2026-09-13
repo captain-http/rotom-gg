@@ -75,10 +75,13 @@ of these are thin callers of the same functions rather than a rewrite.
 Clerk. Session reading happens in app/ only; lib/domain/ takes userId as an
 argument and never reads the session itself.
 
-Every table has a user_id. Every query is scoped to it.
+Ownership lives on the top-level row: decks has a user_id, and games belong
+to a user through their deck. Every query is scoped to the user — directly on
+decks, through a join to decks for everything below them.
 
 Why: keeping session access out of lib/domain/ is what lets the same functions
-be called from a script, a job, or a test with no request context.
+be called from a script, a job, or a test with no request context. Storing
+user_id once means it can never disagree with the deck a row belongs to.
 
 ## Validation
 
