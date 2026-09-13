@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { db as defaultDb, type Db } from "../db";
 import { decks } from "../db/schema";
 
@@ -12,6 +12,18 @@ export async function createDeck(
   if (!deck) {
     throw new Error("Insert returned no deck");
   }
+  return deck;
+}
+
+// Undefined when the deck doesn't exist or belongs to someone else.
+export async function getDeck(
+  input: { userId: string; deckId: number },
+  db: Db = defaultDb,
+): Promise<Deck | undefined> {
+  const [deck] = await db
+    .select()
+    .from(decks)
+    .where(and(eq(decks.id, input.deckId), eq(decks.userId, input.userId)));
   return deck;
 }
 
