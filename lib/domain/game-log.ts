@@ -269,6 +269,12 @@ function listPlayedPokemon(log: string, player: string): string[] {
   return [...found];
 }
 
+// Player names go into the patterns above, and usernames can contain
+// characters that mean something in a regular expression: "Red.Blue" would
+// match "RedXBlue", and "Red(1)" wouldn't compile. The character class lists
+// every such character — . * + ? ^ $ { } ( ) | [ ] \ — and "\\$&" puts a
+// backslash before each match ($& is the matched character), so the name is
+// matched literally.
 function escapeRegExp(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
