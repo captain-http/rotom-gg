@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { expect, test } from "vitest";
 import { withRollback } from "../../test/db";
 import { createDeck, getDeck } from "./decks";
@@ -12,10 +14,33 @@ test("createGame stores the log on the user's deck", () =>
       db,
     );
 
-    expect(game).toMatchObject({ deckId: deck.id, log: "Turn 1" });
+    expect(game).toMatchObject({
+      deckId: deck.id,
+      log: "Turn 1",
+      result: null,
+    });
     expect(await listGames({ userId: "user_a", deckId: deck.id }, db)).toEqual([
       game,
     ]);
+  }));
+
+test("createGame stores the result parsed from the log", () =>
+  withRollback(async (db) => {
+    const deck = await createDeck({ userId: "user_a", title: "Deck" }, db);
+    const log = readFileSync(
+      join(
+        import.meta.dirname,
+        "../../test/fixtures/logs/win-bench-out-opponent-timeouts.txt",
+      ),
+      "utf8",
+    );
+
+    const game = await createGame(
+      { userId: "user_a", deckId: deck.id, log },
+      db,
+    );
+
+    expect(game?.result).toBe("win");
   }));
 
 test("listGames returns newest first", () =>

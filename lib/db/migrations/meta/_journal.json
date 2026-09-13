@@ -8,6 +8,13 @@
       "when": 1789258562642,
       "tag": "0000_create_decks_and_games",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789266034819,
+      "tag": "0001_add_game_result",
+      "breakpoints": true
     }
   ]
 }

@@ -5,6 +5,8 @@ import { getDeck } from "@/lib/domain/decks";
 import { listGames } from "@/lib/domain/games";
 import { createGameAction } from "./actions";
 
+const RESULT_LABELS = { win: "Win", loss: "Loss", unknown: "Unknown" };
+
 export default async function DeckPage({
   params,
 }: {
@@ -58,7 +60,9 @@ export default async function DeckPage({
               className="rounded border border-foreground/20 px-3 py-2"
             >
               <details>
-                <summary>Game #{game.id}</summary>
+                <summary>
+                  Game #{game.id} · {RESULT_LABELS[game.result ?? "unknown"]}
+                </summary>
                 <pre className="mt-2 overflow-x-auto text-sm whitespace-pre-wrap">
                   {game.log}
                 </pre>

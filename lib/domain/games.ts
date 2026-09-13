@@ -2,6 +2,7 @@ import { and, desc, eq, getTableColumns } from "drizzle-orm";
 import { db as defaultDb, type Db } from "../db";
 import { decks, games } from "../db/schema";
 import { getDeck } from "./decks";
+import { parseLog } from "./parse-log";
 
 export type Game = typeof games.$inferSelect;
 
@@ -17,7 +18,7 @@ export async function createGame(
 
   const [game] = await db
     .insert(games)
-    .values({ deckId: deck.id, log: input.log })
+    .values({ deckId: deck.id, log: input.log, ...parseLog(input.log) })
     .returning();
   if (!game) {
     throw new Error("Insert returned no game");

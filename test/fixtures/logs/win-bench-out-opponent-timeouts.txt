@@ -1,0 +1,135 @@
+Setup
+http_party chose tails for the opening coin flip.
+Opponent won the coin toss.
+Opponent decided to go first.
+http_party drew 7 cards for the opening hand.
+- 7 drawn cards.
+   • Basic Fighting Energy, Basic Fighting Energy, Switch, Makuhita, Poké Pad, Premium Power Pro, Boss's Orders
+Opponent drew 7 cards for the opening hand.
+- 7 drawn cards.
+Opponent took a mulligan.
+- Cards revealed from Mulligan 1
+   • Lillie's Determination, Night Stretcher, Toxtricity, Basic Darkness Energy, Punk Helmet, Basic Darkness Energy, Dusk Ball
+http_party drew 1 more card because Opponent took at least 1 mulligan.
+- http_party drew Mega Lucario ex.
+http_party played Makuhita to the Active Spot.
+Opponent played Team Rocket's Sneasel to the Active Spot.
+
+Opponent's Turn
+Opponent drew a card.
+Opponent played Dusk Ball.
+- Opponent drew Toxtricity.
+- Opponent shuffled their deck.
+Opponent attached Punk Helmet to Team Rocket's Sneasel in the Active Spot.
+Opponent attached Basic Darkness Energy to Team Rocket's Sneasel in the Active Spot.
+Opponent ended their turn.
+
+http_party's Turn
+http_party drew Lillie's Determination.
+http_party played Poké Pad.
+- http_party drew Lunatone.
+- http_party shuffled their deck.
+http_party played Lunatone to the Bench.
+http_party played Lillie's Determination.
+- http_party shuffled 6 cards into their deck.
+   • Basic Fighting Energy, Basic Fighting Energy, Switch, Premium Power Pro, Boss's Orders, Mega Lucario ex
+- http_party drew 8 cards.
+   • Basic Fighting Energy, Solrock, Poké Pad, Mega Lucario ex, Ultra Ball, Switch, Special Red Card, Solrock
+http_party played Solrock to the Bench.
+http_party's Lunatone used Lunar Cycle.
+- http_party discarded Basic Fighting Energy.
+- http_party drew 3 cards.
+   • Gravity Mountain, Boss's Orders, Mega Lucario ex
+http_party played Poké Pad.
+- http_party drew Riolu.
+- http_party shuffled their deck.
+http_party played Riolu to the Bench.
+http_party ended their turn.
+
+Opponent's Turn
+Opponent drew a card.
+Opponent played Lillie's Determination.
+- Opponent shuffled 5 cards into their deck.
+- Opponent drew 8 cards.
+Opponent played Buddy-Buddy Poffin.
+- Opponent drew 2 cards and played them to the Bench.
+   • Scraggy, Toxel
+- Opponent shuffled their deck.
+Opponent attached Basic Darkness Energy to Scraggy on the Bench.
+Opponent's Team Rocket's Sneasel used Scratch on http_party’s Makuhita for 20 damage.
+
+http_party's Turn
+http_party drew Makuhita.
+http_party evolved Riolu to Mega Lucario ex on the Bench.
+http_party played Makuhita to the Bench.
+http_party played Ultra Ball.
+- http_party discarded 2 cards.
+   • Solrock, Gravity Mountain
+- http_party drew Meowth ex.
+- http_party shuffled their deck.
+http_party played Meowth ex to the Bench.
+http_party's Meowth ex used Last-Ditch Catch.
+- http_party drew Lillie's Determination.
+- http_party shuffled their deck.
+http_party played Switch.
+- http_party's Mega Lucario ex was switched with http_party's Makuhita to become the Active Pokémon.
+http_party's Mega Lucario ex is now in the Active Spot.
+http_party played Lillie's Determination.
+- http_party shuffled 3 cards into their deck.
+   • Mega Lucario ex, Special Red Card, Boss's Orders
+- http_party drew 8 cards.
+   • Fighting Gong, Basic Fighting Energy, Boss's Orders, Lillie's Determination, Air Balloon, Secret Box, Premium Power Pro, Ultra Ball
+http_party's Lunatone used Lunar Cycle.
+- http_party discarded Basic Fighting Energy.
+- http_party drew 3 cards.
+   • Basic Fighting Energy, Basic Fighting Energy, Special Red Card
+http_party attached Basic Fighting Energy to Mega Lucario ex in the Active Spot.
+http_party's Mega Lucario ex used Aura Jab on Opponent’s Team Rocket's Sneasel for 130 damage.
+- http_party attached Basic Fighting Energy to Makuhita on the Bench.
+- http_party attached Basic Fighting Energy to Makuhita on the Bench.
+Opponent's Team Rocket's Sneasel was Knocked Out!
+- 2 cards were discarded from Opponent's Team Rocket's Sneasel.
+   • Basic Darkness Energy, Punk Helmet
+Punk Helmet was activated.
+- http_party put 4 damage counters on Opponent's Mega Lucario ex.
+http_party took a Prize card.
+Lunatone was added to http_party's hand.
+Opponent's Scraggy is now in the Active Spot.
+
+Opponent's Turn
+Opponent drew a card.
+Opponent didn't take an action in time.
+
+http_party's Turn
+http_party drew Poké Pad.
+http_party's Lunatone used Lunar Cycle.
+- http_party discarded Basic Fighting Energy.
+- http_party drew 3 cards.
+   • Hariyama, Premium Power Pro, Riolu
+http_party played Fighting Gong.
+- http_party drew Basic Fighting Energy.
+- http_party shuffled their deck.
+http_party's Mega Lucario ex used Aura Jab on Opponent’s Scraggy for 130 damage.
+- http_party attached Basic Fighting Energy to Makuhita on the Bench.
+Opponent's Scraggy was Knocked Out!
+Basic Darkness Energy was discarded from Opponent's Scraggy.
+http_party took a Prize card.
+Basic Fighting Energy was added to http_party's hand.
+Opponent's Toxel is now in the Active Spot.
+
+Opponent's Turn
+Opponent drew a card.
+Opponent didn't take an action in time.
+
+http_party's Turn
+http_party drew Basic Fighting Energy.
+http_party's Mega Lucario ex used Aura Jab on Opponent’s Toxel for 260 damage. Opponent's Toxel took 130 more damage because of Fighting Weakness.
+- Damage breakdown:
+   • Base damage: 130 damage
+   • Weakness to Fighting: 130 damage
+   • Total damage: 260 damage
+
+Opponent's Toxel was Knocked Out!
+http_party took a Prize card.
+Riolu was added to http_party's hand.
+No Benched Pokémon for backup. http_party wins.
