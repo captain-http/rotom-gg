@@ -1,6 +1,21 @@
 @import "tailwindcss";
 
 /*
+ * Only the rotom.gg vocabulary exists: Tailwind's default palette, weights,
+ * radii, and shadows are removed, so bg-white, font-bold, rounded-lg, or
+ * shadow-md generate nothing. Must come before the token blocks below.
+ */
+@theme {
+  --color-*: initial;
+  --font-weight-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --text-shadow-*: initial;
+}
+
+/*
  * rotom.gg design tokens — see .claude/skills/rotom-design/SKILL.md.
  * Palette after departuremono.com: paper grounds, soft ink, one amber accent.
  */

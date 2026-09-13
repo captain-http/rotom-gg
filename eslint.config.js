@@ -1,10 +1,17 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
+import rotomDesign from "./eslint-rules/design-classes.js";
 
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  // The design language from .claude/skills/rotom-design/SKILL.md.
+  {
+    files: ["app/**/*.{ts,tsx}"],
+    plugins: { "rotom-design": rotomDesign },
+    rules: { "rotom-design/design-classes": "error" },
+  },
   // Boundary rules from docs/decisions.md.
   {
     files: ["app/**"],
