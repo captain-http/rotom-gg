@@ -7,11 +7,21 @@
   "findStartingPlayer": "Blue",
   "findTurnCount": 8,
   "findResult": "win",
+  "listViewerPlayedPokemon": [
+    "Makuhita",
+    "Lunatone",
+    "Solrock",
+    "Riolu",
+    "Mega Lucario ex",
+    "Meowth ex"
+  ],
+  "listOpponentPlayedPokemon": ["Team Rocket's Sneasel", "Scraggy", "Toxel"],
   "summarize": {
     "result": "win",
     "wonCoinToss": false,
     "coinTossChoice": "first",
     "wentFirst": false,
-    "turnCount": 8
+    "turnCount": 8,
+    "opponentPokemon": ["Team Rocket's Sneasel", "Scraggy", "Toxel"]
   }
 }

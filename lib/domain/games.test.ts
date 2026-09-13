@@ -46,6 +46,7 @@ test("createGame stores the facts summarized from the log", () =>
       coinTossChoice: "first",
       wentFirst: false,
       turnCount: 8,
+      opponentPokemon: ["Team Rocket's Sneasel", "Scraggy", "Toxel"],
     });
   }));
 

@@ -67,6 +67,7 @@ const game = (overrides: Partial<Game>): Game => ({
   coinTossChoice: null,
   wentFirst: null,
   turnCount: null,
+  opponentPokemon: null,
   createdAt: created,
   ...overrides,
 });

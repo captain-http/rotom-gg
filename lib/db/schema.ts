@@ -46,6 +46,8 @@ export const games = pgTable(
     wentFirst: boolean("went_first"),
     // Each player's turn counts separately.
     turnCount: integer("turn_count"),
+    // Pokémon the opponent put on the board, in order of first appearance.
+    opponentPokemon: text("opponent_pokemon").array(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),

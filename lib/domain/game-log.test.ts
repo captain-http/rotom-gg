@@ -34,5 +34,6 @@ test("a log that says nothing summarizes to nulls", () => {
     coinTossChoice: null,
     wentFirst: null,
     turnCount: null,
+    opponentPokemon: null,
   });
 });

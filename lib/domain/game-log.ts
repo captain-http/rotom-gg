@@ -16,6 +16,7 @@ export type Summary = {
   coinTossChoice: TurnOrder | null;
   wentFirst: boolean | null;
   turnCount: number | null;
+  opponentPokemon: string[] | null;
 };
 
 /**
@@ -25,7 +26,8 @@ export type Summary = {
  * @returns The stored facts, with null for anything the log doesn't say.
  * @example
  * gameLog.summarize(log);
- * // { result: "win", wonCoinToss: false, coinTossChoice: "first", wentFirst: false, turnCount: 8 }
+ * // { result: "win", wonCoinToss: false, coinTossChoice: "first", wentFirst: false,
+ * //   turnCount: 8, opponentPokemon: ["Team Rocket's Sneasel", "Scraggy", "Toxel"] }
  */
 export function summarize(log: string): Summary {
   const viewer = findViewer(log);
@@ -38,6 +40,7 @@ export function summarize(log: string): Summary {
     coinTossChoice: findCoinTossChoice(log) ?? null,
     wentFirst: isViewer(findStartingPlayer(log)),
     turnCount: findTurnCount(log) ?? null,
+    opponentPokemon: viewer ? listOpponentPlayedPokemon(log) : null,
   };
 }
 
@@ -193,6 +196,81 @@ export function findResult(log: string): Result | undefined {
     return undefined;
   }
   return winner === viewer ? "win" : "loss";
+}
+
+/**
+ * The Pokémon the viewer put on the board.
+ *
+ * @param log - The raw battle log.
+ * @returns Pokémon names in order of first appearance, or an empty array when
+ *   the viewer can't be found. See `listPlayedPokemon` for what counts.
+ * @example
+ * gameLog.listViewerPlayedPokemon(log);
+ * // ["Makuhita", "Lunatone", "Solrock", "Riolu", "Mega Lucario ex", "Meowth ex"]
+ */
+export function listViewerPlayedPokemon(log: string): string[] {
+  const viewer = findViewer(log);
+  return viewer ? listPlayedPokemon(log, viewer) : [];
+}
+
+/**
+ * The Pokémon the opponent put on the board — the only ones the log reveals
+ * for certain, since their hand and deck stay hidden.
+ *
+ * @param log - The raw battle log.
+ * @returns Pokémon names in order of first appearance, or an empty array when
+ *   the viewer, and so the opponent, can't be found.
+ * @example
+ * gameLog.listOpponentPlayedPokemon(log);
+ * // ["Team Rocket's Sneasel", "Scraggy", "Toxel"]
+ */
+export function listOpponentPlayedPokemon(log: string): string[] {
+  const viewer = findViewer(log);
+  const others = getPlayers(log).filter((player) => player !== viewer);
+  return viewer && others.length === 1 && others[0]
+    ? listPlayedPokemon(log, others[0])
+    : [];
+}
+
+// A player's Pokémon, from lines where that player acts with their own
+// Pokémon: played to the Active Spot or Bench, benched by a search card,
+// evolved, used an attack or ability, promoted, or Knocked Out. Damage
+// targets ("on Blue’s Toxel") are skipped: the game sometimes names the wrong
+// owner there ("Red put 4 damage counters on Blue's Mega Lucario ex").
+function listPlayedPokemon(log: string, player: string): string[] {
+  const p = escapeRegExp(player);
+  const own = `${p}['’]s `;
+  const patterns = [
+    new RegExp(`^${p} played (.+) to the (?:Active Spot|Bench)\\.$`),
+    new RegExp(
+      `^${p} evolved (.+?) to (.+?) (?:in the Active Spot|on the Bench)\\.$`,
+    ),
+    new RegExp(`^${own}(.+?) used `),
+    new RegExp(`^${own}(.+) is now in the Active Spot\\.$`),
+    new RegExp(`^${own}(.+) was Knocked Out!$`),
+  ];
+  const benchedBySearch = new RegExp(
+    `^- ${p} drew \\d+ cards? and played (?:them|it) to the Bench\\.$`,
+  );
+
+  const found = new Set<string>();
+  const all = lines(log);
+  all.forEach((line, index) => {
+    for (const pattern of patterns) {
+      const match = line.match(pattern);
+      match?.slice(1).forEach((name) => found.add(name));
+    }
+    // The benched Pokémon are listed on the next line: "   • Scraggy, Toxel".
+    if (benchedBySearch.test(line)) {
+      const names = all[index + 1]?.match(/^\s+• (.+)$/)?.[1];
+      names?.split(", ").forEach((name) => found.add(name));
+    }
+  });
+  return [...found];
+}
+
+function escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function lines(log: string): string[] {
