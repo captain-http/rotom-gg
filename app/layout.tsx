@@ -21,7 +21,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <SignInButton />
             </Show>
             <Show when="signed-in">
-              <UserButton />
+              <nav className="flex items-center gap-4">
+                <Link href="/decks">Decks</Link>
+                <UserButton />
+              </nav>
             </Show>
           </header>
           {children}
