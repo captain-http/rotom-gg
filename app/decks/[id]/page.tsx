@@ -1,10 +1,11 @@
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { findDeck } from "@/lib/domain/decks";
+import { findDeck, findWinRate } from "@/lib/domain/decks";
 import { listGames } from "@/lib/domain/games";
 import { ButtonLink } from "../../components/ui/button";
 import { GameCard } from "../../components/ui/game-card";
+import { RecordBadge } from "../../components/ui/record-badge";
 import { Reveal } from "../../components/ui/reveal";
 import { Caption, Heading } from "../../components/ui/text";
 
@@ -33,7 +34,14 @@ export default async function DeckPage({
       >
         &lt; Decks
       </Link>
-      <Heading>{deck.title}</Heading>
+      <div className="flex flex-col gap-3">
+        <Heading>{deck.title}</Heading>
+        <RecordBadge
+          wins={deck.wins}
+          losses={deck.losses}
+          winRate={findWinRate(deck)}
+        />
+      </div>
 
       <ButtonLink href={`/decks/${deck.id}/games/new`} className="self-start">
         + Add game

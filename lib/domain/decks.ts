@@ -1,4 +1,4 @@
-import { and, desc, eq, getTableColumns, sql } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, type SQL, sql } from "drizzle-orm";
 import { db as defaultDb, type Db } from "../db";
 import { decks, games } from "../db/schema";
 
@@ -26,7 +26,9 @@ export async function createDeck(
 }
 
 /**
- * A deck, if the user owns it.
+ * A deck with its win–loss record, if the user owns it.
+ *
+ * Games whose result couldn't be parsed count toward neither.
  *
  * @param input - The Clerk user id and the deck id.
  * @param db - The database or a transaction; defaults to the shared client.
@@ -36,11 +38,11 @@ export async function createDeck(
 export async function findDeck(
   input: { userId: string; deckId: number },
   db: Db = defaultDb,
-): Promise<Deck | undefined> {
-  const [deck] = await db
-    .select()
-    .from(decks)
-    .where(and(eq(decks.id, input.deckId), eq(decks.userId, input.userId)));
+): Promise<DeckWithRecord | undefined> {
+  const [deck] = await selectWithRecord(
+    db,
+    and(eq(decks.id, input.deckId), eq(decks.userId, input.userId)),
+  );
   return deck;
 }
 
@@ -57,6 +59,28 @@ export async function listDecks(
   userId: string,
   db: Db = defaultDb,
 ): Promise<DeckWithRecord[]> {
+  return selectWithRecord(db, eq(decks.userId, userId)).orderBy(desc(decks.id));
+}
+
+/**
+ * The share of decided games that were won.
+ *
+ * @param record - Wins and losses; games with an unknown result aren't in it.
+ * @returns A whole percentage from 0 to 100, or undefined when there are no
+ *   wins or losses to rate.
+ * @example
+ * findWinRate({ wins: 5, losses: 2 }); // 71
+ */
+export function findWinRate(record: {
+  wins: number;
+  losses: number;
+}): number | undefined {
+  const decided = record.wins + record.losses;
+  return decided > 0 ? Math.round((record.wins / decided) * 100) : undefined;
+}
+
+// Decks with their win and loss counts, one row per deck.
+function selectWithRecord(db: Db, where: SQL | undefined) {
   return db
     .select({
       ...getTableColumns(decks),
@@ -69,7 +93,6 @@ export async function listDecks(
     })
     .from(decks)
     .leftJoin(games, eq(games.deckId, decks.id))
-    .where(eq(decks.userId, userId))
-    .groupBy(decks.id)
-    .orderBy(desc(decks.id));
+    .where(where)
+    .groupBy(decks.id);
 }

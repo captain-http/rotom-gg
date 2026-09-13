@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 import { withRollback } from "../../test/db";
 import { games } from "../db/schema";
-import { createDeck, listDecks } from "./decks";
+import { createDeck, findDeck, findWinRate, listDecks } from "./decks";
 
 const noGames = { wins: 0, losses: 0 };
 
@@ -30,7 +30,7 @@ test("listDecks returns newest first", () =>
     ]);
   }));
 
-test("listDecks counts wins and losses, skipping unknown results", () =>
+test("decks count wins and losses, skipping unknown results", () =>
   withRollback(async (db) => {
     const deck = await createDeck({ userId: "user_red", title: "Deck" }, db);
     // Rows, not logs: the parser has no real loss fixture yet.
@@ -42,10 +42,19 @@ test("listDecks counts wins and losses, skipping unknown results", () =>
       })),
     );
 
-    expect(await listDecks("user_red", db)).toEqual([
-      { ...deck, wins: 2, losses: 1 },
-    ]);
+    const record = { ...deck, wins: 2, losses: 1 };
+    expect(await listDecks("user_red", db)).toEqual([record]);
+    expect(await findDeck({ userId: "user_red", deckId: deck.id }, db)).toEqual(
+      record,
+    );
   }));
+
+test("findWinRate rounds the share of decided games won", () => {
+  expect(findWinRate({ wins: 5, losses: 2 })).toBe(71);
+  expect(findWinRate({ wins: 0, losses: 3 })).toBe(0);
+  expect(findWinRate({ wins: 4, losses: 0 })).toBe(100);
+  expect(findWinRate({ wins: 0, losses: 0 })).toBeUndefined();
+});
 
 test("listDecks never returns another user's decks", () =>
   withRollback(async (db) => {

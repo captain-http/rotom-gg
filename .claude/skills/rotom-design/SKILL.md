@@ -109,6 +109,8 @@ CSSProperties}` on each item.
   muted meta text; pass `as="h2" | "label" | "span"`.
 - `Reveal index={i}` — a list item that steps in on load.
 - `DeckCard`, `GameCard` — the deck and game sheets.
+- `RecordBadge wins losses winRate` — a record as joined `W 05` / `L 02`
+  halves with the win rate beside it; pass `findWinRate(deck)` for the rate.
 
 Reach for a primitive before writing classes. A pattern used on two routes
 becomes a primitive in `app/components/ui/` and gets a section in

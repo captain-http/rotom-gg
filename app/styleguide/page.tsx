@@ -7,6 +7,7 @@ import { DeckCard } from "../components/ui/deck-card";
 import { Input, Textarea } from "../components/ui/field";
 import { GameCard } from "../components/ui/game-card";
 import { Mark } from "../components/ui/mark";
+import { RecordBadge } from "../components/ui/record-badge";
 import { Reveal } from "../components/ui/reveal";
 import { Caption, Heading } from "../components/ui/text";
 
@@ -144,6 +145,12 @@ export default function StyleguidePage() {
           <Mark tone="loss">Loss</Mark>
           <Mark tone="neutral">Unknown</Mark>
         </div>
+      </Section>
+
+      <Section title="Record">
+        <RecordBadge wins={5} losses={2} winRate={71} />
+        <RecordBadge wins={0} losses={3} winRate={0} />
+        <RecordBadge wins={0} losses={0} winRate={undefined} />
       </Section>
 
       <Section title="Controls">
