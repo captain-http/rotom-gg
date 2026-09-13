@@ -3,9 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { findDeck } from "@/lib/domain/decks";
 import { Button } from "../../../../components/ui/button";
-import { Textarea } from "../../../../components/ui/field";
-import { Caption, Heading } from "../../../../components/ui/text";
+import { Heading } from "../../../../components/ui/text";
 import { createGameAction } from "./actions";
+import { LogField } from "./log-field";
 
 export default async function NewGamePage({
   params,
@@ -35,17 +35,7 @@ export default async function NewGamePage({
 
       <form action={createGameAction} className="flex flex-col gap-2">
         <input type="hidden" name="deckId" value={deck.id} />
-        <Caption as="label" htmlFor="log">
-          File a battle log
-        </Caption>
-        <Textarea
-          id="log"
-          name="log"
-          required
-          rows={16}
-          placeholder="Paste a game log from Pokémon TCG Live"
-          className="text-meta"
-        />
+        <LogField />
         <Button type="submit" className="self-start">
           + Add game
         </Button>
