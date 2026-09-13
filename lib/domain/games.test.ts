@@ -24,7 +24,7 @@ test("createGame stores the log on the user's deck", () =>
     ).toEqual([game]);
   }));
 
-test("createGame stores the result parsed from the log", () =>
+test("createGame stores the facts summarized from the log", () =>
   withRollback(async (db) => {
     const deck = await createDeck({ userId: "user_red", title: "Deck" }, db);
     const log = readFileSync(
@@ -40,7 +40,12 @@ test("createGame stores the result parsed from the log", () =>
       db,
     );
 
-    expect(game?.result).toBe("win");
+    expect(game).toMatchObject({
+      result: "win",
+      wonCoinToss: false,
+      coinTossChoice: "first",
+      wentFirst: false,
+    });
   }));
 
 test("listGames returns newest first", () =>

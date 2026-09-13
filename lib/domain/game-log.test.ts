@@ -26,7 +26,12 @@ describe.each(fixtures)("%s", (name) => {
   });
 });
 
-test("a log without a winner has no result", () => {
+test("a log that says nothing summarizes to nulls", () => {
   expect(gameLog.findWinner("Turn 1")).toBeUndefined();
-  expect(gameLog.summarize("Turn 1")).toEqual({ result: null });
+  expect(gameLog.summarize("Turn 1")).toEqual({
+    result: null,
+    wonCoinToss: null,
+    coinTossChoice: null,
+    wentFirst: null,
+  });
 });

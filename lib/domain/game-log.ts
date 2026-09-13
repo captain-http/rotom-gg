@@ -7,6 +7,15 @@
  */
 
 export type Result = "win" | "loss";
+export type TurnOrder = "first" | "second";
+
+/** The columns stored on a game, from the viewer's point of view. */
+export type Summary = {
+  result: Result | null;
+  wonCoinToss: boolean | null;
+  coinTossChoice: TurnOrder | null;
+  wentFirst: boolean | null;
+};
 
 /**
  * The columns stored on a game for its log.
@@ -14,10 +23,20 @@ export type Result = "win" | "loss";
  * @param log - The raw battle log.
  * @returns The stored facts, with null for anything the log doesn't say.
  * @example
- * gameLog.summarize(log); // { result: "win" }
+ * gameLog.summarize(log);
+ * // { result: "win", wonCoinToss: false, coinTossChoice: "first", wentFirst: false }
  */
-export function summarize(log: string): { result: Result | null } {
-  return { result: findResult(log) ?? null };
+export function summarize(log: string): Summary {
+  const viewer = findViewer(log);
+  const isViewer = (player: string | undefined) =>
+    viewer && player ? player === viewer : null;
+
+  return {
+    result: findResult(log) ?? null,
+    wonCoinToss: isViewer(findCoinTossWinner(log)),
+    coinTossChoice: findCoinTossChoice(log) ?? null,
+    wentFirst: isViewer(findStartingPlayer(log)),
+  };
 }
 
 /**
@@ -93,20 +112,49 @@ export function findCoinTossWinner(log: string): string | undefined {
 }
 
 /**
- * The player who took the first turn, from "<player> decided to go first."
+ * What the coin toss winner chose, from "<player> decided to go first."
  *
- * Only that wording is known so far; a toss winner who chooses to go second
- * returns undefined until a real log shows how that reads.
+ * "decided to go second." is assumed to mirror it; no real log has shown
+ * that wording yet.
  *
  * @param log - The raw battle log.
- * @returns The first player's name, or undefined when the log doesn't say.
+ * @returns "first" or "second", or undefined when the log doesn't say.
  * @example
- * gameLog.findFirstPlayer(log); // "Blue"
+ * gameLog.findCoinTossChoice(log); // "first"
  */
-export function findFirstPlayer(log: string): string | undefined {
-  return getPlayers(log).find((player) =>
-    lines(log).includes(`${player} decided to go first.`),
+export function findCoinTossChoice(log: string): TurnOrder | undefined {
+  const tossWinner = findCoinTossWinner(log);
+  if (!tossWinner) {
+    return undefined;
+  }
+  const line = lines(log).find((line) =>
+    line.startsWith(`${tossWinner} decided to go `),
   );
+  const match = line?.match(/ decided to go (first|second)\.$/);
+  return match?.[1] as TurnOrder | undefined;
+}
+
+/**
+ * The player who took the first turn: the coin toss winner if they chose to
+ * go first, otherwise the other player.
+ *
+ * @param log - The raw battle log.
+ * @returns The starting player's name, or undefined when the toss winner or
+ *   their choice can't be found.
+ * @example
+ * gameLog.findStartingPlayer(log); // "Blue"
+ */
+export function findStartingPlayer(log: string): string | undefined {
+  const tossWinner = findCoinTossWinner(log);
+  const choice = findCoinTossChoice(log);
+  if (!tossWinner || !choice) {
+    return undefined;
+  }
+  if (choice === "first") {
+    return tossWinner;
+  }
+  const others = getPlayers(log).filter((player) => player !== tossWinner);
+  return others.length === 1 ? others[0] : undefined;
 }
 
 /**

@@ -15,6 +15,13 @@
       "when": 1789266034819,
       "tag": "0001_add_game_result",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789270755951,
+      "tag": "0002_add_coin_toss_and_turn_order",
+      "breakpoints": true
     }
   ]
 }

@@ -3,7 +3,13 @@
   "findViewer": "Red",
   "findWinner": "Red",
   "findCoinTossWinner": "Blue",
-  "findFirstPlayer": "Blue",
+  "findCoinTossChoice": "first",
+  "findStartingPlayer": "Blue",
   "findResult": "win",
-  "summarize": { "result": "win" }
+  "summarize": {
+    "result": "win",
+    "wonCoinToss": false,
+    "coinTossChoice": "first",
+    "wentFirst": false
+  }
 }

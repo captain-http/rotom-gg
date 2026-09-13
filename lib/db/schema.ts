@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import {
   bigint,
+  boolean,
   check,
   index,
   pgTable,
@@ -35,9 +36,13 @@ export const games = pgTable(
       .references(() => decks.id, { onDelete: "cascade" }),
     // Raw battle log exactly as exported from Pokémon TCG Live.
     log: text("log").notNull(),
-    // Parsed from the log, from the uploader's point of view. Null when the
-    // parser can't tell. Re-derivable from log at any time.
+    // Parsed from the log (gameLog.summarize), from the viewer's point of view.
+    // Null when the parser can't tell. Re-derivable from log at any time.
     result: text("result", { enum: ["win", "loss"] }),
+    wonCoinToss: boolean("won_coin_toss"),
+    // What the coin toss winner chose — the viewer or the opponent.
+    coinTossChoice: text("coin_toss_choice", { enum: ["first", "second"] }),
+    wentFirst: boolean("went_first"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -45,5 +50,9 @@ export const games = pgTable(
   (table) => [
     index("games_deck_id_idx").on(table.deckId),
     check("games_result_check", sql`${table.result} in ('win', 'loss')`),
+    check(
+      "games_coin_toss_choice_check",
+      sql`${table.coinTossChoice} in ('first', 'second')`,
+    ),
   ],
 );
