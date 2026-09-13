@@ -1,25 +1,146 @@
 @import "tailwindcss";
 
+/*
+ * rotom.gg design tokens — see .claude/skills/rotom-design/SKILL.md.
+ * Palette after departuremono.com: paper grounds, soft ink, one amber accent.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #eeeeee; /* enamel */
+  --foreground: #444444; /* dark */
+  --surface: #ffffff; /* a sheet of paper */
+  --surface-foreground: #222222; /* carbon */
+  --muted: #6c6c58; /* clay */
+  --border: #cccccc; /* aluminum */
+  --highlight: #cccccc; /* block behind headings */
+  --highlight-foreground: #333333; /* soot */
+  --mark: #bccabb; /* foam: highlighter */
+  --mark-foreground: #222222;
+  --accent: #ffa133; /* amber: the only accent */
+  --accent-foreground: #222222;
+  --inverse: #444444;
+  --inverse-foreground: #eeeeee;
+  --win: var(--accent);
+  --win-foreground: var(--accent-foreground);
+  --loss: var(--highlight);
+  --loss-foreground: var(--highlight-foreground);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #222222; /* carbon */
+    --foreground: #c0c0c0; /* cement */
+    --surface: #333333; /* soot */
+    --surface-foreground: #eeeeee;
+    --muted: #8e8e8e; /* ash */
+    --border: #444444;
+    --highlight: #444444;
+    --highlight-foreground: #eeeeee;
+    --mark: #6c6c58; /* clay */
+    --mark-foreground: #eeeeee;
+    --inverse: #c0c0c0;
+    --inverse-foreground: #222222;
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-highlight: var(--highlight);
+  --color-highlight-foreground: var(--highlight-foreground);
+  --color-mark: var(--mark);
+  --color-mark-foreground: var(--mark-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-inverse: var(--inverse);
+  --color-inverse-foreground: var(--inverse-foreground);
+  --color-win: var(--win);
+  --color-win-foreground: var(--win-foreground);
+  --color-loss: var(--loss);
+  --color-loss-foreground: var(--loss-foreground);
   --font-sans: var(--font-departure-mono);
   --font-mono: var(--font-departure-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@theme {
+  /* Departure Mono is drawn on an 11px grid: sizes are multiples of 11px, so
+     its pixels stay crisp, and spacing steps by half of that. */
+  --spacing: 5.5px;
+  --text-*: initial;
+  --text-meta: 11px;
+  --text-meta--line-height: 14px;
+  --text-body: 16.5px;
+  --text-body--line-height: 22px;
+  --text-title: 22px;
+  --text-title--line-height: 27.5px;
+  --text-heading: 33px;
+  --text-heading--line-height: 38.5px;
+  --text-display: 44px;
+  --text-display--line-height: 44px;
+  --text-hero: 88px;
+  --text-hero--line-height: 88px;
+
+  --ease-flick: cubic-bezier(0.36, 2.09, 0.07, -1.52);
+
+  --animate-blink: blink 1s steps(1) infinite;
+  --animate-reveal: reveal 240ms steps(3) both;
+
+  @keyframes blink {
+    0%,
+    100% {
+      background-color: transparent;
+    }
+    50% {
+      background-color: var(--mark);
+    }
+  }
+
+  @keyframes reveal {
+    from {
+      opacity: 0;
+      translate: 0 5.5px;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
+@layer base {
+  body {
+    background-color: var(--background);
+    /* Graph paper: a faint dot every 22px. */
+    background-image: radial-gradient(
+      color-mix(in srgb, var(--border) 60%, transparent) 1px,
+      transparent 1px
+    );
+    background-size: 22px 22px;
+    color: var(--foreground);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+  }
+
+  ::selection {
+    background-color: var(--foreground);
+    color: var(--background);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+}
+
+/* A sheet with its top-right corner cut, like a filed report. */
+@utility notch {
+  clip-path: polygon(0 0, calc(100% - 11px) 0, 100% 11px, 100% 100%, 0 100%);
 }

@@ -24,6 +24,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Every exported function in `lib/domain/` has a JSDoc comment.
 - Players in examples, tests, and fixtures are **Red** (the viewer, who exported the log) and **Blue** (the opponent); test Clerk ids are `user_red` and `user_blue`. Replace real usernames in fixtures before committing — the repo is public.
 
+- UI work follows the design language in `.claude/skills/rotom-design/SKILL.md`: read it before building or restyling anything in `app/`.
+
 # Adding a game log fixture
 
 Real logs live in `test/fixtures/logs/`, each `<name>.txt` next to `<name>.json`. `lib/domain/game-log.test.ts` runs every pair; there is nothing to register. See `win-bench-out-opponent-timeouts` for a complete example.
