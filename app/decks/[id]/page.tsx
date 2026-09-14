@@ -5,7 +5,7 @@ import { findDeck, findWinRate } from "@/lib/domain/decks";
 import { listGames } from "@/lib/domain/games";
 import { ButtonLink } from "../../components/ui/button";
 import { GameCard } from "../../components/ui/game-card";
-import { RecordBadge } from "../../components/ui/record-badge";
+import { formatWinRate, RecordBadge } from "../../components/ui/record-badge";
 import { Reveal } from "../../components/ui/reveal";
 import { Caption, Heading } from "../../components/ui/text";
 
@@ -25,6 +25,7 @@ export default async function DeckPage({
     notFound();
   }
   const games = await listGames({ userId, deckId });
+  const winRate = findWinRate(deck);
 
   return (
     <main className="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-6">
@@ -36,18 +37,20 @@ export default async function DeckPage({
       </Link>
       <div className="flex flex-col gap-3">
         <Heading>{deck.title}</Heading>
-        <RecordBadge
-          wins={deck.wins}
-          losses={deck.losses}
-          winRate={findWinRate(deck)}
-        />
+        {/* The record and the action that changes it share a row. The win
+            rate sits with the game count below, so the row fits a phone. */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <RecordBadge wins={deck.wins} losses={deck.losses} />
+          <ButtonLink href={`/decks/${deck.id}/games/new`}>
+            + Add game
+          </ButtonLink>
+        </div>
       </div>
 
-      <ButtonLink href={`/decks/${deck.id}/games/new`} className="self-start">
-        + Add game
-      </ButtonLink>
-
-      <Caption as="h2">Games on file: {games.length}</Caption>
+      <Caption as="h2">
+        Games on file: {games.length}
+        {winRate !== undefined && ` · ${formatWinRate(winRate)}`}
+      </Caption>
       {games.length === 0 ? (
         <Caption>No games yet.</Caption>
       ) : (

@@ -1,8 +1,8 @@
 // A deck's record as one badge of two joined halves — wins, then losses — with
 // the win rate beside it in muted text: the record is the fact, the rate a
 // reading of it. Counts are padded to two digits so badges line up, and a
-// zero half stays neutral so amber only marks real wins. No rate without a
-// decided game.
+// zero half stays neutral so amber only marks real wins. Leave out winRate
+// where the rate is shown elsewhere, or where nothing is decided yet.
 export function RecordBadge({
   wins,
   losses,
@@ -10,8 +10,8 @@ export function RecordBadge({
 }: {
   wins: number;
   losses: number;
-  // From findWinRate: undefined when nothing is decided yet.
-  winRate: number | undefined;
+  // From findWinRate.
+  winRate?: number;
 }) {
   return (
     <span className="flex flex-wrap items-center gap-x-3 gap-y-1 tracking-wider uppercase">
@@ -28,10 +28,15 @@ export function RecordBadge({
         </span>
       </span>
       {winRate !== undefined && (
-        <span className="text-meta text-muted">{pad(winRate)}% win rate</span>
+        <span className="text-meta text-muted">{formatWinRate(winRate)}</span>
       )}
     </span>
   );
+}
+
+// "71% win rate"; an 8% rate reads "08%", so rates hold one width.
+export function formatWinRate(winRate: number): string {
+  return `${pad(winRate)}% win rate`;
 }
 
 function pad(count: number): string {
