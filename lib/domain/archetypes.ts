@@ -1,4 +1,4 @@
-import { desc } from "drizzle-orm";
+import { desc, sql } from "drizzle-orm";
 import { db as defaultDb, type Db } from "../db";
 import { archetypes } from "../db/schema";
 
@@ -30,6 +30,44 @@ const FLOOR = 0.5;
  */
 export async function listArchetypes(db: Db = defaultDb): Promise<Archetype[]> {
   return db.select().from(archetypes).orderBy(desc(archetypes.lists));
+}
+
+/**
+ * An archetype by the name Limitless calls it, however it was capitalized.
+ *
+ * @param name - The display name, e.g. "Dragapult Dusknoir".
+ * @param db - The database or a transaction; defaults to the shared client.
+ * @returns The archetype, or undefined when the format has no deck by that
+ *   name — including one that has rotated out since a game was played.
+ */
+export async function findArchetypeByName(
+  name: string,
+  db: Db = defaultDb,
+): Promise<Archetype | undefined> {
+  const [found] = await db
+    .select()
+    .from(archetypes)
+    .where(sql`lower(${archetypes.name}) = lower(${name})`)
+    .limit(1);
+  return found;
+}
+
+/**
+ * Every archetype's name and share, without the decklists.
+ *
+ * Cheap next to listArchetypes: the consensus lists are the bulk of a row,
+ * and naming what exists doesn't need them.
+ *
+ * @param db - The database or a transaction; defaults to the shared client.
+ * @returns Names with their share of the format, commonest first.
+ */
+export async function listArchetypeNames(
+  db: Db = defaultDb,
+): Promise<{ name: string; share: number }[]> {
+  return db
+    .select({ name: archetypes.name, share: archetypes.share })
+    .from(archetypes)
+    .orderBy(desc(archetypes.lists));
 }
 
 /**

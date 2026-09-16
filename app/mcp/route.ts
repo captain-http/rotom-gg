@@ -120,6 +120,14 @@ function result<T>(structuredContent: T) {
   };
 }
 
+const cardSchema = z.object({
+  name: z.string(),
+  set: z.string().describe('Set code, e.g. "PBL".'),
+  number: z.string().describe("Collector number within the set."),
+  pct: z.number().describe("Percent of lists running it."),
+  typical: z.number().describe("The usual number of copies."),
+});
+
 const handler = createMcpHandler(
   (server) => {
     server.registerTool(
@@ -164,6 +172,65 @@ const handler = createMcpHandler(
           archetypes.listArchetypes(),
         ]);
         return result({ games: played.map((game) => toGame(game, format)) });
+      },
+    );
+
+    server.registerTool(
+      "get_archetype",
+      {
+        title: "Get a deck archetype's typical list",
+        description:
+          "What a named deck archetype usually plays, from recent tournament " +
+          "decklists: every card in at least a tenth of them, with the exact " +
+          "printing, how often it's run and how many copies. Use it after " +
+          "list_games names an opponent's deck, to judge what they were " +
+          "likely holding — whether that build runs Rare Candy, how many " +
+          "lists play Unfair Stamp, which printing of a Pokémon it uses.",
+        inputSchema: z.object({
+          name: z
+            .string()
+            .describe("An archetype name, as opponentArchetype gives it."),
+        }),
+        outputSchema: z.object({
+          archetype: z
+            .object({
+              name: z.string(),
+              share: z.number().describe("Percent of recent tournament decks."),
+              lists: z.number().describe("Decklists this was taken from."),
+              cards: z.array(cardSchema),
+            })
+            .nullable(),
+          // Named so a miss can be retried rather than guessed at.
+          suggestions: z.array(z.string()),
+        }),
+        annotations: READ_ONLY,
+      },
+      async ({ name }) => {
+        const found = await archetypes.findArchetypeByName(name);
+        if (found) {
+          return result({
+            archetype: {
+              name: found.name,
+              share: found.share,
+              lists: found.lists,
+              cards: found.cards,
+            },
+            suggestions: [],
+          });
+        }
+
+        const known = await archetypes.listArchetypeNames();
+        const needle = name.toLowerCase();
+        const close = known
+          .filter((entry) => entry.name.toLowerCase().includes(needle))
+          .map((entry) => entry.name);
+        return result({
+          archetype: null,
+          suggestions: (close.length > 0
+            ? close
+            : known.map((entry) => entry.name)
+          ).slice(0, 8),
+        });
       },
     );
 

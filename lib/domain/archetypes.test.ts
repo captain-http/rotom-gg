@@ -1,7 +1,13 @@
 import { expect, test } from "vitest";
 import { archetypes as table } from "../db/schema";
 import { withRollback } from "../../test/db";
-import { findMatch, listArchetypes, type Archetype } from "./archetypes";
+import {
+  findArchetypeByName,
+  findMatch,
+  listArchetypeNames,
+  listArchetypes,
+  type Archetype,
+} from "./archetypes";
 
 function archetype(
   slug: string,
@@ -108,5 +114,35 @@ test("listArchetypes returns the commonest first", () =>
     expect((await listArchetypes(db)).map((a) => a.slug)).toEqual([
       "dragapult",
       "zoroark",
+    ]);
+  }));
+
+test("findArchetypeByName ignores capitalization", () =>
+  withRollback(async (db) => {
+    await db.insert(table).values(DRAGAPULT);
+
+    expect(await findArchetypeByName("DRAGAPULT", db)).toMatchObject({
+      slug: "dragapult",
+    });
+    expect(await findArchetypeByName("dragapult", db)).toMatchObject({
+      slug: "dragapult",
+    });
+  }));
+
+test("findArchetypeByName returns undefined for a deck that isn't there", () =>
+  withRollback(async (db) => {
+    expect(await findArchetypeByName("Wailord Mill", db)).toBeUndefined();
+  }));
+
+test("listArchetypeNames gives names and shares, commonest first", () =>
+  withRollback(async (db) => {
+    await db.insert(table).values([
+      { ...ZOROARK, lists: 50 },
+      { ...DRAGAPULT, lists: 300 },
+    ]);
+
+    expect(await listArchetypeNames(db)).toEqual([
+      { name: "dragapult", share: 12 },
+      { name: "zoroark", share: 7 },
     ]);
   }));
