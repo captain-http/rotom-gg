@@ -8,6 +8,7 @@ import { z } from "zod";
 import * as archetypes from "@/lib/domain/archetypes";
 import * as cards from "@/lib/domain/cards";
 import * as decks from "@/lib/domain/decks";
+import * as gameLog from "@/lib/domain/game-log";
 import * as games from "@/lib/domain/games";
 
 // Absolute and on our own origin, which is what the spec asks of an icon.
@@ -121,14 +122,9 @@ function result<T>(structuredContent: T) {
   };
 }
 
-const cardSchema = z.object({
-  name: z.string(),
-  set: z.string().describe('Set code, e.g. "PBL".'),
-  number: z.string().describe("Collector number within the set."),
-  pct: z.number().describe("Percent of lists running it."),
-  typical: z.number().describe("The usual number of copies."),
-  // Flat and optional rather than nested: basic Energy has none of it, and a
-  // Trainer only has type and effect.
+// What one version of a card does. Every field is optional: basic Energy has
+// none of it, and a Trainer only has type and effect.
+const printingSchema = z.object({
   type: z
     .string()
     .nullable()
@@ -157,6 +153,36 @@ const cardSchema = z.object({
     .optional()
     .describe("The rules text of a Trainer or Special Energy."),
 });
+
+const cardSchema = printingSchema.extend({
+  name: z.string(),
+  set: z.string().describe('Set code, e.g. "PBL".'),
+  number: z.string().describe("Collector number within the set."),
+  pct: z.number().describe("Percent of lists running it."),
+  typical: z.number().describe("The usual number of copies."),
+});
+
+// A log names a card without saying which printing was played, so every
+// version of it comes along. Most names have just one.
+const logCardSchema = z.object({
+  name: z.string(),
+  category: z.enum(["pokemon", "trainer", "energy"]),
+  printings: z.array(printingSchema),
+});
+
+// What the cards a player showed in a log do. Names outside the format, basic
+// Energy among them, have no text and are left out.
+function toLogCards(names: gameLog.Cards) {
+  return cards
+    .listCards([...names.pokemon, ...names.trainers, ...names.energy])
+    .map((card) => ({
+      ...card,
+      printings: card.printings.map((printing) => ({
+        ...printing,
+        prints: undefined,
+      })),
+    }));
+}
 
 // The text of the exact printing the lists run, since reprints can differ.
 function toCard(card: archetypes.Archetype["cards"][number]) {
@@ -282,13 +308,25 @@ const handler = createMcpHandler(
         title: "Get one game's battle log",
         description:
           "Returns a single game with its full Pokémon TCG Live battle log, " +
-          "for reading a match turn by turn. The log is long, so fetch one " +
-          "game at a time rather than looping over a deck.",
+          "for reading a match turn by turn, and what every card each player " +
+          "showed in it does — HP, attacks, abilities, Trainer text — so a " +
+          "card's effect is read, not inferred from the log. The log is " +
+          "long, so fetch one game at a time rather than looping over a deck.",
         inputSchema: z.object({
           gameId: z.number().describe("A game id from list_games."),
         }),
         outputSchema: z.object({
-          game: gameSchema.extend({ log: z.string() }).nullable(),
+          game: gameSchema
+            .extend({
+              log: z.string(),
+              playerCards: z
+                .array(logCardSchema)
+                .describe("Cards the player who exported the log showed."),
+              opponentCards: z
+                .array(logCardSchema)
+                .describe("Cards the opponent showed."),
+            })
+            .nullable(),
         }),
         annotations: READ_ONLY,
       },
@@ -299,7 +337,14 @@ const handler = createMcpHandler(
           archetypes.listArchetypes(),
         ]);
         return result({
-          game: game ? { ...toGame(game, format), log: game.log } : null,
+          game: game
+            ? {
+                ...toGame(game, format),
+                log: game.log,
+                playerCards: toLogCards(gameLog.getViewerCards(game.log)),
+                opponentCards: toLogCards(gameLog.getOpponentCards(game.log)),
+              }
+            : null,
         });
       },
     );
