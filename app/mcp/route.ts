@@ -26,6 +26,56 @@ const serverInfo: Implementation = {
   ],
 };
 
+// Sent once when a client connects: what the data is and where it misleads,
+// so every tool call starts from the same understanding.
+const instructions = [
+  "rotom.gg keeps a Pokémon TCG Live player's decks and the battle logs of " +
+    "their games. A log is written from the side of the player who exported " +
+    "it: their draws name cards, the opponent's don't.",
+  "Read what a card does from the tools — get_game's playerCards and " +
+    "opponentCards, get_archetype's list — never from memory, which is " +
+    "wrong for anything printed recently. If a card's text isn't there, say " +
+    "so and stop short of judging what it did; unknown text is not a blank " +
+    "card.",
+  "Neither hand is in the log, and neither are the prize cards. Say what the " +
+    "log shows, and mark anything about hidden cards as inference.",
+  'Lines like "X put N damage counters on Y\'s Pokémon" can name the ' +
+    "wrong player on either side. Work out who placed the counters and whose " +
+    "Pokémon took them from the attack, ability or Tool that triggered it on " +
+    "the lines before.",
+  "When a search card such as Buddy-Buddy Poffin is followed only by a " +
+    "shuffle, the log doesn't say whether it found nothing or found cards it " +
+    "didn't name.",
+  "The log has no turn numbers, prize counts or HP totals. Count them from " +
+    "the turn headers, prize takes and damage lines, and show the count.",
+].join("\n\n");
+
+// The questions a game review should answer, in order. Written from what
+// went wrong in a real review: judging a card whose text was never looked up.
+function reviewGame(gameId: string | undefined) {
+  const which = gameId
+    ? `game ${gameId} (get_game)`
+    : "the most recent game (list_games with limit 1, then get_game)";
+  return [
+    `Review ${which}: was it winnable, and what should change next time?`,
+    "",
+    "1. Before judging any card, have the rules text of every Pokémon that " +
+      "reached the board on both sides, and every Trainer that mattered. " +
+      "Missing text is a reason to look further — get_archetype for the " +
+      "opponent's likely deck — not to treat the card as doing nothing.",
+    "2. Rebuild the prize race turn by turn: whose turn, what was knocked " +
+      "out, prizes left for each player.",
+    "3. Find the two or three turns that decided the game, quoting the log " +
+      "lines for each.",
+    "4. For each, separate a misplay from bad luck and from what couldn't " +
+      "be known. Don't claim what was in either hand.",
+    "5. Weigh every card's part on both sides: a Pokémon can power a deck " +
+      "and still be the one that gives up the last prizes.",
+    "6. End with a verdict on whether it was winnable, and at most three " +
+      "concrete changes to play or to the list.",
+  ].join("\n");
+}
+
 // Every tool is read-only and scoped to the Clerk user the token belongs to.
 // The user id comes from the verified token, never from a tool argument.
 const READ_ONLY = { readOnlyHint: true, openWorldHint: false };
@@ -204,6 +254,30 @@ function toCard(card: archetypes.Archetype["cards"][number]) {
 
 const handler = createMcpHandler(
   (server) => {
+    server.registerPrompt(
+      "review_game",
+      {
+        title: "Review a game",
+        description:
+          "Walk through one game turn by turn: prize race, deciding turns, " +
+          "misplays against bad luck, and whether it was winnable.",
+        argsSchema: z.object({
+          gameId: z
+            .string()
+            .optional()
+            .describe("A game id from list_games. Omit for the latest game."),
+        }),
+      },
+      ({ gameId }) => ({
+        messages: [
+          {
+            role: "user" as const,
+            content: { type: "text" as const, text: reviewGame(gameId) },
+          },
+        ],
+      }),
+    );
+
     server.registerTool(
       "list_decks",
       {
@@ -378,7 +452,7 @@ const handler = createMcpHandler(
       },
     );
   },
-  { serverInfo },
+  { serverInfo, instructions },
 );
 
 // Clerk issues the OAuth token; auth() validates it and tells us whose it is.
