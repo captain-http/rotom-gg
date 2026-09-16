@@ -40,6 +40,7 @@ const deckSchema = z.object({
 
 const gameSchema = z.object({
   id: z.number(),
+  deckId: z.number(),
   result: z.enum(["win", "loss"]).nullable(),
   wonCoinToss: z.boolean().nullable(),
   coinTossChoice: z.enum(["first", "second"]).nullable(),
@@ -79,6 +80,7 @@ function toGame(game: games.Game, format: archetypes.Archetype[]) {
   const match = archetypes.findMatch(game.opponentPokemon ?? [], format);
   return {
     id: game.id,
+    deckId: game.deckId,
     result: game.result,
     wonCoinToss: game.wonCoinToss,
     coinTossChoice: game.coinTossChoice,
@@ -203,7 +205,8 @@ const handler = createMcpHandler(
         title: "List decks",
         description:
           "Lists the signed-in player's decks with their win–loss record. " +
-          "Start here: every other tool needs a deck id from this list.",
+          "Start here to see what the player plays; list_games can also " +
+          "go straight to games across every deck.",
         inputSchema: z.object({}),
         outputSchema: z.object({ decks: z.array(deckSchema) }),
         annotations: READ_ONLY,
@@ -218,24 +221,34 @@ const handler = createMcpHandler(
     server.registerTool(
       "list_games",
       {
-        title: "List games on a deck",
+        title: "List games",
         description:
-          "Lists the games played with one deck, newest first, summarized: " +
-          "result, coin toss, turn order, turn count, the opponent's Pokémon " +
-          "the biggest hit each player landed, and which deck the opponent " +
-          "was most likely playing. Use it to look for " +
+          "Lists the player's games, newest first, summarized: result, coin " +
+          "toss, turn order, turn count, the opponent's Pokémon, the biggest " +
+          "hit each player landed, and which deck the opponent was most " +
+          "likely playing. Leave out deckId for games across every deck — " +
+          "with limit 1, that's the most recent game. Use it to look for " +
           "patterns across games. Returns nothing for a deck the player " +
           "doesn't own.",
         inputSchema: z.object({
-          deckId: z.number().describe("A deck id from list_decks."),
+          deckId: z
+            .number()
+            .optional()
+            .describe("A deck id from list_decks. Omit for every deck."),
+          limit: z
+            .number()
+            .int()
+            .positive()
+            .optional()
+            .describe("Return at most this many of the newest games."),
         }),
         outputSchema: z.object({ games: z.array(gameSchema) }),
         annotations: READ_ONLY,
       },
-      async ({ deckId }, context) => {
+      async ({ deckId, limit }, context) => {
         const userId = getUserId(context);
         const [played, format] = await Promise.all([
-          games.listGames({ userId, deckId }),
+          games.listGames({ userId, deckId, limit }),
           archetypes.listArchetypes(),
         ]);
         return result({ games: played.map((game) => toGame(game, format)) });

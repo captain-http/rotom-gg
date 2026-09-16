@@ -62,6 +62,33 @@ test("listGames returns newest first", () =>
     expect(await listGames(input, db)).toEqual([second, first]);
   }));
 
+test("listGames without a deck returns every deck's games, newest first", () =>
+  withRollback(async (db) => {
+    const one = await createDeck({ userId: "user_red", title: "One" }, db);
+    const two = await createDeck({ userId: "user_red", title: "Two" }, db);
+    const theirs = await createDeck({ userId: "user_blue", title: "No" }, db);
+    const first = await createGame(
+      { userId: "user_red", deckId: one.id, log: "First" },
+      db,
+    );
+    const second = await createGame(
+      { userId: "user_red", deckId: two.id, log: "Second" },
+      db,
+    );
+    await createGame(
+      { userId: "user_blue", deckId: theirs.id, log: "Theirs" },
+      db,
+    );
+
+    expect(await listGames({ userId: "user_red" }, db)).toEqual([
+      second,
+      first,
+    ]);
+    expect(await listGames({ userId: "user_red", limit: 1 }, db)).toEqual([
+      second,
+    ]);
+  }));
+
 test("findGame returns the user's own game", () =>
   withRollback(async (db) => {
     const deck = await createDeck({ userId: "user_red", title: "Deck" }, db);

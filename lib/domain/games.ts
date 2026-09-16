@@ -58,21 +58,28 @@ export async function findGame(
 }
 
 /**
- * All games on a user's deck.
+ * A user's games, on one deck or across all of them.
  *
- * @param input - The Clerk user id and the deck id.
+ * @param input - The Clerk user id; optionally a deck id to keep to that deck,
+ *   and a limit on how many to return.
  * @param db - The database or a transaction; defaults to the shared client.
- * @returns The games, newest first, or an empty array when the deck has none
- *   or belongs to someone else.
+ * @returns The games, newest first, or an empty array when there are none or
+ *   the deck belongs to someone else.
  */
 export async function listGames(
-  input: { userId: string; deckId: number },
+  input: { userId: string; deckId?: number; limit?: number },
   db: Db = defaultDb,
 ): Promise<Game[]> {
-  return db
+  const query = db
     .select(getTableColumns(games))
     .from(games)
     .innerJoin(decks, eq(games.deckId, decks.id))
-    .where(and(eq(games.deckId, input.deckId), eq(decks.userId, input.userId)))
+    .where(
+      and(
+        eq(decks.userId, input.userId),
+        input.deckId === undefined ? undefined : eq(games.deckId, input.deckId),
+      ),
+    )
     .orderBy(desc(games.id));
+  return input.limit === undefined ? query : query.limit(input.limit);
 }
