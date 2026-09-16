@@ -37,8 +37,11 @@ const instructions = [
     "wrong for anything printed recently. If a card's text isn't there, say " +
     "so and stop short of judging what it did; unknown text is not a blank " +
     "card.",
-  "Neither hand is in the log, and neither are the prize cards. Say what the " +
-    "log shows, and mark anything about hidden cards as inference.",
+  "The exporting player's hand can be tracked: the log names their opening " +
+    "hand, most of their draws and the prize cards they take, so what they " +
+    "held on a turn can be rebuilt. The opponent's hand can't: their draws " +
+    "go unnamed until a card is played or revealed. Mark anything about " +
+    "the opponent's hidden cards as inference.",
   'Lines like "X put N damage counters on Y\'s Pokémon" can name the ' +
     "wrong player on either side. Work out who placed the counters and whose " +
     "Pokémon took them from the attack, ability or Tool that triggered it on " +
@@ -67,8 +70,10 @@ function reviewGame(gameId: string | undefined) {
       "out, prizes left for each player.",
     "3. Find the two or three turns that decided the game, quoting the log " +
       "lines for each.",
-    "4. For each, separate a misplay from bad luck and from what couldn't " +
-      "be known. Don't claim what was in either hand.",
+    "4. For each, rebuild what the player held and had in play, and test " +
+      "the alternatives against that and the cards' text. Separate a " +
+      "misplay from bad luck and from what couldn't be known; the " +
+      "opponent's hand is only ever inference.",
     "5. Weigh every card's part on both sides: a Pokémon can power a deck " +
       "and still be the one that gives up the last prizes.",
     "6. End with a verdict on whether it was winnable, and at most three " +
