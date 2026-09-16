@@ -36,7 +36,8 @@ const instructions = [
     "opponentCards, get_archetype's list — never from memory, which is " +
     "wrong for anything printed recently. If a card's text isn't there, say " +
     "so and stop short of judging what it did; unknown text is not a blank " +
-    "card.",
+    "card. Basic Energy is the exception: it has no rules text, only the " +
+    "one Energy of its type it provides, so it's left out on purpose.",
   "The exporting player's hand can be tracked: the log names their opening " +
     "hand, most of their draws and the prize cards they take, so what they " +
     "held on a turn can be rebuilt. The opponent's hand can't: their draws " +
