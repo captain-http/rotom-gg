@@ -1,9 +1,27 @@
 import { auth } from "@clerk/nextjs/server";
-import type { ServerContext } from "@modelcontextprotocol/server";
+import type {
+  Implementation,
+  ServerContext,
+} from "@modelcontextprotocol/server";
 import { createMcpHandler, withMcpAuth } from "mcp-handler";
 import { z } from "zod";
 import * as decks from "@/lib/domain/decks";
 import * as games from "@/lib/domain/games";
+
+// Absolute and on our own origin, which is what the spec asks of an icon.
+// No client renders a remote server's icon yet, so this is here for when
+// they do.
+const serverInfo: Implementation = {
+  name: "rotom.gg",
+  version: "1.0.0",
+  icons: [
+    {
+      src: "https://rotom.gg/icon.png",
+      mimeType: "image/png",
+      sizes: ["224x224"],
+    },
+  ],
+};
 
 // Every tool is read-only and scoped to the Clerk user the token belongs to.
 // The user id comes from the verified token, never from a tool argument.
@@ -145,7 +163,7 @@ const handler = createMcpHandler(
       },
     );
   },
-  { serverInfo: { name: "rotom.gg", version: "1.0.0" } },
+  { serverInfo },
 );
 
 // Clerk issues the OAuth token; auth() validates it and tells us whose it is.
