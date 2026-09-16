@@ -5,7 +5,9 @@ import {
   check,
   index,
   integer,
+  jsonb,
   pgTable,
+  real,
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
@@ -64,3 +66,38 @@ export const games = pgTable(
     ),
   ],
 );
+
+// Pokémon TCG deck archetypes, mirrored from Limitless, with what a typical
+// list of each contains. Reference data: shared by everyone, owned by no
+// user, and rebuilt in full by scripts/build-archetypes.ts.
+export const archetypes = pgTable("archetypes", {
+  // Limitless's own identifier, e.g. "excadrill-mega". Their key, not ours.
+  slug: text("slug").primaryKey(),
+  name: text("name").notNull(),
+  // Share of the decklists the rebuild saw, as a percentage. Not whole: the
+  // long tail of the format sits well under 1%.
+  share: real("share").notNull(),
+  // How many decklists the figures below were taken from.
+  lists: integer("lists").notNull(),
+  // [{ name, set, number, pct, typical }], commonest first.
+  cards: jsonb("cards").$type<ArchetypeCard[]>().notNull(),
+  // How often each Pokémon appears in a list, as a percentage, for
+  // classifying an opponent from the few a battle log reveals:
+  // { "Dreepy": 98, … }. Pokémon only — Trainers are too alike across decks
+  // to tell archetypes apart, and a log names the Pokémon anyway.
+  pokemon: jsonb("pokemon").$type<Record<string, number>>().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+/** One card in a typical list of an archetype. */
+export type ArchetypeCard = {
+  name: string;
+  set: string;
+  number: string;
+  /** Percentage of lists that ran it. */
+  pct: number;
+  /** The usual number of copies. */
+  typical: number;
+};

@@ -43,6 +43,13 @@
       "when": 1789333001909,
       "tag": "0005_add_max_damage",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789540835219,
+      "tag": "0006_add_archetypes",
+      "breakpoints": true
     }
   ]
 }

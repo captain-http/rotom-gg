@@ -5,6 +5,7 @@ import type {
 } from "@modelcontextprotocol/server";
 import { createMcpHandler, withMcpAuth } from "mcp-handler";
 import { z } from "zod";
+import * as archetypes from "@/lib/domain/archetypes";
 import * as decks from "@/lib/domain/decks";
 import * as games from "@/lib/domain/games";
 
@@ -46,6 +47,18 @@ const gameSchema = z.object({
   maxDamage: z.number().nullable(),
   opponentMaxDamage: z.number().nullable(),
   playedAt: z.string(),
+  // Null when the log showed too little to tell, which a short game often
+  // does. Never a guess dressed up as a fact.
+  opponentArchetype: z
+    .object({
+      name: z.string(),
+      share: z.number().describe("Percent of recent tournament decks."),
+      confidence: z.number().describe("0 to 1."),
+      alternatives: z.array(
+        z.object({ name: z.string(), confidence: z.number() }),
+      ),
+    })
+    .nullable(),
 });
 
 function toDeck(deck: decks.DeckWithRecord) {
@@ -60,7 +73,8 @@ function toDeck(deck: decks.DeckWithRecord) {
 
 // The raw log is deliberately left out: one is hundreds of lines, so a deck's
 // worth of them would crowd out everything else in the client's context.
-function toGame(game: games.Game) {
+function toGame(game: games.Game, format: archetypes.Archetype[]) {
+  const match = archetypes.findMatch(game.opponentPokemon ?? [], format);
   return {
     id: game.id,
     result: game.result,
@@ -72,6 +86,17 @@ function toGame(game: games.Game) {
     maxDamage: game.maxDamage,
     opponentMaxDamage: game.opponentMaxDamage,
     playedAt: game.createdAt.toISOString(),
+    opponentArchetype: match
+      ? {
+          name: match.name,
+          share: match.share,
+          confidence: match.confidence,
+          alternatives: match.alternatives.map(({ name, confidence }) => ({
+            name,
+            confidence,
+          })),
+        }
+      : null,
   };
 }
 
@@ -122,7 +147,8 @@ const handler = createMcpHandler(
         description:
           "Lists the games played with one deck, newest first, summarized: " +
           "result, coin toss, turn order, turn count, the opponent's Pokémon " +
-          "and the biggest hit each player landed. Use it to look for " +
+          "the biggest hit each player landed, and which deck the opponent " +
+          "was most likely playing. Use it to look for " +
           "patterns across games. Returns nothing for a deck the player " +
           "doesn't own.",
         inputSchema: z.object({
@@ -133,8 +159,11 @@ const handler = createMcpHandler(
       },
       async ({ deckId }, context) => {
         const userId = getUserId(context);
-        const played = await games.listGames({ userId, deckId });
-        return result({ games: played.map(toGame) });
+        const [played, format] = await Promise.all([
+          games.listGames({ userId, deckId }),
+          archetypes.listArchetypes(),
+        ]);
+        return result({ games: played.map((game) => toGame(game, format)) });
       },
     );
 
@@ -156,9 +185,12 @@ const handler = createMcpHandler(
       },
       async ({ gameId }, context) => {
         const userId = getUserId(context);
-        const game = await games.findGame({ userId, gameId });
+        const [game, format] = await Promise.all([
+          games.findGame({ userId, gameId }),
+          archetypes.listArchetypes(),
+        ]);
         return result({
-          game: game ? { ...toGame(game), log: game.log } : null,
+          game: game ? { ...toGame(game, format), log: game.log } : null,
         });
       },
     );
