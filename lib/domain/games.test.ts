@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { expect, test } from "vitest";
 import { withRollback } from "../../test/db";
 import { createDeck, findDeck } from "./decks";
-import { createGame, listGames } from "./games";
+import { createGame, findGame, listGames } from "./games";
 
 test("createGame stores the log on the user's deck", () =>
   withRollback(async (db) => {
@@ -62,6 +62,26 @@ test("listGames returns newest first", () =>
     expect(await listGames(input, db)).toEqual([second, first]);
   }));
 
+test("findGame returns the user's own game", () =>
+  withRollback(async (db) => {
+    const deck = await createDeck({ userId: "user_red", title: "Deck" }, db);
+    const game = await createGame(
+      { userId: "user_red", deckId: deck.id, log: "Mine" },
+      db,
+    );
+
+    expect(
+      await findGame({ userId: "user_red", gameId: game!.id }, db),
+    ).toEqual(game);
+  }));
+
+test("findGame returns undefined for a game that doesn't exist", () =>
+  withRollback(async (db) => {
+    expect(
+      await findGame({ userId: "user_red", gameId: 123456 }, db),
+    ).toBeUndefined();
+  }));
+
 test("another user's deck can't be read or given games", () =>
   withRollback(async (db) => {
     const deck = await createDeck(
@@ -77,6 +97,13 @@ test("another user's deck can't be read or given games", () =>
     expect(await findDeck(asRed, db)).toBeUndefined();
     expect(await createGame({ ...asRed, log: "Mine" }, db)).toBeUndefined();
     expect(await listGames(asRed, db)).toEqual([]);
+    const theirs = await listGames(
+      { userId: "user_blue", deckId: deck.id },
+      db,
+    );
+    expect(
+      await findGame({ userId: "user_red", gameId: theirs[0]!.id }, db),
+    ).toBeUndefined();
     expect(
       await listGames({ userId: "user_blue", deckId: deck.id }, db),
     ).toHaveLength(1);

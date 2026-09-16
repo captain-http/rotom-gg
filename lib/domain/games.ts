@@ -38,6 +38,26 @@ export async function createGame(
 }
 
 /**
+ * A single game, if the user owns the deck it belongs to.
+ *
+ * @param input - The Clerk user id and the game id.
+ * @param db - The database or a transaction; defaults to the shared client.
+ * @returns The game, or undefined when it doesn't exist or belongs to someone
+ *   else.
+ */
+export async function findGame(
+  input: { userId: string; gameId: number },
+  db: Db = defaultDb,
+): Promise<Game | undefined> {
+  const [game] = await db
+    .select(getTableColumns(games))
+    .from(games)
+    .innerJoin(decks, eq(games.deckId, decks.id))
+    .where(and(eq(games.id, input.gameId), eq(decks.userId, input.userId)));
+  return game;
+}
+
+/**
  * All games on a user's deck.
  *
  * @param input - The Clerk user id and the deck id.
