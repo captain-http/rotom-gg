@@ -39,6 +39,9 @@ const TOURNAMENTS = 80;
 const MIN_LISTS = 5;
 // Cards in fewer than this share of lists are that player's own tech.
 const MIN_CARD_PCT = 10;
+// Their API is free and anonymous; go gently and give up slowly.
+const RETRIES = 5;
+const PAUSE_MS = 250;
 
 type Tournament = { id: string; format: string; players: number };
 type Standing = {
@@ -64,6 +67,7 @@ async function main() {
     const standings = await getJson<Standing[]>(
       `${API}/tournaments/${tournament.id}/standings`,
     );
+    await sleep(PAUSE_MS);
     for (const standing of standings) {
       const entry = toEntry(standing);
       if (entry) entries.push(entry);
@@ -168,10 +172,27 @@ function median(counts: number[]): number {
   return sorted[Math.floor(sorted.length / 2)]!;
 }
 
-async function getJson<T>(url: string): Promise<T> {
+// Limitless rate-limits anonymous callers, and a rebuild is a few hundred
+// requests. Back off and retry rather than losing the whole run to one 429.
+async function getJson<T>(url: string, attempt = 1): Promise<T> {
   const response = await fetch(url);
+  if (response.status === 429 || response.status >= 500) {
+    if (attempt > RETRIES) {
+      throw new Error(`${url}: ${response.status} after ${RETRIES} retries`);
+    }
+    const after = Number(response.headers.get("retry-after"));
+    const wait =
+      Number.isFinite(after) && after > 0 ? after * 1000 : 2 ** attempt * 1000;
+    console.log(`  ${response.status} — waiting ${Math.round(wait / 1000)}s`);
+    await sleep(wait);
+    return getJson<T>(url, attempt + 1);
+  }
   if (!response.ok) throw new Error(`${url}: ${response.status}`);
   return (await response.json()) as T;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 await main();
