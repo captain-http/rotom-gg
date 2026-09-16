@@ -6,6 +6,7 @@ import type {
 import { createMcpHandler, withMcpAuth } from "mcp-handler";
 import { z } from "zod";
 import * as archetypes from "@/lib/domain/archetypes";
+import * as cards from "@/lib/domain/cards";
 import * as decks from "@/lib/domain/decks";
 import * as games from "@/lib/domain/games";
 
@@ -126,7 +127,47 @@ const cardSchema = z.object({
   number: z.string().describe("Collector number within the set."),
   pct: z.number().describe("Percent of lists running it."),
   typical: z.number().describe("The usual number of copies."),
+  // Flat and optional rather than nested: basic Energy has none of it, and a
+  // Trainer only has type and effect.
+  type: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("Supporter, Item, Stadium, Tool; Basic, Stage1, Stage2."),
+  hp: z.number().optional(),
+  retreat: z.number().optional(),
+  types: z.array(z.string()).optional(),
+  weakness: z.array(z.string()).optional(),
+  evolveFrom: z.string().optional(),
+  attacks: z
+    .array(
+      z.object({
+        name: z.string(),
+        cost: z.array(z.string()),
+        damage: z.string().nullable(),
+        effect: z.string().nullable(),
+      }),
+    )
+    .optional(),
+  abilities: z
+    .array(z.object({ name: z.string(), effect: z.string().nullable() }))
+    .optional(),
+  effect: z
+    .string()
+    .optional()
+    .describe("The rules text of a Trainer or Special Energy."),
 });
+
+// The text of the exact printing the lists run, since reprints can differ.
+function toCard(card: archetypes.Archetype["cards"][number]) {
+  const printing = cards.findPrinting(card.name, card.set, card.number);
+  if (!printing) {
+    return card;
+  }
+  // Where else it was printed is noise to a reader; undefined keeps it out of
+  // the JSON.
+  return { ...card, ...printing, prints: undefined };
+}
 
 const handler = createMcpHandler(
   (server) => {
@@ -182,7 +223,8 @@ const handler = createMcpHandler(
         description:
           "What a named deck archetype usually plays, from recent tournament " +
           "decklists: every card in at least a tenth of them, with the exact " +
-          "printing, how often it's run and how many copies. Use it after " +
+          "printing, how often it's run, how many copies, and what that " +
+          "printing does — HP, attacks, abilities, Trainer text. Use it after " +
           "list_games names an opponent's deck, to judge what they were " +
           "likely holding — whether that build runs Rare Candy, how many " +
           "lists play Unfair Stamp, which printing of a Pokémon it uses.",
@@ -213,7 +255,7 @@ const handler = createMcpHandler(
               name: found.name,
               share: found.share,
               lists: found.lists,
-              cards: found.cards,
+              cards: found.cards.map(toCard),
             },
             suggestions: [],
           });

@@ -25,6 +25,8 @@ export type Printing = {
   abilities?: { name: string; effect: string | null }[];
   /** The rules text of a Trainer or Special Energy. */
   effect?: string;
+  /** Where this version was printed, as "SET number": ["TWM 130"]. */
+  prints: string[];
 };
 
 /** A card name, and every distinct printing of it in the format. */
@@ -73,4 +75,32 @@ export function listCards(names: string[]): Card[] {
     }
   }
   return [...found.values()];
+}
+
+/**
+ * The version of a card printed at one set and number.
+ *
+ * A decklist can name a printing from outside the format — an older set's
+ * copy of a card that's still legal through a reprint. When every printing
+ * of the name reads the same, that one is returned anyway.
+ *
+ * @param name - The card name.
+ * @param set - The set's official code, e.g. "TWM".
+ * @param number - The collector number, with or without zero padding.
+ * @returns The printing, or undefined when the format has no card by that
+ *   name — including basic Energy, which has no rules text — or when it has
+ *   several versions and none was printed there.
+ * @example
+ * cards.findPrinting("Dragapult ex", "TWM", "130");
+ * // { type: "Stage2", hp: 320, attacks: [...], prints: ["TWM 130", …] }
+ */
+export function findPrinting(
+  name: string,
+  set: string,
+  number: string,
+): Printing | undefined {
+  const printings = findCard(name)?.printings ?? [];
+  const print = `${set} ${number.replace(/^0+(?=.)/, "")}`;
+  const exact = printings.find((printing) => printing.prints.includes(print));
+  return exact ?? (printings.length === 1 ? printings[0] : undefined);
 }

@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import cardRules from "./card-rules.json";
-import { findCard, listCards } from "./cards";
+import { findCard, findPrinting, listCards } from "./cards";
 
 // Read a real name out of the generated file rather than hard-coding one, so
 // these keep passing after a rotation takes any particular card away.
@@ -46,4 +46,34 @@ test("every card has a known kind and at least one printing", () => {
       0,
     );
   }
+});
+
+test("findPrinting returns the version printed at that set and number", () => {
+  const printing = findCard(first)!.printings.at(-1)!;
+  const [set, number] = printing.prints[0]!.split(" ") as [string, string];
+
+  expect(findPrinting(first, set, number)).toEqual(printing);
+});
+
+test("findPrinting ignores zero padding in the number", () => {
+  const printing = findCard(first)!.printings[0]!;
+  const [set, number] = printing.prints[0]!.split(" ") as [string, string];
+
+  expect(findPrinting(first, set, number.padStart(3, "0"))).toEqual(printing);
+});
+
+test("findPrinting falls back to a card's only version", () => {
+  const name = names.find((name) => findCard(name)!.printings.length === 1)!;
+
+  expect(findPrinting(name, "XXX", "1")).toEqual(findCard(name)!.printings[0]);
+});
+
+test("findPrinting won't pick between versions the set doesn't name", () => {
+  const name = names.find((name) => findCard(name)!.printings.length > 1)!;
+
+  expect(findPrinting(name, "XXX", "1")).toBeUndefined();
+});
+
+test("findPrinting returns undefined for a name outside the format", () => {
+  expect(findPrinting("Not A Real Card", "TWM", "1")).toBeUndefined();
 });

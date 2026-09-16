@@ -18,6 +18,9 @@
  * of a card, what it does is *not* stable across printings — around a third of
  * names in the format have more than one version — so each name carries every
  * distinct printing and the caller decides what to do with the ambiguity.
+ * Each printing lists where it was printed, as "SET number" with the set's
+ * official code and no zero padding ("TWM 130") — the form Limitless uses —
+ * so a decklist that names its printing can be matched exactly.
  *
  * Two TCGdex traps, if you extend this. Its `name` filter is a substring
  * match, so "Iono" also returns "Iono's Bellibolt ex" — don't use it to check
@@ -36,6 +39,8 @@ const REGULATION_MARKS = ["H", "I", "J"];
 
 type ApiCard = {
   name: string;
+  localId: string;
+  set: { id: string };
   category: "Pokemon" | "Trainer" | "Energy";
   stage: string | null;
   trainerType: string | null;
@@ -72,6 +77,7 @@ type Printing = {
   }[];
   abilities?: { name: string; effect: string | null }[];
   effect?: string;
+  prints: string[];
 };
 
 type CardRules = {
@@ -84,6 +90,8 @@ async function main() {
     await Promise.all(REGULATION_MARKS.map((mark) => getCards(mark)))
   ).flat();
 
+  const setCodes = await getSetCodes(new Set(cards.map((card) => card.set.id)));
+
   const rules = new Map<string, CardRules>();
   const conflicts: string[] = [];
   for (const card of cards) {
@@ -95,11 +103,18 @@ async function main() {
     }
 
     const entry = existing ?? { category, printings: [] };
-    const printing = toPrinting(card);
-    const serialized = JSON.stringify(printing);
-    // Most reprints read identically; keep one of each distinct version.
-    if (!entry.printings.some((seen) => JSON.stringify(seen) === serialized)) {
-      entry.printings.push(printing);
+    const text = toText(card);
+    const serialized = JSON.stringify(text);
+    const print = `${setCodes.get(card.set.id)} ${card.localId.replace(/^0+(?=.)/, "")}`;
+    // Most reprints read identically; keep one of each distinct version, and
+    // every place it was printed.
+    const seen = entry.printings.find(
+      (other) => JSON.stringify({ ...other, prints: undefined }) === serialized,
+    );
+    if (seen) {
+      seen.prints.push(print);
+    } else {
+      entry.printings.push({ ...text, prints: [print] });
     }
     rules.set(card.name, entry);
   }
@@ -121,7 +136,7 @@ async function main() {
   );
 }
 
-function toPrinting(card: ApiCard): Printing {
+function toText(card: ApiCard): Omit<Printing, "prints"> {
   return {
     type: card.trainerType ?? card.energyType ?? card.stage,
     ...(card.hp ? { hp: card.hp } : {}),
@@ -153,10 +168,27 @@ function toPrinting(card: ApiCard): Printing {
   };
 }
 
+// GraphQL doesn't expose a set's official code, so read each from REST.
+async function getSetCodes(ids: Set<string>): Promise<Map<string, string>> {
+  const entries = await Promise.all(
+    [...ids].map(async (id) => {
+      const response = await fetch(`${API}/en/sets/${id}`);
+      if (!response.ok) throw new Error(`Set ${id}: ${response.status}`);
+      const set = (await response.json()) as {
+        abbreviation?: { official?: string };
+      };
+      const code = set.abbreviation?.official;
+      if (!code) throw new Error(`Set ${id} has no official code`);
+      return [id, code] as const;
+    }),
+  );
+  return new Map(entries);
+}
+
 async function getCards(mark: string): Promise<ApiCard[]> {
   const { data, errors } = await postGraphql<{ cards: ApiCard[] }>(`{
     cards(filters: { regulationMark: "${mark}" }) {
-      name category stage trainerType energyType hp retreat types evolveFrom effect
+      name localId set { id } category stage trainerType energyType hp retreat types evolveFrom effect
       attacks { name cost damage effect }
       abilities { name effect }
       weaknesses { type value }
