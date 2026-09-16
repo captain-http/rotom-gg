@@ -237,6 +237,13 @@ const printingSchema = z.object({
     .string()
     .optional()
     .describe("The rules text of a Trainer or Special Energy."),
+  tera: z
+    .literal(true)
+    .optional()
+    .describe(
+      "A Tera Pokémon: attacks do it no damage while it's on the Bench, and " +
+        "effects that name Tera Pokémon apply to it.",
+    ),
 });
 
 const cardSchema = printingSchema.extend({

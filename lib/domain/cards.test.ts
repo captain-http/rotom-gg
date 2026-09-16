@@ -77,3 +77,27 @@ test("findPrinting won't pick between versions the set doesn't name", () => {
 test("findPrinting returns undefined for a name outside the format", () => {
   expect(findPrinting("Not A Real Card", "TWM", "1")).toBeUndefined();
 });
+
+test("only basic Energy is typed Normal", () => {
+  for (const name of names) {
+    const card = findCard(name)!;
+    if (card.category !== "energy") continue;
+    for (const printing of card.printings) {
+      expect([name, printing.type]).toEqual([
+        name,
+        /^Basic .+ Energy$/.test(name) ? "Normal" : "Special",
+      ]);
+    }
+  }
+});
+
+test("Tera marks some Pokémon and nothing else", () => {
+  const tera = names.filter((name) =>
+    findCard(name)!.printings.some((printing) => printing.tera),
+  );
+
+  expect(tera.length).toBeGreaterThan(0);
+  expect(tera.every((name) => findCard(name)!.category === "pokemon")).toBe(
+    true,
+  );
+});

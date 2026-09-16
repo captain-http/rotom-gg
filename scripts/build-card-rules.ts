@@ -22,15 +22,24 @@
  * official code and no zero padding ("TWM 130") — the form Limitless uses —
  * so a decklist that names its printing can be matched exactly.
  *
- * Two TCGdex traps, if you extend this. Its `name` filter is a substring
+ * TCGdex doesn't say which Pokémon are Tera, and attacks like Gemstone
+ * Mimicry turn on it, so the Tera printings come from the Pokémon TCG API
+ * (https://pokemontcg.io), matched on "SET number". That API is slow and often
+ * fails, so it's asked one small question — every Tera card — with retries.
+ *
+ * Three TCGdex traps, if you extend this. Its `name` filter is a substring
  * match, so "Iono" also returns "Iono's Bellibolt ex" — don't use it to check
  * whether a card is in the format. And `legal.standard` comes back true for
- * cards as old as Base Set. Regulation mark is the honest definition.
+ * cards as old as Base Set. Regulation mark is the honest definition. And
+ * `energyType` isn't reliable: the Ascended Heroes reprint of Team Rocket's
+ * Energy comes back "Normal". In the format, basic Energy are exactly the
+ * cards named "Basic … Energy", so the type is read from the name.
  */
 
 import { writeFileSync } from "node:fs";
 
 const API = "https://api.tcgdex.net/v2";
+const POKEMON_TCG_API = "https://api.pokemontcg.io/v2";
 const OUT = new URL("../lib/domain/card-rules.json", import.meta.url);
 
 // Scarlet & Violet onward, minus the marks that have rotated out. G rotated,
@@ -44,7 +53,6 @@ type ApiCard = {
   category: "Pokemon" | "Trainer" | "Energy";
   stage: string | null;
   trainerType: string | null;
-  energyType: string | null;
   hp: number | null;
   retreat: number | null;
   types: string[] | null;
@@ -77,6 +85,8 @@ type Printing = {
   }[];
   abilities?: { name: string; effect: string | null }[];
   effect?: string;
+  /** A Tera Pokémon: no damage from attacks while it's on the Bench. */
+  tera?: true;
   prints: string[];
 };
 
@@ -86,9 +96,12 @@ type CardRules = {
 };
 
 async function main() {
-  const cards = (
-    await Promise.all(REGULATION_MARKS.map((mark) => getCards(mark)))
-  ).flat();
+  const [cards, teraPrints] = await Promise.all([
+    Promise.all(REGULATION_MARKS.map((mark) => getCards(mark))).then((all) =>
+      all.flat(),
+    ),
+    getTeraPrints(),
+  ]);
 
   const setCodes = await getSetCodes(new Set(cards.map((card) => card.set.id)));
 
@@ -122,6 +135,22 @@ async function main() {
     throw new Error(`Names printed as different kinds: ${conflicts}`);
   }
 
+  // Marked after grouping: a printing is Tera when any place it was printed
+  // is. Promos don't match on code between the two APIs, but a Tera promo
+  // reads like its set printing, so it shares that printing's entry.
+  let tera = 0;
+  for (const entry of rules.values()) {
+    for (const printing of entry.printings) {
+      if (printing.prints.some((print) => teraPrints.has(print))) {
+        printing.tera = true;
+        tera++;
+      }
+    }
+  }
+  if (tera === 0) {
+    throw new Error("No Tera printings matched; the API or codes changed");
+  }
+
   const sorted = Object.fromEntries(
     [...rules].sort(([a], [b]) => a.localeCompare(b)),
   );
@@ -132,13 +161,18 @@ async function main() {
     0,
   );
   console.log(
-    `Wrote ${rules.size} cards (${printings} printings) to ${OUT.pathname}`,
+    `Wrote ${rules.size} cards (${printings} printings, ${tera} Tera) to ${OUT.pathname}`,
   );
 }
 
 function toText(card: ApiCard): Omit<Printing, "prints"> {
   return {
-    type: card.trainerType ?? card.energyType ?? card.stage,
+    type:
+      card.category === "Energy"
+        ? /^Basic .+ Energy$/.test(card.name)
+          ? "Normal"
+          : "Special"
+        : (card.trainerType ?? card.stage),
     ...(card.hp ? { hp: card.hp } : {}),
     ...(card.retreat != null ? { retreat: card.retreat } : {}),
     ...(card.types?.length ? { types: card.types } : {}),
@@ -168,6 +202,32 @@ function toText(card: ApiCard): Omit<Printing, "prints"> {
   };
 }
 
+// Every Tera card ever printed, as "SET number". A few hundred at most, so one
+// page; retried because the API fails often, sometimes with an HTML error page.
+async function getTeraPrints(): Promise<Set<string>> {
+  const url = `${POKEMON_TCG_API}/cards?q=subtypes:Tera&pageSize=250&select=number,set`;
+  for (let attempt = 1; ; attempt++) {
+    try {
+      const response = await fetch(url);
+      const body = (await response.json()) as {
+        data?: { number: string; set: { ptcgoCode?: string } }[];
+        totalCount?: number;
+      };
+      if (!body.data) throw new Error(`status ${response.status}`);
+      if (body.data.length !== body.totalCount) {
+        throw new Error(`Tera cards span pages: ${body.totalCount}`);
+      }
+      return new Set(
+        body.data.map((card) => `${card.set.ptcgoCode} ${card.number}`),
+      );
+    } catch (error) {
+      if (attempt === 8) throw error;
+      console.warn(`Tera cards, attempt ${attempt}: ${error}`);
+      await new Promise((resolve) => setTimeout(resolve, attempt * 3000));
+    }
+  }
+}
+
 // GraphQL doesn't expose a set's official code, so read each from REST.
 async function getSetCodes(ids: Set<string>): Promise<Map<string, string>> {
   const entries = await Promise.all(
@@ -188,7 +248,7 @@ async function getSetCodes(ids: Set<string>): Promise<Map<string, string>> {
 async function getCards(mark: string): Promise<ApiCard[]> {
   const { data, errors } = await postGraphql<{ cards: ApiCard[] }>(`{
     cards(filters: { regulationMark: "${mark}" }) {
-      name localId set { id } category stage trainerType energyType hp retreat types evolveFrom effect
+      name localId set { id } category stage trainerType hp retreat types evolveFrom effect
       attacks { name cost damage effect }
       abilities { name effect }
       weaknesses { type value }

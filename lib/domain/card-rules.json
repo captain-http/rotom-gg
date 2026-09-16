@@ -694,7 +694,8 @@
           "SSP 225",
           "SSP 242",
           "SSP 248"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -5371,7 +5372,7 @@
     "category": "energy",
     "printings": [
       {
-        "type": "Normal",
+        "type": "Special",
         "effect": "As long as this card is attached to a Pokémon, it provides {W} Energy.\n\nThe {W} Pokémon this card is attached to recovers from all Special Conditions and can't be affected by any Special Conditions.",
         "prints": [
           "CRI 84"
@@ -6553,7 +6554,8 @@
         "prints": [
           "SSP 36",
           "PRE 147"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -7958,7 +7960,8 @@
           "ASC 38",
           "SCR 157",
           "SVP 163"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -8885,7 +8888,8 @@
           "PRE 160",
           "TWM 199",
           "TWM 215"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -10054,7 +10058,8 @@
         "prints": [
           "SSP 159",
           "SSP 228"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -12196,7 +12201,8 @@
           "ASC 160",
           "PRE 165",
           "TWM 200"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -14000,7 +14006,8 @@
         "prints": [
           "PRE 75",
           "PRE 167"
-        ]
+        ],
+        "tera": true
       },
       {
         "type": "Basic",
@@ -15320,7 +15327,8 @@
           "PRE 34",
           "PRE 155",
           "SVP 175"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -16347,7 +16355,8 @@
         "prints": [
           "TEF 108",
           "TEF 194"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -17200,7 +17209,8 @@
         "prints": [
           "PRE 14",
           "PRE 146"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -17673,7 +17683,8 @@
         "prints": [
           "SSP 106",
           "SSP 222"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -18779,7 +18790,8 @@
           "SCR 51",
           "SCR 159",
           "SCR 168"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -19539,7 +19551,8 @@
         "prints": [
           "PRE 26",
           "PRE 150"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -21099,7 +21112,8 @@
           "TWM 106",
           "TWM 198",
           "TWM 214"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -21341,7 +21355,7 @@
     "category": "energy",
     "printings": [
       {
-        "type": "Normal",
+        "type": "Special",
         "effect": "As long as this card is attached to a Pokémon, it provides {G} Energy.\nThe {G} Pokémon this card is attached to gets +20 HP.",
         "prints": [
           "POR 86"
@@ -22089,7 +22103,8 @@
           "PRE 148",
           "TWM 192",
           "TWM 212"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -24259,7 +24274,8 @@
           "SSP 119",
           "SSP 223",
           "SSP 240"
-        ]
+        ],
+        "tera": true
       },
       {
         "type": "Stage2",
@@ -24344,7 +24360,7 @@
     "category": "energy",
     "printings": [
       {
-        "type": "Normal",
+        "type": "Special",
         "effect": "If this card is attached to 1 of your Pokémon, discard it at the end of your turn.\n\nAs long as this card is attached to a Pokémon, it provides {C} Energy.\n\nIf this card is attached to an Evolution Pokémon, it provides {C}{C}{C} Energy instead.",
         "prints": [
           "WHT 86",
@@ -25831,7 +25847,8 @@
         "prints": [
           "PRE 30",
           "PRE 153"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -27311,7 +27328,8 @@
         ],
         "prints": [
           "ASC 121"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -28030,7 +28048,8 @@
           "SCR 32",
           "SCR 158",
           "SVP 164"
-        ]
+        ],
+        "tera": true
       },
       {
         "type": "Basic",
@@ -28760,7 +28779,8 @@
         "prints": [
           "PRE 6",
           "PRE 144"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -30715,7 +30735,8 @@
         "prints": [
           "TWM 29",
           "TWM 191"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -30879,7 +30900,7 @@
     "category": "energy",
     "printings": [
       {
-        "type": "Normal",
+        "type": "Special",
         "effect": "As long as this card is attached to a Pokémon, it provides {M} Energy.\n\nThe {M} Pokémon this card is attached to has no Retreat Cost.",
         "prints": [
           "CRI 85"
@@ -36107,7 +36128,8 @@
         ],
         "prints": [
           "ASC 73"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -38259,7 +38281,7 @@
     "category": "energy",
     "printings": [
       {
-        "type": "Normal",
+        "type": "Special",
         "effect": "As long as this card is attached to a Pokémon, it provides {R} Energy.\n\nIf this card is discarded by an effect of an attack used by the {R} Pokémon this card is attached to, put this card into your hand after attack damage and effects.",
         "prints": [
           "CRI 86"
@@ -39962,7 +39984,8 @@
         "prints": [
           "SSP 91",
           "SSP 221"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -41502,7 +41525,8 @@
         ],
         "prints": [
           "PRE 28"
-        ]
+        ],
+        "tera": true
       },
       {
         "type": "Basic",
@@ -41540,7 +41564,8 @@
           "SSP 238",
           "SSP 247",
           "ASC 277"
-        ]
+        ],
+        "tera": true
       },
       {
         "type": "Basic",
@@ -42628,7 +42653,7 @@
     "category": "energy",
     "printings": [
       {
-        "type": "Normal",
+        "type": "Special",
         "effect": "As long as this card is attached to a Pokémon, it provides {C} Energy.\n\nIf this card is attached to a Basic Pokémon, this card provides every type of Energy but provides only 1 Energy at a time.",
         "prints": [
           "BLK 86",
@@ -44805,7 +44830,8 @@
         "prints": [
           "SFA 15",
           "SFA 81"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -45178,7 +45204,7 @@
     "category": "energy",
     "printings": [
       {
-        "type": "Normal",
+        "type": "Special",
         "effect": "As long as this card is attached to a Pokémon, it provides {F} Energy.\nPrevent all effects of attacks used by your opponent's Pokémon done to the {F} Pokémon this card is attached to. (Existing effects are not removed. Damage is not an effect.)",
         "prints": [
           "POR 87"
@@ -47623,7 +47649,7 @@
     "category": "energy",
     "printings": [
       {
-        "type": "Normal",
+        "type": "Special",
         "effect": "As long as this card is attached to a Pokémon, it provides {D} Energy.\n\nAs long as the {D} Pokémon this card is attached to is on your Bench, prevent all damage done to it by attacks from your opponent's Pokémon.",
         "prints": [
           "PBL 83"
@@ -52591,7 +52617,8 @@
           "PRE 41",
           "SSP 86",
           "PRE 156"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -53160,7 +53187,8 @@
         "prints": [
           "SSP 142",
           "SSP 226"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -53366,7 +53394,8 @@
           "TWM 190",
           "TWM 211",
           "TWM 221"
-        ]
+        ],
+        "tera": true
       },
       {
         "type": "Basic",
@@ -53828,13 +53857,7 @@
         "type": "Special",
         "effect": "This card can only be attached to a Team Rocket's Pokémon. If this card is attached to anything other than a Team Rocket's Pokémon, discard this card.\n\nAs long as this card is attached to a Pokémon, it provides 2 in any combination of {P} Energy and {D} Energy.",
         "prints": [
-          "DRI 182"
-        ]
-      },
-      {
-        "type": "Normal",
-        "effect": "This card can only be attached to a Team Rocket's Pokémon. If this card is attached to anything other than a Team Rocket's Pokémon, discard this card.\n\nAs long as this card is attached to a Pokémon, it provides 2 in any combination of {P} Energy and {D} Energy.",
-        "prints": [
+          "DRI 182",
           "ASC 217"
         ]
       }
@@ -55478,7 +55501,7 @@
     "category": "energy",
     "printings": [
       {
-        "type": "Normal",
+        "type": "Special",
         "effect": "As long as this card is attached to a Pokémon, it provides {P} Energy.\nWhen you attach this card from your hand to a {P} Pokémon, search your deck for up to 2 Basic {P} Pokémon and put them onto your Bench. Then, shuffle your deck.",
         "prints": [
           "POR 88"
@@ -55666,7 +55689,8 @@
           "SCR 173",
           "ASC 179",
           "PRE 180"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -58209,7 +58233,8 @@
           "PRE 60",
           "PRE 161",
           "SVP 176"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -58491,7 +58516,8 @@
         "prints": [
           "PRE 23",
           "PRE 149"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -59487,7 +59513,7 @@
     "category": "energy",
     "printings": [
       {
-        "type": "Normal",
+        "type": "Special",
         "effect": "As long as this card is attached to a Pokémon, it provides {L} Energy.\n\nAttacks used by the {L} Pokémon this card is attached to do 20 more damage to your opponent's Active Pokémon (before applying Weakness and Resistance).",
         "prints": [
           "PBL 84"
@@ -60398,7 +60424,8 @@
           "PRE 152",
           "TWM 194",
           "TWM 213"
-        ]
+        ],
+        "tera": true
       }
     ]
   },
@@ -60902,7 +60929,8 @@
         "prints": [
           "TEF 60",
           "TEF 190"
-        ]
+        ],
+        "tera": true
       }
     ]
   },

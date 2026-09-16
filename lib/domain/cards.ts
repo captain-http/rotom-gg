@@ -25,6 +25,8 @@ export type Printing = {
   abilities?: { name: string; effect: string | null }[];
   /** The rules text of a Trainer or Special Energy. */
   effect?: string;
+  /** A Tera Pokémon: no damage from attacks while it's on the Bench. */
+  tera?: true;
   /** Where this version was printed, as "SET number": ["TWM 130"]. */
   prints: string[];
 };
