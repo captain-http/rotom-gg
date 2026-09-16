@@ -51,10 +51,21 @@ const instructions = [
     "didn't name.",
   "The log has no turn numbers, prize counts or HP totals. Count them from " +
     "the turn headers, prize takes and damage lines, and show the count.",
+  "A play is only better than the one made if it holds up against the " +
+    "opponent's reply. Before recommending a line, play the opponent's next " +
+    "turn against the board it leaves — their main attacks and abilities, " +
+    "from get_archetype — and compare it with the board the player kept.",
+  "The log records what the player did, never why. A non-play — an " +
+    "evolution held in hand, a Pokémon left off the Bench, an attack " +
+    "skipped — is often deliberate, protecting cards from what the " +
+    "opponent's deck does. Find the best reason for a play before calling " +
+    "it a mistake, and when the player can be asked, ask.",
 ].join("\n\n");
 
 // The questions a game review should answer, in order. Written from what
-// went wrong in a real review: judging a card whose text was never looked up.
+// went wrong in real reviews: judging a card whose text was never looked up,
+// and calling a deliberate hold a misplay without asking what the opponent's
+// deck would have done to the alternative.
 function reviewGame(gameId: string | undefined) {
   const which = gameId
     ? `game ${gameId} (get_game)`
@@ -64,20 +75,32 @@ function reviewGame(gameId: string | undefined) {
     "",
     "1. Before judging any card, have the rules text of every Pokémon that " +
       "reached the board on both sides, and every Trainer that mattered. " +
-      "Missing text is a reason to look further — get_archetype for the " +
-      "opponent's likely deck — not to treat the card as doing nothing.",
-    "2. Rebuild the prize race turn by turn: whose turn, what was knocked " +
+      "Missing text is a reason to look further, not to treat the card as " +
+      "doing nothing.",
+    "2. Call get_archetype for the opponent's likely deck, and note what it " +
+      "threatens: its main attacks and abilities, what they can target, and " +
+      "what the player's cards protect against. This is the threat the " +
+      "player was playing around.",
+    "3. Rebuild the prize race turn by turn: whose turn, what was knocked " +
       "out, prizes left for each player.",
-    "3. Find the two or three turns that decided the game, quoting the log " +
+    "4. Find the two or three turns that decided the game, quoting the log " +
       "lines for each.",
-    "4. For each, rebuild what the player held and had in play, and test " +
-      "the alternatives against that and the cards' text. Separate a " +
-      "misplay from bad luck and from what couldn't be known; the " +
-      "opponent's hand is only ever inference.",
-    "5. Weigh every card's part on both sides: a Pokémon can power a deck " +
-      "and still be the one that gives up the last prizes.",
-    "6. End with a verdict on whether it was winnable, and at most three " +
-      "concrete changes to play or to the list.",
+    "5. For each, rebuild what the player held and had in play, and list the " +
+      "alternatives. For every alternative, play out the opponent's next " +
+      "turn against the board it leaves, and compare that with what " +
+      "actually happened. An alternative that loses more to that reply is " +
+      "not better, however good it looks on the player's turn.",
+    "6. For every play or non-play you'd call a mistake, write the best " +
+      "reason a strong player could have had for it. Then stop and ask the " +
+      "player why they made those two or three decisions, and wait for the " +
+      "answer before going on.",
+    "7. Separate misplays from bad luck and from what couldn't be known; " +
+      "the opponent's hand is only ever inference. Weigh every card's part " +
+      "on both sides: a Pokémon can power a deck and still be the one that " +
+      "gives up the last prizes.",
+    "8. End with a verdict on whether it was winnable, a confidence that " +
+      "reflects which of the opponent's replies were checked, and at most " +
+      "three concrete changes to play or to the list.",
   ].join("\n");
 }
 
