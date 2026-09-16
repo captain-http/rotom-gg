@@ -61,7 +61,12 @@ const gameSchema = z.object({
         z.object({ name: z.string(), confidence: z.number() }),
       ),
     })
-    .nullable(),
+    .nullable()
+    .describe(
+      "A guess from the Pokémon the opponent showed, not a fact. When " +
+        "confidence is low, look in the log for the Pokémon that set an " +
+        "alternative apart before settling on one.",
+    ),
 });
 
 function toDeck(deck: decks.DeckWithRecord) {
@@ -263,14 +268,20 @@ const handler = createMcpHandler(
           "What a named deck archetype usually plays, from recent tournament " +
           "decklists: every card in at least a tenth of them, with the exact " +
           "printing, how often it's run, how many copies, and what that " +
-          "printing does — HP, attacks, abilities, Trainer text. Use it after " +
-          "list_games names an opponent's deck, to judge what they were " +
-          "likely holding — whether that build runs Rare Candy, how many " +
-          "lists play Unfair Stamp, which printing of a Pokémon it uses.",
+          "printing does — HP, attacks, abilities, Trainer text. Works for " +
+          "any archetype: the opponent's, to judge what they were likely " +
+          "holding — whether that build runs Rare Candy, how many lists play " +
+          "Unfair Stamp — or one close to the player's own deck. A card " +
+          "missing from the list may still be in a given deck: techs under " +
+          "a tenth of lists are left out, so treat absence as unlikely, not " +
+          "impossible.",
         inputSchema: z.object({
           name: z
             .string()
-            .describe("An archetype name, as opponentArchetype gives it."),
+            .describe(
+              "An archetype name, as opponentArchetype gives it, e.g. " +
+                '"Dragapult Dusknoir".',
+            ),
         }),
         outputSchema: z.object({
           archetype: z
@@ -282,7 +293,12 @@ const handler = createMcpHandler(
             })
             .nullable(),
           // Named so a miss can be retried rather than guessed at.
-          suggestions: z.array(z.string()),
+          suggestions: z
+            .array(z.string())
+            .describe(
+              "Only when archetype is null: known names to retry with, " +
+                "closest first. Empty on a match.",
+            ),
         }),
         annotations: READ_ONLY,
       },
