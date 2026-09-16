@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__claude_ai_Rotom__list_decks",
+      "mcp__claude_ai_Rotom__list_games",
+      "mcp__claude_ai_Rotom__get_game",
+      "mcp__claude_ai_Rotom__get_archetype"
+    ]
+  }
+}
