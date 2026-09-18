@@ -30,7 +30,8 @@ import { tournamentPages } from "../lib/db/schema.ts";
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const db = drizzle({ client: pool });
 
-const URL = "https://www.pokemon.com/us/play-pokemon/pokemon-events";
+const URL =
+  "https://www.pokemon.com/us/pokemon-trainer-club/play-pokemon-tournaments";
 const FIRST_ID = "26-09-000001";
 // Long enough to solve a challenge by hand.
 const TIMEOUT_MS = 120_000;
@@ -74,7 +75,7 @@ async function fetchPage(id: string): Promise<string> {
   });
   try {
     const page = await browser.newPage();
-    await page.goto(`${URL}/${id}/`, { timeout: TIMEOUT_MS });
+    await page.goto(`${URL}/${id}`, { timeout: TIMEOUT_MS });
     await page
       .waitForSelector(`#tournament_id[data-tournament-id="${id}"]`, {
         timeout: TIMEOUT_MS,
