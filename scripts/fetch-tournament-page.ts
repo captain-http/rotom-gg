@@ -7,23 +7,21 @@
  * With no id it takes the one after the highest saved: 26-09-000041 is
  * followed by 26-09-000042. With an empty table it starts at FIRST_ID.
  *
- * pokemon.com sits behind Incapsula, which turns away scripted requests, so
- * this opens a visible Chrome window rather than a headless one. If a
- * challenge appears, solve it in the window; the script waits for the
- * tournament's details and saves them once they show. The profile persists
- * between runs, so a challenge passed once isn't asked again for a while.
- *
- * Needs a display (WSLg is enough) and Chrome, installed once with
- * `pnpm exec puppeteer browsers install chrome`.
+ * pokemon.com sits behind Imperva, which turns away scripted requests, so the
+ * page is fetched through ZenRows (https://docs.zenrows.com). Needs
+ * ZENROWS_API_KEY; each page costs credits, more when ZenRows has to render
+ * it or use premium proxies.
  */
 
-import { homedir } from "node:os";
-import { join } from "node:path";
 import { desc, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import puppeteer from "puppeteer";
+import { ZenRows } from "zenrows";
 import { tournamentPages } from "../lib/db/schema.ts";
+
+const apiKey = process.env.ZENROWS_API_KEY;
+if (!apiKey) throw new Error("ZENROWS_API_KEY is not set");
+const zenrows = new ZenRows(apiKey);
 
 // Its own connection rather than lib/db: that module is built for the Vercel
 // runtime, and its imports don't carry the extensions a plain node run needs.
@@ -33,9 +31,6 @@ const db = drizzle({ client: pool });
 const URL =
   "https://www.pokemon.com/us/pokemon-trainer-club/play-pokemon-tournaments";
 const FIRST_ID = "26-09-000001";
-// Long enough to solve a challenge by hand.
-const TIMEOUT_MS = 120_000;
-const PROFILE = join(homedir(), ".cache", "rotom-gg", "chrome-profile");
 
 async function main() {
   const id = process.argv[2] ?? (await findNextId()) ?? FIRST_ID;
@@ -67,29 +62,23 @@ async function findNextId(): Promise<string | undefined> {
   return prefix + String(Number(sequence) + 1).padStart(sequence.length, "0");
 }
 
-/** The page's HTML once it shows this tournament's details. */
+/** The page's HTML, or throws when it isn't this tournament's page. */
 async function fetchPage(id: string): Promise<string> {
-  const browser = await puppeteer.launch({
-    headless: false,
-    userDataDir: PROFILE,
+  // Adaptive mode starts with the cheapest request and escalates to
+  // rendering or premium proxies only when the site needs it.
+  const response = await zenrows.fetch(`${URL}/${id}`, {
+    mode: "auto",
   });
-  try {
-    const page = await browser.newPage();
-    await page.goto(`${URL}/${id}`, { timeout: TIMEOUT_MS });
-    await page
-      .waitForSelector(`#tournament_id[data-tournament-id="${id}"]`, {
-        timeout: TIMEOUT_MS,
-      })
-      .catch(() => {
-        throw new Error(
-          `${id}: no tournament details after ${TIMEOUT_MS / 1000}s — ` +
-            "blocked, or no such tournament",
-        );
-      });
-    return await page.content();
-  } finally {
-    await browser.close();
+  const html = await response.text();
+  if (!response.ok) {
+    throw new Error(`${id}: ZenRows ${response.status}: ${html.slice(0, 300)}`);
   }
+  if (!html.includes(`data-tournament-id="${id}"`)) {
+    throw new Error(
+      `${id}: not a tournament page — blocked, or no such tournament`,
+    );
+  }
+  return html;
 }
 
 try {
