@@ -30,8 +30,7 @@ import { tournamentPages } from "../lib/db/schema.ts";
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const db = drizzle({ client: pool });
 
-const URL =
-  "https://www.pokemon.com/us/pokemon-trainer-club/play-pokemon-tournaments";
+const URL = "https://www.pokemon.com/us/play-pokemon/pokemon-events";
 const FIRST_ID = "26-09-000001";
 // Long enough to solve a challenge by hand.
 const TIMEOUT_MS = 120_000;
