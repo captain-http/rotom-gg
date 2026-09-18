@@ -91,6 +91,19 @@ export const archetypes = pgTable("archetypes", {
     .defaultNow(),
 });
 
+// Tournament pages from pokemon.com, as fetched. Parsed offline later, once
+// we've seen enough of them to know what to structure. Re-fetching a page
+// overwrites it. The HTML includes the organizer's contact details, so never
+// commit a page as a fixture without removing them.
+export const tournamentPages = pgTable("tournament_pages", {
+  // pokemon.com's id, e.g. "26-09-012234". Their key, not ours.
+  id: text("id").primaryKey(),
+  html: text("html").notNull(),
+  fetchedAt: timestamp("fetched_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
 /** One card in a typical list of an archetype. */
 export type ArchetypeCard = {
   name: string;
