@@ -7,7 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "tournament:fetch:prod": "env -u DATABASE_URL node --env-file=.env.production.local scripts/fetch-tournament-page.ts",
+    "tournament:import:prod": "env -u DATABASE_URL node --env-file=.env.production.local scripts/import-tournament-page.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "7.9.2",
