@@ -79,7 +79,7 @@ export const archetypes = pgTable("archetypes", {
   share: real("share").notNull(),
   // How many decklists the figures below were taken from.
   lists: integer("lists").notNull(),
-  // [{ name, set, number, pct, typical }], commonest first.
+  // [{ name, set, collectorNumber, playRate, copies }], commonest first.
   cards: jsonb("cards").$type<ArchetypeCard[]>().notNull(),
   // How often each Pokémon appears in a list, as a percentage, for
   // classifying an opponent from the few a battle log reveals:
@@ -108,9 +108,9 @@ export const tournamentPages = pgTable("tournament_pages", {
 export type ArchetypeCard = {
   name: string;
   set: string;
-  number: string;
+  collectorNumber: string;
   /** Percentage of lists that ran it. */
-  pct: number;
+  playRate: number;
   /** The usual number of copies. */
-  typical: number;
+  copies: number;
 };

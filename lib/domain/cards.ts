@@ -80,7 +80,7 @@ export function listCards(names: string[]): Card[] {
 }
 
 /**
- * The version of a card printed at one set and number.
+ * The version of a card printed at one set and collector number.
  *
  * A decklist can name a printing from outside the format — an older set's
  * copy of a card that's still legal through a reprint. When every printing
@@ -88,7 +88,7 @@ export function listCards(names: string[]): Card[] {
  *
  * @param name - The card name.
  * @param set - The set's official code, e.g. "TWM".
- * @param number - The collector number, with or without zero padding.
+ * @param collectorNumber - The collector number, with or without zero padding.
  * @returns The printing, or undefined when the format has no card by that
  *   name — including basic Energy, which has no rules text — or when it has
  *   several versions and none was printed there.
@@ -99,10 +99,10 @@ export function listCards(names: string[]): Card[] {
 export function findPrinting(
   name: string,
   set: string,
-  number: string,
+  collectorNumber: string,
 ): Printing | undefined {
   const printings = findCard(name)?.printings ?? [];
-  const print = `${set} ${number.replace(/^0+(?=.)/, "")}`;
+  const print = `${set} ${collectorNumber.replace(/^0+(?=.)/, "")}`;
   const exact = printings.find((printing) => printing.prints.includes(print));
   return exact ?? (printings.length === 1 ? printings[0] : undefined);
 }

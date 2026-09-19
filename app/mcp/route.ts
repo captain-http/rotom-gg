@@ -250,9 +250,9 @@ const printingSchema = z.object({
 const cardSchema = printingSchema.extend({
   name: z.string(),
   set: z.string().describe('Set code, e.g. "PBL".'),
-  number: z.string().describe("Collector number within the set."),
-  pct: z.number().describe("Percent of lists running it."),
-  typical: z.number().describe("The usual number of copies."),
+  collectorNumber: z.string().describe("Collector number within the set."),
+  playRate: z.number().describe("Percent of lists running it."),
+  copies: z.number().describe("The usual number of copies."),
 });
 
 // A log names a card without saying which printing was played, so every
@@ -279,7 +279,11 @@ function toLogCards(names: gameLog.Cards) {
 
 // The text of the exact printing the lists run, since reprints can differ.
 function toCard(card: archetypes.Archetype["cards"][number]) {
-  const printing = cards.findPrinting(card.name, card.set, card.number);
+  const printing = cards.findPrinting(
+    card.name,
+    card.set,
+    card.collectorNumber,
+  );
   if (!printing) {
     return card;
   }

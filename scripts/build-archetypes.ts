@@ -38,7 +38,7 @@ const TOURNAMENTS = 80;
 // Below this an archetype has too few lists to describe honestly.
 const MIN_LISTS = 5;
 // Cards in fewer than this share of lists are that player's own tech.
-const MIN_CARD_PCT = 10;
+const MIN_PLAY_RATE = 10;
 // Their API is free and anonymous; go gently and give up slowly.
 const RETRIES = 5;
 const PAUSE_MS = 250;
@@ -136,12 +136,12 @@ function summarize(entries: Entry[]) {
       .map((entry) => ({
         name: entry.card.name,
         set: entry.card.set,
-        number: entry.card.number,
-        pct: Math.round((entry.lists / lists.length) * 100),
-        typical: median(entry.counts),
+        collectorNumber: entry.card.number,
+        playRate: Math.round((entry.lists / lists.length) * 100),
+        copies: median(entry.counts),
       }))
-      .filter((card) => card.pct >= MIN_CARD_PCT)
-      .sort((a, b) => b.pct - a.pct || a.name.localeCompare(b.name));
+      .filter((card) => card.playRate >= MIN_PLAY_RATE)
+      .sort((a, b) => b.playRate - a.playRate || a.name.localeCompare(b.name));
 
     const pokemon = Object.fromEntries(
       [...pokemonLists].map(([name, count]) => [
