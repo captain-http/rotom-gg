@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { expect, test } from "vitest";
 import { withRollback } from "../../test/db";
 import { createDeck, findDeck } from "./decks";
-import { createGame, findGame, listGames } from "./games";
+import { countGames, createGame, findGame, listGames } from "./games";
 
 test("createGame stores the log on the user's deck", () =>
   withRollback(async (db) => {
@@ -124,6 +124,7 @@ test("another user's deck can't be read or given games", () =>
     expect(await findDeck(asRed, db)).toBeUndefined();
     expect(await createGame({ ...asRed, log: "Mine" }, db)).toBeUndefined();
     expect(await listGames(asRed, db)).toEqual([]);
+    expect(await countGames(asRed, db)).toBe(0);
     const theirs = await listGames(
       { userId: "user_blue", deckId: deck.id },
       db,
@@ -134,4 +135,17 @@ test("another user's deck can't be read or given games", () =>
     expect(
       await listGames({ userId: "user_blue", deckId: deck.id }, db),
     ).toHaveLength(1);
+  }));
+
+test("countGames counts the games on one deck", () =>
+  withRollback(async (db) => {
+    const deck = await createDeck({ userId: "user_red", title: "Deck" }, db);
+    const other = await createDeck({ userId: "user_red", title: "Other" }, db);
+    for (const deckId of [deck.id, deck.id, other.id]) {
+      await createGame({ userId: "user_red", deckId, log: "Turn 1" }, db);
+    }
+
+    expect(await countGames({ userId: "user_red", deckId: deck.id }, db)).toBe(
+      2,
+    );
   }));

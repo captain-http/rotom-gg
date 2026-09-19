@@ -1,4 +1,4 @@
-import { and, desc, eq, getTableColumns } from "drizzle-orm";
+import { and, count, desc, eq, getTableColumns } from "drizzle-orm";
 import { db as defaultDb, type Db } from "../db";
 import { decks, games } from "../db/schema";
 import { findDeck } from "./decks";
@@ -82,4 +82,23 @@ export async function listGames(
     )
     .orderBy(desc(games.id));
   return input.limit === undefined ? query : query.limit(input.limit);
+}
+
+/**
+ * How many games a user has on one deck.
+ *
+ * @param input - The Clerk user id and the deck id.
+ * @param db - The database or a transaction; defaults to the shared client.
+ * @returns The number of games; 0 when the deck belongs to someone else.
+ */
+export async function countGames(
+  input: { userId: string; deckId: number },
+  db: Db = defaultDb,
+): Promise<number> {
+  const [row] = await db
+    .select({ count: count() })
+    .from(games)
+    .innerJoin(decks, eq(games.deckId, decks.id))
+    .where(and(eq(decks.userId, input.userId), eq(games.deckId, input.deckId)));
+  return row?.count ?? 0;
 }
