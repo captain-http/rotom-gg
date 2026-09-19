@@ -91,15 +91,37 @@ test("check leaves an unsure language null", async () => {
   });
 });
 
-test("check falls back to Spain's Spanish when the two can't be split", async () => {
+test("check reads which Spanish from the log, not from Jev", async () => {
   const { client } = answering({
     isLog: { type: "noul", noul: 0.98 },
-    language: languageAnswer({ es: 0.48, "es-mx": 0.47, pt: 0.05 }),
+    language: languageAnswer({ es: 0.95, pt: 0.05 }),
   });
 
-  expect(await logCheck.check("Setup", client)).toMatchObject({
-    language: "es",
-  });
+  expect(
+    await logCheck.check(
+      "http_party robó 7 cartas de la mano inicial.",
+      client,
+    ),
+  ).toMatchObject({ language: "es-mx" });
+});
+
+test("findSpanish tells Spain's Spanish from Latin America's", () => {
+  expect(
+    logCheck.findSpanish(
+      "Janta_Abi ha robado una carta.\n- ha barajado su baraja.",
+    ),
+  ).toBe("es");
+  expect(
+    logCheck.findSpanish("http_party robó una carta.\n- barajó su mazo."),
+  ).toBe("es-mx");
+  expect(
+    logCheck.findSpanish("http_party puso en juego a Budew en la Banca."),
+  ).toBeNull();
+});
+
+test("findSpanish reads the Rocket cards' name", () => {
+  expect(logCheck.findSpanish("Mimikyu del Team Rocket")).toBe("es");
+  expect(logCheck.findSpanish("Mimikyu del Equipo Rocket")).toBe("es-mx");
 });
 
 test("check can't tell when TypeSafe fails", async () => {

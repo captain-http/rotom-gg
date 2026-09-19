@@ -120,8 +120,9 @@ export function findPrinting(
  * A card's English name, from its name in another language.
  *
  * Everything else here goes by English name, so this is the way in for a
- * card named in another language. Latin American Spanish falls back to
- * Spain's: TCGdex only has it from Journey Together on.
+ * card named in another language. The two Spanishes fall back to each
+ * other: TCGdex only has Latin America's from Journey Together on, and
+ * Spain's table renames the cards Latin America leaves as Lillie's.
  *
  * @param name - The card name in that language, e.g. "Melenaleteo".
  * @param language - The language it's written in.
@@ -136,8 +137,9 @@ export function findEnglishName(
   language: Language,
 ): string | undefined {
   const key = name.replaceAll("’", "'");
+  const spanish = language === "es" ? "es-mx" : "es";
   const translated =
     CARD_NAMES[language][key] ??
-    (language === "es-mx" ? CARD_NAMES.es[key] : undefined);
+    (language.startsWith("es") ? CARD_NAMES[spanish][key] : undefined);
   return translated ?? (findCard(key) ? key : undefined);
 }

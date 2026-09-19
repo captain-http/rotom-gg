@@ -3,6 +3,8 @@
  * one, and which language Pokémon TCG Live wrote it in. The parser only
  * knows English sentences; Jev reads any of the game's languages.
  *
+ * Jev names the language; which Spanish it is, the log itself says.
+ *
  * Every failure — no API key, a timeout, an outage — answers "can't tell",
  * so filing a game never depends on TypeSafe being up.
  */
@@ -27,9 +29,6 @@ const SAMPLE_CHARS = 6000;
 // clear no refuses.
 const NOT_A_LOG_BELOW = 0.1;
 const MIN_LANGUAGE_CONFIDENCE = 0.6;
-// Latin American and Spain's Spanish can read the same. When Jev can't split
-// them but is sure it's Spanish, Spain's is the table cards falls back to.
-const MIN_SPANISH = 0.8;
 // The form waits on this, so fail fast rather than retry for half a minute.
 const REQUEST = { timeout: 5000, retry: { maxRetries: 1 } };
 
@@ -49,8 +48,7 @@ const QUESTIONS = {
       fr: "French",
       de: "German",
       it: "Italian",
-      es: "Spanish as used in Spain",
-      "es-mx": "Spanish as used in Latin America",
+      es: "Spanish, of either Spain or Latin America",
       pt: "Brazilian Portuguese",
     },
   ),
@@ -81,9 +79,10 @@ export async function check(
     if (answers.isLog.noul < NOT_A_LOG_BELOW) {
       return { isLog: false, language: null };
     }
+    const language = pickLanguage(answers.language);
     return {
       isLog: answers.isLog.noul >= 0.5 ? true : null,
-      language: pickLanguage(answers.language),
+      language: language === "es" ? findSpanish(log) : language,
     };
   } catch (error) {
     console.warn("TypeSafe log check failed", error);
@@ -109,14 +108,48 @@ export function sample(log: string): string {
     .slice(0, SAMPLE_CHARS);
 }
 
+/**
+ * Which Spanish a log is in, from wording only these two differ on.
+ *
+ * Spain's client writes the perfect tense and "su baraja", and calls the
+ * cards "del Team Rocket"; Latin America's writes the simple past and "su
+ * mazo", and calls them "del Equipo Rocket". A question to Jev can't split
+ * them reliably, but counting these can.
+ *
+ * @param log - The raw battle log, in Spanish.
+ * @returns "es" for Spain, "es-mx" for Latin America, or null when the log
+ *   shows neither.
+ * @example
+ * logCheck.findSpanish("http_party ha robado una carta."); // "es"
+ */
+export function findSpanish(log: string): "es" | "es-mx" | null {
+  // \b is ASCII-only, and "robó" ends outside it, so bound on letters.
+  const spain = count(log, [
+    /(?<!\p{L})ha robado(?!\p{L})/gu,
+    /(?<!\p{L})su baraja(?!\p{L})/gu,
+    /(?<!\p{L})del Team Rocket(?!\p{L})/gu,
+  ]);
+  const latin = count(log, [
+    /(?<!\p{L})robó(?!\p{L})/gu,
+    /(?<!\p{L})su mazo(?!\p{L})/gu,
+    /(?<!\p{L})del Equipo Rocket(?!\p{L})/gu,
+  ]);
+  if (spain === latin) {
+    return null;
+  }
+  return spain > latin ? "es" : "es-mx";
+}
+
+function count(log: string, patterns: RegExp[]): number {
+  return patterns.reduce(
+    (total, pattern) => total + (log.match(pattern)?.length ?? 0),
+    0,
+  );
+}
+
 function pickLanguage(answer: {
   choice: Language;
   confidence: number;
-  probabilities: Record<Language, number>;
 }): Language | null {
-  if (answer.confidence >= MIN_LANGUAGE_CONFIDENCE) {
-    return answer.choice;
-  }
-  const spanish = answer.probabilities.es + answer.probabilities["es-mx"];
-  return spanish >= MIN_SPANISH ? "es" : null;
+  return answer.confidence >= MIN_LANGUAGE_CONFIDENCE ? answer.choice : null;
 }
