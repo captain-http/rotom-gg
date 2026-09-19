@@ -51,7 +51,12 @@ type Standing = {
     { name: string; set: string; number: string; count: number }[]
   >;
 };
-type Entry = { slug: string; name: string; cards: Card[]; pokemon: Card[] };
+type Entry = {
+  slug: string;
+  name: string;
+  cards: (Card & { key: string })[];
+  pokemon: Card[];
+};
 type Card = { name: string; set: string; number: string; count: number };
 
 async function main() {
@@ -94,13 +99,24 @@ function toEntry(standing: Standing): Entry | undefined {
   const name = standing.deck?.name;
   if (!slug || !name || !standing.decklist) return undefined;
 
-  const cards = Object.values(standing.decklist)
-    .flat()
-    .filter((card) => card?.name);
   const pokemon = (standing.decklist.pokemon ?? []).filter(
     (card) => card?.name,
   );
+  const cards = Object.entries(standing.decklist).flatMap(([kind, cards]) =>
+    cards
+      .filter((card) => card?.name)
+      .map((card) => ({ ...card, key: cardKey(kind, card) })),
+  );
   return cards.length > 0 ? { slug, name, cards, pokemon } : undefined;
+}
+
+// Trainers and Energy of the same name are the same card in any printing, so
+// they're one entry however the list splits them. A Pokémon's name isn't
+// enough: two printings can have different HP, attacks and abilities.
+function cardKey(kind: string, card: Card): string {
+  return kind === "pokemon"
+    ? `${card.name}|${card.set}|${card.number}`
+    : card.name;
 }
 
 function summarize(entries: Entry[]) {
@@ -113,17 +129,18 @@ function summarize(entries: Entry[]) {
   for (const [slug, lists] of grouped) {
     if (lists.length < MIN_LISTS) continue;
 
-    const counted = new Map<
-      string,
-      { card: Card; lists: number; counts: number[] }
-    >();
+    const counted = new Map<string, { counts: number[]; uses: Card[] }>();
     const pokemonLists = new Map<string, number>();
     for (const list of lists) {
+      // A list can split one Trainer across printings: 2 of one, 2 of another.
+      const inList = new Map<string, Card[]>();
       for (const card of list.cards) {
-        const key = `${card.name}|${card.set}|${card.number}`;
-        const entry = counted.get(key) ?? { card, lists: 0, counts: [] };
-        entry.lists++;
-        entry.counts.push(card.count);
+        inList.set(card.key, [...(inList.get(card.key) ?? []), card]);
+      }
+      for (const [key, printings] of inList) {
+        const entry = counted.get(key) ?? { counts: [], uses: [] };
+        entry.counts.push(printings.reduce((sum, card) => sum + card.count, 0));
+        entry.uses.push(...printings);
         counted.set(key, entry);
       }
       // By name, because a battle log never says which printing it was.
@@ -133,13 +150,16 @@ function summarize(entries: Entry[]) {
     }
 
     const cards: ArchetypeCard[] = [...counted.values()]
-      .map((entry) => ({
-        name: entry.card.name,
-        set: entry.card.set,
-        collectorNumber: entry.card.number,
-        playRate: Math.round((entry.lists / lists.length) * 100),
-        copies: median(entry.counts),
-      }))
+      .map((entry) => {
+        const card = commonestPrinting(entry.uses);
+        return {
+          name: card.name,
+          set: card.set,
+          collectorNumber: card.number,
+          playRate: Math.round((entry.counts.length / lists.length) * 100),
+          copies: median(entry.counts),
+        };
+      })
       .filter((card) => card.playRate >= MIN_PLAY_RATE)
       .sort((a, b) => b.playRate - a.playRate || a.name.localeCompare(b.name));
 
@@ -161,6 +181,18 @@ function summarize(entries: Entry[]) {
     });
   }
   return rows.sort((a, b) => b.lists - a.lists);
+}
+
+// The printing most lists ran, to show for a card merged across printings.
+function commonestPrinting(uses: Card[]): Card {
+  const tally = new Map<string, { card: Card; uses: number }>();
+  for (const card of uses) {
+    const key = `${card.set}|${card.number}`;
+    const entry = tally.get(key) ?? { card, uses: 0 };
+    entry.uses++;
+    tally.set(key, entry);
+  }
+  return [...tally.values()].sort((a, b) => b.uses - a.uses)[0]!.card;
 }
 
 function round(value: number): number {
