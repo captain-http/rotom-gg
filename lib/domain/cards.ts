@@ -6,8 +6,8 @@
  * `scripts/build-card-rules.ts` generates.
  */
 
-import cardNames from "./card-names.json";
-import cardRules from "./card-rules.json";
+import cardNames from "./card-names.json" with { type: "json" };
+import cardRules from "./card-rules.json" with { type: "json" };
 
 /** One version of a card. Reprints often differ, so a name can have several. */
 export type Printing = {

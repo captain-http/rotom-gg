@@ -23,6 +23,7 @@ import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { archetypes, type ArchetypeCard } from "../lib/db/schema.ts";
+import * as cards from "../lib/domain/cards.ts";
 
 // Its own connection rather than lib/db: that module is built for the Vercel
 // runtime, and its imports don't carry the extensions a plain node run needs.
@@ -112,11 +113,17 @@ function toEntry(standing: Standing): Entry | undefined {
 
 // Trainers and Energy of the same name are the same card in any printing, so
 // they're one entry however the list splits them. A Pokémon's name isn't
-// enough: two printings can have different HP, attacks and abilities.
+// enough: two printings can have different HP, attacks and abilities. So a
+// Pokémon goes by its version in card-rules.json, which groups the printings
+// that read the same. A printing the file doesn't list, like one from a set
+// newer than it, stays on its own rather than being guessed into a version.
 function cardKey(kind: string, card: Card): string {
-  return kind === "pokemon"
-    ? `${card.name}|${card.set}|${card.number}`
-    : card.name;
+  if (kind !== "pokemon") return card.name;
+  const print = `${card.set} ${card.number.replace(/^0+(?=.)/, "")}`;
+  const version = cards
+    .findCard(card.name)
+    ?.printings.find((printing) => printing.prints.includes(print));
+  return `${card.name}|${version?.prints[0] ?? print}`;
 }
 
 function summarize(entries: Entry[]) {
