@@ -25,6 +25,13 @@
  * (https://pokemontcg.io), matched on "SET number". That API is slow and often
  * fails, so it's asked one small question — every Tera card — with retries.
  *
+ * It also writes lib/domain/card-names.json: each format card's name in every
+ * other language PTCGL is played in, pointing at its English name, for logs
+ * exported in those languages. Only names that differ from English are kept.
+ * TCGdex's GraphQL only speaks English, so these come from REST, and a card
+ * is the same card across languages by its TCGdex id ("sv05-078" is Flutter
+ * Mane and Melenaleteo).
+ *
  * Three TCGdex traps, if you extend this. Its `name` filter is a substring
  * match, so "Iono" also returns "Iono's Bellibolt ex" — don't use it to check
  * whether a card is in the format. And `legal.standard` comes back true for
@@ -39,12 +46,20 @@ import { writeFileSync } from "node:fs";
 const API = "https://api.tcgdex.net/v2";
 const POKEMON_TCG_API = "https://api.pokemontcg.io/v2";
 const OUT = new URL("../lib/domain/card-rules.json", import.meta.url);
+const NAMES_OUT = new URL("../lib/domain/card-names.json", import.meta.url);
 
 // Scarlet & Violet onward, minus the marks that have rotated out. G rotated,
 // which is why Iono and Charizard ex aren't in here.
 const REGULATION_MARKS = ["H", "I", "J"];
 
+// PTCGL's languages besides English, as TCGdex codes them. Its "pt" is
+// Brazilian Portuguese; "pt-br" there holds only TCG Pocket. Its "es-mx"
+// (Latin America) only starts at Journey Together, so cards.findEnglishName
+// falls back to Spain's "es" for older sets.
+const LANGUAGES = ["fr", "de", "it", "es", "es-mx", "pt"];
+
 type ApiCard = {
+  id: string;
   name: string;
   localId: string;
   set: { id: string };
@@ -94,11 +109,12 @@ type CardRules = {
 };
 
 async function main() {
-  const [cards, teraPrints] = await Promise.all([
+  const [cards, teraPrints, localized] = await Promise.all([
     Promise.all(REGULATION_MARKS.map((mark) => getCards(mark))).then((all) =>
       all.flat(),
     ),
     getTeraPrints(),
+    Promise.all(LANGUAGES.map((language) => getLocalizedNames(language))),
   ]);
 
   const setCodes = await getSetCodes(new Set(cards.map((card) => card.set.id)));
@@ -154,6 +170,9 @@ async function main() {
   );
   writeFileSync(OUT, `${JSON.stringify(sorted, null, 2)}\n`);
 
+  const names = toNameTables(cards, rules, localized);
+  writeFileSync(NAMES_OUT, `${JSON.stringify(names, null, 2)}\n`);
+
   const printings = [...rules.values()].reduce(
     (count, entry) => count + entry.printings.length,
     0,
@@ -161,6 +180,50 @@ async function main() {
   console.log(
     `Wrote ${rules.size} cards (${printings} printings, ${tera} Tera) to ${OUT.pathname}`,
   );
+  console.log(
+    `Wrote ${Object.entries(names)
+      .map(([language, table]) => `${Object.keys(table).length} ${language}`)
+      .join(", ")} names to ${NAMES_OUT.pathname}`,
+  );
+}
+
+// { language: { localized name: English name } }, skipping names that read
+// the same as in English. Apostrophes are straightened, as the log parser
+// does before looking a card up.
+function toNameTables(
+  cards: ApiCard[],
+  rules: Map<string, CardRules>,
+  localized: Map<string, string>[],
+): Record<string, Record<string, string>> {
+  const english = new Map(
+    cards
+      .filter((card) => rules.has(card.name))
+      .map((card) => [card.id, card.name]),
+  );
+  const tables: Record<string, Record<string, string>> = {};
+  const clashes: string[] = [];
+  LANGUAGES.forEach((language, index) => {
+    const table = new Map<string, string>();
+    for (const [id, name] of localized[index]!) {
+      const englishName = english.get(id);
+      const key = name.replaceAll("’", "'");
+      if (!englishName || key === englishName) continue;
+      const existing = table.get(key);
+      if (existing && existing !== englishName) {
+        clashes.push(`${language} ${key}: ${existing}, ${englishName}`);
+      }
+      table.set(key, englishName);
+    }
+    tables[language] = Object.fromEntries(
+      [...table].sort(([a], [b]) => a.localeCompare(b)),
+    );
+  });
+  // One name for two English cards can't be undone from a log. None exist
+  // today; if one appears, decide by hand rather than guess.
+  if (clashes.length > 0) {
+    throw new Error(`Localized names shared by different cards: ${clashes}`);
+  }
+  return tables;
 }
 
 function toText(card: ApiCard): Omit<Printing, "prints"> {
@@ -246,7 +309,7 @@ async function getSetCodes(ids: Set<string>): Promise<Map<string, string>> {
 async function getCards(mark: string): Promise<ApiCard[]> {
   const { data, errors } = await postGraphql<{ cards: ApiCard[] }>(`{
     cards(filters: { regulationMark: "${mark}" }) {
-      name localId set { id } category stage trainerType hp retreat types evolveFrom effect
+      id name localId set { id } category stage trainerType hp retreat types evolveFrom effect
       attacks { name cost damage effect }
       abilities { name effect }
       weaknesses { type value }
@@ -256,6 +319,28 @@ async function getCards(mark: string): Promise<ApiCard[]> {
     throw new Error(`TCGdex query failed: ${JSON.stringify(errors)}`);
   }
   return data.cards;
+}
+
+// Every format card's name in one language, by TCGdex id. A card the language
+// hasn't been printed in is missing, not an error.
+async function getLocalizedNames(
+  language: string,
+): Promise<Map<string, string>> {
+  const names = new Map<string, string>();
+  for (const mark of REGULATION_MARKS) {
+    const response = await fetch(
+      `${API}/${language}/cards?regulationMark=${mark}`,
+    );
+    if (!response.ok) {
+      throw new Error(`${language} cards, mark ${mark}: ${response.status}`);
+    }
+    const cards = (await response.json()) as { id: string; name: string }[];
+    for (const card of cards) names.set(card.id, card.name);
+  }
+  if (names.size === 0) {
+    throw new Error(`No ${language} cards; TCGdex changed its language codes`);
+  }
+  return names;
 }
 
 async function postGraphql<T>(

@@ -2,9 +2,11 @@
  * What the cards in the current Standard format do.
  *
  * Import as a namespace: `import * as cards from "./cards"`.
- * Backed by card-rules.json, which `scripts/build-card-rules.ts` generates.
+ * Backed by card-rules.json and card-names.json, which
+ * `scripts/build-card-rules.ts` generates.
  */
 
+import cardNames from "./card-names.json";
 import cardRules from "./card-rules.json";
 
 /** One version of a card. Reprints often differ, so a name can have several. */
@@ -38,9 +40,16 @@ export type Card = {
   printings: Printing[];
 };
 
+/** A language PTCGL can be played in besides English, as TCGdex codes it. */
+export type Language = "fr" | "de" | "it" | "es" | "es-mx" | "pt";
+
 const CARD_RULES = cardRules as unknown as Record<
   string,
   Omit<Card, "name"> | undefined
+>;
+const CARD_NAMES = cardNames as Record<
+  Language,
+  Record<string, string | undefined>
 >;
 
 /**
@@ -105,4 +114,30 @@ export function findPrinting(
   const print = `${set} ${collectorNumber.replace(/^0+(?=.)/, "")}`;
   const exact = printings.find((printing) => printing.prints.includes(print));
   return exact ?? (printings.length === 1 ? printings[0] : undefined);
+}
+
+/**
+ * A card's English name, from its name in another language.
+ *
+ * Everything else here goes by English name, so this is the way in for a
+ * card named in another language. Latin American Spanish falls back to
+ * Spain's: TCGdex only has it from Journey Together on.
+ *
+ * @param name - The card name in that language, e.g. "Melenaleteo".
+ * @param language - The language it's written in.
+ * @returns The English name — the same name when the language doesn't
+ *   translate it — or undefined when no card in the format has that name.
+ * @example
+ * cards.findEnglishName("Melenaleteo", "es"); // "Flutter Mane"
+ * cards.findEnglishName("Slowking", "es"); // "Slowking"
+ */
+export function findEnglishName(
+  name: string,
+  language: Language,
+): string | undefined {
+  const key = name.replaceAll("’", "'");
+  const translated =
+    CARD_NAMES[language][key] ??
+    (language === "es-mx" ? CARD_NAMES.es[key] : undefined);
+  return translated ?? (findCard(key) ? key : undefined);
 }

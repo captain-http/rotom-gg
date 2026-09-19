@@ -1,6 +1,7 @@
 import { expect, test } from "vitest";
+import cardNames from "./card-names.json";
 import cardRules from "./card-rules.json";
-import { findCard, findPrinting, listCards } from "./cards";
+import { findCard, findEnglishName, findPrinting, listCards } from "./cards";
 
 // Read a real name out of the generated file rather than hard-coding one, so
 // these keep passing after a rotation takes any particular card away.
@@ -100,4 +101,42 @@ test("Tera marks some Pokémon and nothing else", () => {
   expect(tera.every((name) => findCard(name)!.category === "pokemon")).toBe(
     true,
   );
+});
+
+test("findEnglishName translates a card named in another language", () => {
+  const [localized, english] = Object.entries(cardNames.fr)[0]!;
+
+  expect(findEnglishName(localized, "fr")).toBe(english);
+});
+
+test("findEnglishName returns a name the language doesn't translate", () => {
+  expect(findEnglishName(first, "de")).toBe(first);
+});
+
+test("findEnglishName reads a curly apostrophe as a straight one", () => {
+  const [localized, english] = Object.entries(cardNames.fr).find(([name]) =>
+    name.includes("'"),
+  )!;
+
+  expect(findEnglishName(localized.replaceAll("'", "’"), "fr")).toBe(english);
+});
+
+test("findEnglishName falls back to Spain's Spanish for Latin America", () => {
+  const [localized, english] = Object.entries(cardNames.es).find(
+    ([name]) => !(name in cardNames["es-mx"]),
+  )!;
+
+  expect(findEnglishName(localized, "es-mx")).toBe(english);
+});
+
+test("findEnglishName returns undefined for a name outside the format", () => {
+  expect(findEnglishName("Not A Real Card", "it")).toBeUndefined();
+});
+
+test("every translated name leads to a card in the format", () => {
+  for (const [language, table] of Object.entries(cardNames)) {
+    for (const [localized, english] of Object.entries(table)) {
+      expect(findCard(english), `${language} ${localized}`).toBeDefined();
+    }
+  }
 });
