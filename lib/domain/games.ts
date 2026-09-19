@@ -3,19 +3,26 @@ import { db as defaultDb, type Db } from "../db";
 import { decks, games } from "../db/schema";
 import { findDeck } from "./decks";
 import * as gameLog from "./game-log";
+import type { Language } from "./log-check";
 
 export type Game = typeof games.$inferSelect;
 
 /**
  * Stores a game log on a user's deck, with the facts summarized from it.
  *
- * @param input - The Clerk user id, the deck id, and the raw battle log.
+ * @param input - The Clerk user id, the deck id, the raw battle log, and the
+ *   language it's in when known (logCheck.check).
  * @param db - The database or a transaction; defaults to the shared client.
  * @returns The stored game, or undefined when the deck doesn't exist or
  *   belongs to someone else.
  */
 export async function createGame(
-  input: { userId: string; deckId: number; log: string },
+  input: {
+    userId: string;
+    deckId: number;
+    log: string;
+    language?: Language | null;
+  },
   db: Db = defaultDb,
 ): Promise<Game | undefined> {
   const deck = await findDeck(input, db);
@@ -29,6 +36,7 @@ export async function createGame(
       deckId: deck.id,
       log: input.log,
       ...gameLog.summarize(input.log),
+      language: input.language ?? null,
     })
     .returning();
   if (!game) {

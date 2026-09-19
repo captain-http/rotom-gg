@@ -57,6 +57,13 @@
       "when": 1789700881642,
       "tag": "0007_add_tournament_pages",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1789850396947,
+      "tag": "0008_add_language",
+      "breakpoints": true
     }
   ]
 }

@@ -53,6 +53,12 @@ export const games = pgTable(
     // Most damage from a single attack, Weakness included.
     maxDamage: integer("max_damage"),
     opponentMaxDamage: integer("opponent_max_damage"),
+    // The language PTCGL wrote the log in, as TypeSafe's Jev read it when
+    // the game was filed (logCheck.check). Null when Jev wasn't sure or
+    // couldn't be asked.
+    language: text("language", {
+      enum: ["en", "fr", "de", "it", "es", "es-mx", "pt"],
+    }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -63,6 +69,10 @@ export const games = pgTable(
     check(
       "games_coin_toss_choice_check",
       sql`${table.coinTossChoice} in ('first', 'second')`,
+    ),
+    check(
+      "games_language_check",
+      sql`${table.language} in ('en', 'fr', 'de', 'it', 'es', 'es-mx', 'pt')`,
     ),
   ],
 );

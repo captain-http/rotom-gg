@@ -2,10 +2,8 @@ import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { findDeck } from "@/lib/domain/decks";
-import { Button } from "../../../../components/ui/button";
 import { Heading } from "../../../../components/ui/text";
-import { createGameAction } from "./actions";
-import { LogField } from "./log-field";
+import { NewGameForm } from "./new-game-form";
 
 export default async function NewGamePage({
   params,
@@ -33,13 +31,7 @@ export default async function NewGamePage({
       </Link>
       <Heading className="uppercase">New game</Heading>
 
-      <form action={createGameAction} className="flex flex-col gap-2">
-        <input type="hidden" name="deckId" value={deck.id} />
-        <LogField />
-        <Button type="submit" className="self-start">
-          + Add game
-        </Button>
-      </form>
+      <NewGameForm deckId={deck.id} />
     </main>
   );
 }

@@ -52,6 +52,18 @@ test("createGame stores the facts summarized from the log", () =>
     });
   }));
 
+test("createGame stores the language the log is in", () =>
+  withRollback(async (db) => {
+    const deck = await createDeck({ userId: "user_red", title: "Deck" }, db);
+
+    const game = await createGame(
+      { userId: "user_red", deckId: deck.id, log: "Turn 1", language: "es" },
+      db,
+    );
+
+    expect(game).toMatchObject({ language: "es" });
+  }));
+
 test("listGames returns newest first", () =>
   withRollback(async (db) => {
     const deck = await createDeck({ userId: "user_red", title: "Deck" }, db);

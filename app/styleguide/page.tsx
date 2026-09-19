@@ -71,6 +71,7 @@ const game = (overrides: Partial<Game>): Game => ({
   opponentPokemon: null,
   maxDamage: null,
   opponentMaxDamage: null,
+  language: null,
   createdAt: created,
   ...overrides,
 });
