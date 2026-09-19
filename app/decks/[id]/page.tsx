@@ -62,6 +62,13 @@ export default async function DeckPage({
           ))}
         </ul>
       )}
+
+      <Link
+        href={`/decks/${deck.id}/delete`}
+        className="self-start px-1 text-meta tracking-wider text-muted uppercase transition-colors duration-75 ease-flick hover:bg-mark hover:text-mark-foreground"
+      >
+        x Delete deck
+      </Link>
     </main>
   );
 }

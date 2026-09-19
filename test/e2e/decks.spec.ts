@@ -5,6 +5,7 @@ const pages = [
   { path: "/decks", content: 'name="title"' },
   { path: "/decks/1", content: "Games on file" },
   { path: "/decks/1/games/new", content: 'name="log"' },
+  { path: "/decks/1/delete", content: 'name="deckId"' },
 ];
 
 for (const { path, content } of pages) {
