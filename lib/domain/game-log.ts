@@ -6,7 +6,7 @@
  * doesn't say.
  */
 
-import cardIndex from "./card-index.json";
+import * as cards from "./cards";
 
 export type Result = "win" | "loss";
 export type TurnOrder = "first" | "second";
@@ -16,19 +16,10 @@ export type Cards = {
   pokemon: string[];
   trainers: string[];
   energy: string[];
-  // Names the card index doesn't know.
+  // Names that aren't in the current format: rotated cards, a set newer
+  // than card-rules.json, or a parser mistake.
   unknown: string[];
 };
-
-type CardEntry = {
-  category: "pokemon" | "trainer" | "energy";
-  type: string | null;
-};
-
-const CARD_INDEX: Record<string, CardEntry | undefined> = cardIndex as Record<
-  string,
-  CardEntry
->;
 
 const KINDS = {
   pokemon: "pokemon",
@@ -236,7 +227,7 @@ export function findResult(log: string): Result | undefined {
  * @remarks
  * Only Pokémon that reached the board. Cards the log reveals but that were
  * never played — the opening hand, draws, discards, shuffles — aren't
- * included — `getViewerCards` sorts those with the card index. In the
+ * included — `getViewerCards` sorts those by kind. In the
  * fixture, Hariyama is drawn but never played, so it isn't listed here.
  *
  * @param log - The raw battle log.
@@ -367,15 +358,16 @@ function listPlayedPokemon(log: string, player: string): string[] {
 
 /**
  * Every card the log shows the viewer with, played or only revealed, sorted
- * into kinds with the card index.
+ * into kinds with the current format's cards.
  *
  * @remarks
  * Reads cards the viewer drew by name, played, attached, evolved, discarded,
  * took as a Prize, or had revealed in a list (opening hand, draws, shuffles,
- * discards). Cards are sorted with `card-index.json`, generated from TCGdex by
- * `scripts/build-card-index.ts`. A name missing from the index — a set newer
- * than the index, or a parser mistake — lands in `unknown` rather than being
- * dropped.
+ * discards). Cards are sorted with `cards.findCard`, which only knows the
+ * current Standard format. A name it doesn't have — a rotated card, a set
+ * newer than card-rules.json, or a parser mistake — lands in `unknown` rather
+ * than being dropped. Basic Energy isn't in the format's cards (it has no
+ * text), so any other name ending in " Energy" is sorted as Energy.
  *
  * @param log - The raw battle log.
  * @returns Names per kind in order of first appearance; all empty when the
@@ -475,17 +467,17 @@ function getCards(log: string, player: string): Cards {
 }
 
 function sortCards(names: string[]): Cards {
-  const cards: Cards = { pokemon: [], trainers: [], energy: [], unknown: [] };
+  const sorted: Cards = { pokemon: [], trainers: [], energy: [], unknown: [] };
   for (const name of new Set(names)) {
-    const entry = CARD_INDEX[name.replaceAll("’", "'")];
-    const kind = entry
-      ? KINDS[entry.category]
+    const card = cards.findCard(name.replaceAll("’", "'"));
+    const kind = card
+      ? KINDS[card.category]
       : name.endsWith(" Energy")
         ? "energy"
         : "unknown";
-    cards[kind].push(name);
+    sorted[kind].push(name);
   }
-  return cards;
+  return sorted;
 }
 
 // Player names go into the patterns above, and usernames can contain

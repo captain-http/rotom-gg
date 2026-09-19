@@ -9,13 +9,11 @@
  * here by regulation mark, so rotating means editing REGULATION_MARKS and
  * rebuilding. The file is a snapshot of the format on the day it was built.
  *
- * Separate from card-index.json on purpose. That one answers "what kind of
- * card is this name", needs every card ever printed, and is read by the
- * parser. This one answers "what does this card do", only covers cards that
- * can be in a current game, and is read when someone asks a question.
+ * The log parser sorts cards into kinds with this file too, so a rotated card
+ * lands in `unknown`. That's intended: rotom.gg only covers Standard.
  *
- * Keyed by name, because a battle log only ever gives a name. Unlike the kind
- * of a card, what it does is *not* stable across printings — around a third of
+ * Keyed by name, because a battle log only ever gives a name. Every printing
+ * of a name is the same kind of card, but what it does is *not* stable across printings — around a third of
  * names in the format have more than one version — so each name carries every
  * distinct printing and the caller decides what to do with the ambiguity.
  * Each printing lists where it was printed, as "SET number" with the set's

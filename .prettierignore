@@ -1,4 +1,3 @@
 pnpm-lock.yaml
 lib/db/migrations/meta/
-lib/domain/card-index.json
 lib/domain/card-rules.json
