@@ -63,6 +63,25 @@ export async function listDecks(
 }
 
 /**
+ * Deletes a user's deck and, by cascade, all of its games.
+ *
+ * @param input - The owner's Clerk user id and the deck id.
+ * @param db - The database or a transaction; defaults to the shared client.
+ * @returns Whether a deck was deleted: false when it doesn't exist or belongs
+ *   to someone else.
+ */
+export async function deleteDeck(
+  input: { userId: string; deckId: number },
+  db: Db = defaultDb,
+): Promise<boolean> {
+  const deleted = await db
+    .delete(decks)
+    .where(and(eq(decks.id, input.deckId), eq(decks.userId, input.userId)))
+    .returning({ id: decks.id });
+  return deleted.length > 0;
+}
+
+/**
  * The share of decided games that were won.
  *
  * @param record - Wins and losses; games with an unknown result aren't in it.

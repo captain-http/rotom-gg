@@ -1,7 +1,14 @@
 import { expect, test } from "vitest";
 import { withRollback } from "../../test/db";
+import { eq } from "drizzle-orm";
 import { games } from "../db/schema";
-import { createDeck, findDeck, findWinRate, listDecks } from "./decks";
+import {
+  createDeck,
+  deleteDeck,
+  findDeck,
+  findWinRate,
+  listDecks,
+} from "./decks";
 
 const noGames = { wins: 0, losses: 0 };
 
@@ -61,4 +68,28 @@ test("listDecks never returns another user's decks", () =>
     await createDeck({ userId: "user_blue", title: "Not yours" }, db);
 
     expect(await listDecks("user_red", db)).toEqual([]);
+  }));
+
+test("deleteDeck removes the deck and its games", () =>
+  withRollback(async (db) => {
+    const deck = await createDeck({ userId: "user_red", title: "Deck" }, db);
+    await db.insert(games).values({ deckId: deck.id, log: "" });
+
+    expect(await deleteDeck({ userId: "user_red", deckId: deck.id }, db)).toBe(
+      true,
+    );
+    expect(await listDecks("user_red", db)).toEqual([]);
+    expect(
+      await db.select().from(games).where(eq(games.deckId, deck.id)),
+    ).toEqual([]);
+  }));
+
+test("deleteDeck leaves another user's deck alone", () =>
+  withRollback(async (db) => {
+    const deck = await createDeck({ userId: "user_blue", title: "Deck" }, db);
+
+    expect(await deleteDeck({ userId: "user_red", deckId: deck.id }, db)).toBe(
+      false,
+    );
+    expect(await listDecks("user_blue", db)).toEqual([{ ...deck, ...noGames }]);
   }));
