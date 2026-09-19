@@ -43,7 +43,7 @@ const MIN_PLAY_RATE = 10;
 const RETRIES = 5;
 const PAUSE_MS = 250;
 
-type Tournament = { id: string; format: string; players: number };
+type Tournament = { id: string; players: number };
 type Standing = {
   deck?: { id?: string; name?: string };
   decklist?: Record<
@@ -57,9 +57,9 @@ type Card = { name: string; set: string; number: string; count: number };
 async function main() {
   const tournaments = (
     await getJson<Tournament[]>(
-      `${API}/tournaments?game=PTCG&limit=${TOURNAMENTS}`,
+      `${API}/tournaments?game=PTCG&format=${FORMAT}&limit=${TOURNAMENTS}`,
     )
-  ).filter((t) => t.format === FORMAT && t.players >= MIN_PLAYERS);
+  ).filter((t) => t.players >= MIN_PLAYERS);
   console.log(`Reading ${tournaments.length} tournaments…`);
 
   const entries: Entry[] = [];
