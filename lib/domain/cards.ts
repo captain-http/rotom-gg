@@ -40,15 +40,18 @@ export type Card = {
   printings: Printing[];
 };
 
-/** A language PTCGL can be played in besides English, as TCGdex codes it. */
-export type Language = "fr" | "de" | "it" | "es" | "es-mx" | "pt";
+/** A language PTCGL can be played in, as TCGdex codes it. */
+export type Language = "en" | Translated;
+
+/** A language that gives the cards names of its own. */
+export type Translated = "fr" | "de" | "it" | "es" | "es-mx" | "pt";
 
 const CARD_RULES = cardRules as unknown as Record<
   string,
   Omit<Card, "name"> | undefined
 >;
 const CARD_NAMES = cardNames as Record<
-  Language,
+  Translated,
   Record<string, string | undefined>
 >;
 
@@ -134,7 +137,7 @@ export function findPrinting(
  */
 export function findEnglishName(
   name: string,
-  language: Language,
+  language: Translated,
 ): string | undefined {
   const key = name.replaceAll("’", "'");
   const spanish = language === "es" ? "es-mx" : "es";

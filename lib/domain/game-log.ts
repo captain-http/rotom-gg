@@ -7,6 +7,7 @@
  */
 
 import * as cards from "./cards";
+import type { Language } from "./cards";
 
 export type Result = "win" | "loss";
 export type TurnOrder = "first" | "second";
@@ -27,8 +28,110 @@ const KINDS = {
   energy: "energy",
 } as const;
 
+/**
+ * The sentences Pokémon TCG Live writes for one language.
+ *
+ * Every pattern takes a player's name already escaped for a regular
+ * expression, since the game writes most lines around it. English is the
+ * only language here so far; each other one arrives with its fixture.
+ */
+type Phrases = {
+  language: Language;
+  /** "Red drew 7 cards for the opening hand." — captures the player. */
+  openingHand: RegExp;
+  /** "Red drew Lillie's Determination." — captures what was drawn. */
+  drew: (p: string) => RegExp;
+  /** What a draw says when it doesn't name the cards: "a card.", "3 cards". */
+  unnamedDraw: RegExp;
+  /** "Red wins.", after a reason on the same line or alone. */
+  wins: (p: string) => RegExp;
+  /** "Blue won the coin toss." */
+  wonCoinToss: (p: string) => RegExp;
+  /** "Blue decided to go first." — captures a word in turnOrder. */
+  tossChoice: (p: string) => RegExp;
+  /** The words that choice can use, as the game writes them. */
+  turnOrder: Record<string, TurnOrder>;
+  /** "Red's Turn" */
+  turnHeader: (p: string) => RegExp;
+  /** An attack that dealt damage — captures the amount. */
+  attack: (p: string) => RegExp;
+  /** Lines where a player acts with a Pokémon of their own. */
+  playedPokemon: (p: string) => RegExp[];
+  /** "- Red drew 2 cards and played them to the Bench." */
+  benchedBySearch: (p: string) => RegExp;
+  /** Lines that name a card of the player's, in any way. */
+  cardLines: (p: string) => RegExp[];
+  /** Whether a line is about this player: "Red played …", "Red's Lunatone …". */
+  owns: (p: string) => RegExp;
+};
+
+const ENGLISH: Phrases = {
+  language: "en",
+  openingHand: /^(.+) drew 7 cards for the opening hand\.$/,
+  drew: (p) => new RegExp(`^${p} drew (.+)$`),
+  unnamedDraw: /^(?:a card\.|\d+ (?:more )?cards?\b)/,
+  wins: (p) => new RegExp(`^(?:.+\\. )?${p} wins\\.$`),
+  wonCoinToss: (p) => new RegExp(`^${p} won the coin toss\\.$`),
+  tossChoice: (p) => new RegExp(`^${p} decided to go (first|second)\\.$`),
+  turnOrder: { first: "first", second: "second" },
+  turnHeader: (p) => new RegExp(`^${p}['’]s Turn$`),
+  // Not anchored at the end: a Weakness note can follow on the same line.
+  attack: (p) => new RegExp(`^${p}['’]s .+? used .+? for (\\d+) damage\\.`),
+  playedPokemon: (p) => [
+    new RegExp(`^${p} played (.+) to the (?:Active Spot|Bench)\\.$`),
+    new RegExp(
+      `^${p} evolved (.+?) to (.+?) (?:in the Active Spot|on the Bench)\\.$`,
+    ),
+    new RegExp(`^${p}['’]s (.+?) used `),
+    new RegExp(`^${p}['’]s (.+) is now in the Active Spot\\.$`),
+    new RegExp(`^${p}['’]s (.+) was Knocked Out!$`),
+  ],
+  benchedBySearch: (p) =>
+    new RegExp(
+      `^- ${p} drew \\d+ cards? and played (?:them|it) to the Bench\\.$`,
+    ),
+  cardLines: (p) => [
+    // "Red drew Lillie's Determination." — not "drew a card"/"drew 3 cards".
+    new RegExp(`^${p} drew (?!a card\\.)(?!\\d)(.+)\\.$`),
+    new RegExp(`^${p} played (.+?)(?: to the (?:Active Spot|Bench))?\\.$`),
+    new RegExp(`^${p} attached (.+?) to .+\\.$`),
+    new RegExp(
+      `^${p} evolved (.+?) to (.+?) (?:in the Active Spot|on the Bench)\\.$`,
+    ),
+    new RegExp(`^${p} discarded (?!\\d)(.+)\\.$`),
+    new RegExp(`^(.+) was added to ${p}['’]s hand\\.$`),
+    new RegExp(`^(.+) was discarded from ${p}['’]s .+\\.$`),
+    new RegExp(`^${p}['’]s (.+?) used `),
+    new RegExp(`^${p}['’]s (.+) is now in the Active Spot\\.$`),
+    new RegExp(`^${p}['’]s (.+) was Knocked Out!$`),
+  ],
+  owns: (p) => new RegExp(`^${p} |^${p}['’]s |from ${p}['’]s `),
+};
+
+const PHRASES: Phrases[] = [ENGLISH];
+
+/**
+ * The language a log is written in, from the sentences the game used.
+ *
+ * @param log - The raw battle log.
+ * @returns The language, or undefined when no language's opening-hand line
+ *   matches — an empty log, or one in a language the parser can't read yet.
+ * @example
+ * gameLog.findLanguage(log); // "en"
+ */
+export function findLanguage(log: string): Language | undefined {
+  return findPhrases(log)?.language;
+}
+
+function findPhrases(log: string): Phrases | undefined {
+  return PHRASES.find((phrases) =>
+    lines(log).some((line) => phrases.openingHand.test(line)),
+  );
+}
+
 /** The columns stored on a game, from the viewer's point of view. */
 export type Summary = {
+  language: Language | null;
   result: Result | null;
   wonCoinToss: boolean | null;
   coinTossChoice: TurnOrder | null;
@@ -46,7 +149,8 @@ export type Summary = {
  * @returns The stored facts, with null for anything the log doesn't say.
  * @example
  * gameLog.summarize(log);
- * // { result: "win", wonCoinToss: false, coinTossChoice: "first", wentFirst: false,
+ * // { language: "en", result: "win", wonCoinToss: false, coinTossChoice: "first",
+ * //   wentFirst: false,
  * //   turnCount: 8, opponentPokemon: ["Team Rocket's Sneasel", "Scraggy", "Toxel"],
  * //   maxDamage: 260, opponentMaxDamage: 20 }
  */
@@ -56,6 +160,7 @@ export function summarize(log: string): Summary {
     viewer && player ? player === viewer : null;
 
   return {
+    language: findLanguage(log) ?? null,
     result: findResult(log) ?? null,
     wonCoinToss: isViewer(findCoinTossWinner(log)),
     coinTossChoice: findCoinTossChoice(log) ?? null,
@@ -77,8 +182,12 @@ export function summarize(log: string): Summary {
  * gameLog.getPlayers(log); // ["Red", "Blue"]
  */
 export function getPlayers(log: string): string[] {
+  const phrases = findPhrases(log);
+  if (!phrases) {
+    return [];
+  }
   return lines(log).flatMap((line) => {
-    const match = line.match(/^(.+) drew 7 cards for the opening hand\.$/);
+    const match = line.match(phrases.openingHand);
     return match?.[1] ? [match[1]] : [];
   });
 }
@@ -95,15 +204,17 @@ export function getPlayers(log: string): string[] {
  * gameLog.findViewer(log); // "Red"
  */
 export function findViewer(log: string): string | undefined {
-  const withNamedDraws = getPlayers(log).filter((player) =>
-    lines(log).some((line) => {
-      if (!line.startsWith(`${player} drew `)) {
-        return false;
-      }
-      const drawn = line.slice(`${player} drew `.length);
-      return drawn !== "a card." && !/^\d+ (more )?cards?\b/.test(drawn);
-    }),
-  );
+  const phrases = findPhrases(log);
+  if (!phrases) {
+    return undefined;
+  }
+  const withNamedDraws = getPlayers(log).filter((player) => {
+    const drew = phrases.drew(escapeRegExp(player));
+    return lines(log).some((line) => {
+      const drawn = line.match(drew)?.[1];
+      return drawn !== undefined && !phrases.unnamedDraw.test(drawn);
+    });
+  });
   return withNamedDraws.length === 1 ? withNamedDraws[0] : undefined;
 }
 
@@ -117,12 +228,11 @@ export function findViewer(log: string): string | undefined {
  * gameLog.findWinner(log); // "Red"
  */
 export function findWinner(log: string): string | undefined {
-  return getPlayers(log).find((player) =>
-    lines(log).some(
-      (line) =>
-        line === `${player} wins.` || line.endsWith(`. ${player} wins.`),
-    ),
-  );
+  const phrases = findPhrases(log);
+  return getPlayers(log).find((player) => {
+    const wins = phrases?.wins(escapeRegExp(player));
+    return wins && lines(log).some((line) => wins.test(line));
+  });
 }
 
 /**
@@ -134,9 +244,11 @@ export function findWinner(log: string): string | undefined {
  * gameLog.findCoinTossWinner(log); // "Blue"
  */
 export function findCoinTossWinner(log: string): string | undefined {
-  return getPlayers(log).find((player) =>
-    lines(log).includes(`${player} won the coin toss.`),
-  );
+  const phrases = findPhrases(log);
+  return getPlayers(log).find((player) => {
+    const won = phrases?.wonCoinToss(escapeRegExp(player));
+    return won && lines(log).some((line) => won.test(line));
+  });
 }
 
 /**
@@ -151,15 +263,14 @@ export function findCoinTossWinner(log: string): string | undefined {
  * gameLog.findCoinTossChoice(log); // "first"
  */
 export function findCoinTossChoice(log: string): TurnOrder | undefined {
+  const phrases = findPhrases(log);
   const tossWinner = findCoinTossWinner(log);
-  if (!tossWinner) {
+  if (!phrases || !tossWinner) {
     return undefined;
   }
-  const line = lines(log).find((line) =>
-    line.startsWith(`${tossWinner} decided to go `),
-  );
-  const match = line?.match(/ decided to go (first|second)\.$/);
-  return match?.[1] as TurnOrder | undefined;
+  const choice = phrases.tossChoice(escapeRegExp(tossWinner));
+  const word = lines(log).flatMap((line) => line.match(choice)?.[1] ?? [])[0];
+  return word === undefined ? undefined : phrases.turnOrder[word];
 }
 
 /**
@@ -195,11 +306,16 @@ export function findStartingPlayer(log: string): string | undefined {
  * gameLog.findTurnCount(log); // 8
  */
 export function findTurnCount(log: string): number | undefined {
-  const headers = getPlayers(log).flatMap((player) => [
-    `${player}'s Turn`,
-    `${player}’s Turn`,
-  ]);
-  const count = lines(log).filter((line) => headers.includes(line)).length;
+  const phrases = findPhrases(log);
+  if (!phrases) {
+    return undefined;
+  }
+  const headers = getPlayers(log).map((player) =>
+    phrases.turnHeader(escapeRegExp(player)),
+  );
+  const count = lines(log).filter((line) =>
+    headers.some((header) => header.test(line)),
+  ).length;
   return count > 0 ? count : undefined;
 }
 
@@ -308,10 +424,11 @@ function findOpponent(log: string): string | undefined {
 }
 
 function findMaxDamage(log: string, player: string): number | undefined {
-  // Not anchored at the end: a Weakness note can follow on the same line.
-  const attack = new RegExp(
-    `^${escapeRegExp(player)}['’]s .+? used .+? for (\\d+) damage\\.`,
-  );
+  const phrases = findPhrases(log);
+  if (!phrases) {
+    return undefined;
+  }
+  const attack = phrases.attack(escapeRegExp(player));
   const damages = lines(log).flatMap((line) => {
     const damage = line.match(attack)?.[1];
     return damage ? [Number(damage)] : [];
@@ -325,20 +442,13 @@ function findMaxDamage(log: string, player: string): number | undefined {
 // targets ("on Blue’s Toxel") are skipped: the game sometimes names the wrong
 // owner there ("Red put 4 damage counters on Blue's Mega Lucario ex").
 function listPlayedPokemon(log: string, player: string): string[] {
+  const phrases = findPhrases(log);
+  if (!phrases) {
+    return [];
+  }
   const p = escapeRegExp(player);
-  const own = `${p}['’]s `;
-  const patterns = [
-    new RegExp(`^${p} played (.+) to the (?:Active Spot|Bench)\\.$`),
-    new RegExp(
-      `^${p} evolved (.+?) to (.+?) (?:in the Active Spot|on the Bench)\\.$`,
-    ),
-    new RegExp(`^${own}(.+?) used `),
-    new RegExp(`^${own}(.+) is now in the Active Spot\\.$`),
-    new RegExp(`^${own}(.+) was Knocked Out!$`),
-  ];
-  const benchedBySearch = new RegExp(
-    `^- ${p} drew \\d+ cards? and played (?:them|it) to the Bench\\.$`,
-  );
+  const patterns = phrases.playedPokemon(p);
+  const benchedBySearch = phrases.benchedBySearch(p);
 
   const found = new Set<string>();
   const all = lines(log);
@@ -403,34 +513,20 @@ export function getOpponentCards(log: string): Cards {
 }
 
 function getCards(log: string, player: string): Cards {
+  const phrases = findPhrases(log);
+  if (!phrases) {
+    return sortCards([]);
+  }
   const players = getPlayers(log);
-  const p = escapeRegExp(player);
-  const own = `${p}['’]s `;
-  const single = [
-    // "Red drew Lillie's Determination." — not "drew a card" or "drew 3 cards".
-    new RegExp(`^${p} drew (?!a card\\.)(?!\\d)(.+)\\.$`),
-    new RegExp(`^${p} played (.+?)(?: to the (?:Active Spot|Bench))?\\.$`),
-    new RegExp(`^${p} attached (.+?) to .+\\.$`),
-    new RegExp(
-      `^${p} evolved (.+?) to (.+?) (?:in the Active Spot|on the Bench)\\.$`,
-    ),
-    new RegExp(`^${p} discarded (?!\\d)(.+)\\.$`),
-    new RegExp(`^(.+) was added to ${own}hand\\.$`),
-    new RegExp(`^(.+) was discarded from ${own}.+\\.$`),
-    new RegExp(`^${own}(.+?) used `),
-    new RegExp(`^${own}(.+) is now in the Active Spot\\.$`),
-    new RegExp(`^${own}(.+) was Knocked Out!$`),
-  ];
+  const single = phrases.cardLines(escapeRegExp(player));
 
   // Whose line this is: "Red played …", "Red's Lunatone …", or "… from Red's".
+  const owners = players.map((name) => ({
+    name,
+    owns: phrases.owns(escapeRegExp(name)),
+  }));
   const ownerOf = (text: string) =>
-    players.find(
-      (name) =>
-        text.startsWith(`${name} `) ||
-        new RegExp(
-          `^${escapeRegExp(name)}['’]s |from ${escapeRegExp(name)}['’]s `,
-        ).test(text),
-    );
+    owners.find((owner) => owner.owns.test(text))?.name;
 
   const names: string[] = [];
   let topOwner: string | undefined;

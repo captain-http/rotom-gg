@@ -10,10 +10,9 @@
  */
 
 import { choice, noul, TypeSafeClient } from "@typesafe-ai/sdk";
-import type * as cards from "./cards";
+import type { Language } from "./cards";
 
-/** A language PTCGL can be played in, as TCGdex codes it. */
-export type Language = "en" | cards.Language;
+export type { Language };
 
 export type Check = {
   /** False only when Jev is sure the text isn't a battle log. */

@@ -29,6 +29,7 @@ describe.each(fixtures)("%s", (name) => {
 test("a log that says nothing summarizes to nulls", () => {
   expect(gameLog.findWinner("Turn 1")).toBeUndefined();
   expect(gameLog.summarize("Turn 1")).toEqual({
+    language: null,
     result: null,
     wonCoinToss: null,
     coinTossChoice: null,

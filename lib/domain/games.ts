@@ -11,7 +11,7 @@ export type Game = typeof games.$inferSelect;
  * Stores a game log on a user's deck, with the facts summarized from it.
  *
  * @param input - The Clerk user id, the deck id, the raw battle log, and the
- *   language it's in when known (logCheck.check).
+ *   language Jev read it in, used only when the parser can't tell.
  * @param db - The database or a transaction; defaults to the shared client.
  * @returns The stored game, or undefined when the deck doesn't exist or
  *   belongs to someone else.
@@ -36,7 +36,9 @@ export async function createGame(
       deckId: deck.id,
       log: input.log,
       ...gameLog.summarize(input.log),
-      language: input.language ?? null,
+      // The parser knows the language for certain when it can read the log;
+      // Jev's answer is for the languages it can't.
+      language: gameLog.findLanguage(input.log) ?? input.language ?? null,
     })
     .returning();
   if (!game) {
