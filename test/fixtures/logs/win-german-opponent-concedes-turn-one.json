@@ -1,0 +1,45 @@
+{
+  "findLanguage": "de",
+  "getPlayers": ["Blue", "Red"],
+  "findViewer": "Red",
+  "findWinner": "Red",
+  "findCoinTossWinner": "Red",
+  "findCoinTossChoice": "first",
+  "findStartingPlayer": "Red",
+  "findTurnCount": 1,
+  "findResult": "win",
+  "listViewerPlayedPokemon": ["Team Rocket's Articuno"],
+  "listOpponentPlayedPokemon": ["Fezandipiti ex"],
+  "findViewerMaxDamage": null,
+  "findOpponentMaxDamage": null,
+  "getViewerCards": {
+    "pokemon": ["Lillie's Clefairy ex", "Team Rocket's Articuno"],
+    "trainers": [
+      "Team Rocket's Petrel",
+      "Night Stretcher",
+      "Maximum Belt",
+      "Team Rocket's Giovanni",
+      "Bug Catching Set",
+      "Team Rocket's Factory"
+    ],
+    "energy": [],
+    "unknown": []
+  },
+  "getOpponentCards": {
+    "pokemon": ["Fezandipiti ex"],
+    "trainers": [],
+    "energy": [],
+    "unknown": []
+  },
+  "summarize": {
+    "language": "de",
+    "result": "win",
+    "wonCoinToss": true,
+    "coinTossChoice": "first",
+    "wentFirst": true,
+    "turnCount": 1,
+    "opponentPokemon": ["Fezandipiti ex"],
+    "maxDamage": null,
+    "opponentMaxDamage": null
+  }
+}

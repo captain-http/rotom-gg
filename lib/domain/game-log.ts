@@ -61,8 +61,13 @@ type Phrases = {
   benchedBySearch: (p: string) => RegExp;
   /** Lines that name a card of the player's, in any way. */
   cardLines: (p: string) => RegExp[];
-  /** Whether a line is about this player: "Red played …", "Red's Lunatone …". */
-  owns: (p: string) => RegExp;
+  /** What basic Energy is called: it has no rules text, so no card matches it. */
+  basicEnergy: RegExp;
+  /**
+   * Whether a line is about this player, as patterns to try in order: the
+   * line starting with their name beats their name appearing later in it.
+   */
+  owns: (p: string) => RegExp[];
 };
 
 const ENGLISH: Phrases = {
@@ -105,10 +110,69 @@ const ENGLISH: Phrases = {
     new RegExp(`^${p}['’]s (.+) is now in the Active Spot\\.$`),
     new RegExp(`^${p}['’]s (.+) was Knocked Out!$`),
   ],
-  owns: (p) => new RegExp(`^${p} |^${p}['’]s |from ${p}['’]s `),
+  owns: (p) => [
+    new RegExp(`^${p} |^${p}['’]s `),
+    new RegExp(`from ${p}['’]s `),
+  ],
+  basicEnergy: / Energy$/,
 };
 
-const PHRASES: Phrases[] = [ENGLISH];
+const GERMAN: Phrases = {
+  language: "de",
+  openingHand: /^(.+) hat für die Starthand 7 Karten gezogen\.$/,
+  drew: (p) => new RegExp(`^${p} hat (.+) gezogen\\.$`),
+  // Also the opening hand, which German writes as one of these draws.
+  unnamedDraw:
+    /^(?:eine Karte|für die Starthand \d+ Karten|\d+ (?:weitere |zusätzliche )?Karten?)$/,
+  wins: (p) => new RegExp(`^(?:.+\\. )?${p} hat gewonnen\\.$`),
+  wonCoinToss: (p) => new RegExp(`^${p} hat den Münzwurf gewonnen\\.$`),
+  // "Zweiter" hasn't been seen yet; it mirrors "Erster".
+  tossChoice: (p) =>
+    new RegExp(`^${p} möchte als (Erster|Zweiter) dran sein\\.$`),
+  turnOrder: { Erster: "first", Zweiter: "second" },
+  turnHeader: (p) => new RegExp(`^Zug von ${p}$`),
+  attack: (p) =>
+    new RegExp(
+      `^.+? von ${p} hat .+? gegen .+? für (\\d+) Schadenspunkte eingesetzt\\.`,
+    ),
+  playedPokemon: (p) => [
+    new RegExp(`^${p} hat (.+) in die Aktive Position gelegt\\.$`),
+    new RegExp(`^${p} hat (.+) auf die Bank gelegt\\.$`),
+    new RegExp(
+      `^${p} hat (.+?) (?:in der Aktiven Position|auf der Bank) zu (.+?) entwickelt\\.$`,
+    ),
+    new RegExp(`^(.+?) von ${p} hat .+? eingesetzt`),
+    new RegExp(`^(.+?) von ${p} ist jetzt in der Aktiven Position\\.$`),
+    new RegExp(`^(.+?) von ${p} wurde kampfunfähig gemacht!$`),
+  ],
+  benchedBySearch: (p) =>
+    new RegExp(
+      `^- ${p} hat \\d+ Karten? gezogen und auf die Bank gespielt\\.$`,
+    ),
+  cardLines: (p) => [
+    new RegExp(
+      `^${p} hat (?!eine Karte)(?!für die Starthand)(?!\\d)(.+) gezogen\\.$`,
+    ),
+    new RegExp(`^${p} hat (?!\\d)(.+?)(?: auf das Stadion-Feld)? gespielt\\.$`),
+    new RegExp(`^${p} hat (.+?) an .+ angelegt\\.$`),
+    new RegExp(`^${p} hat (.+) in die Aktive Position gelegt\\.$`),
+    new RegExp(`^${p} hat (.+) auf die Bank gelegt\\.$`),
+    new RegExp(
+      `^${p} hat (.+?) (?:in der Aktiven Position|auf der Bank) zu (.+?) entwickelt\\.$`,
+    ),
+    new RegExp(`^${p} hat (?!\\d)(.+) auf den Ablagestapel gelegt\\.$`),
+    new RegExp(
+      `^(?!Eine Karte)(.+) wurde zu der Hand von ${p} hinzugefügt\\.$`,
+    ),
+    new RegExp(`^(.+?) von ${p} hat .+? eingesetzt`),
+    new RegExp(`^(.+?) von ${p} ist jetzt in der Aktiven Position\\.$`),
+    new RegExp(`^(.+?) von ${p} wurde kampfunfähig gemacht!$`),
+  ],
+  owns: (p) => [new RegExp(`^${p} `), new RegExp(`von ${p}(?!\\p{L})`, "u")],
+  basicEnergy: /^Basis-.+-Energie$/,
+};
+
+const PHRASES: Phrases[] = [ENGLISH, GERMAN];
 
 /**
  * The language a log is written in, from the sentences the game used.
@@ -441,6 +505,15 @@ function findMaxDamage(log: string, player: string): number | undefined {
 // evolved, used an attack or ability, promoted, or Knocked Out. Damage
 // targets ("on Blue’s Toxel") are skipped: the game sometimes names the wrong
 // owner there ("Red put 4 damage counters on Blue's Mega Lucario ex").
+// A card's English name, which everything downstream goes by. A name the
+// language doesn't translate, or that no card in the format has, is kept as
+// written: getCards sorts those into `unknown`.
+function toEnglish(name: string, language: Language): string {
+  return language === "en"
+    ? name
+    : (cards.findEnglishName(name, language) ?? name);
+}
+
 function listPlayedPokemon(log: string, player: string): string[] {
   const phrases = findPhrases(log);
   if (!phrases) {
@@ -463,7 +536,7 @@ function listPlayedPokemon(log: string, player: string): string[] {
       names?.split(", ").forEach((name) => found.add(name));
     }
   });
-  return [...found];
+  return [...found].map((name) => toEnglish(name, phrases.language));
 }
 
 /**
@@ -521,12 +594,22 @@ function getCards(log: string, player: string): Cards {
   const single = phrases.cardLines(escapeRegExp(player));
 
   // Whose line this is: "Red played …", "Red's Lunatone …", or "… from Red's".
+  // A line starting with a name wins over one that only mentions it later,
+  // so the patterns are tried in turn rather than player by player.
   const owners = players.map((name) => ({
     name,
     owns: phrases.owns(escapeRegExp(name)),
   }));
-  const ownerOf = (text: string) =>
-    owners.find((owner) => owner.owns.test(text))?.name;
+  const ownerOf = (text: string) => {
+    const depth = owners[0]?.owns.length ?? 0;
+    for (let index = 0; index < depth; index++) {
+      const owner = owners.find((owner) => owner.owns[index]?.test(text));
+      if (owner) {
+        return owner.name;
+      }
+    }
+    return undefined;
+  };
 
   const names: string[] = [];
   let topOwner: string | undefined;
@@ -559,19 +642,24 @@ function getCards(log: string, player: string): Cards {
       names.push(...(text.match(pattern)?.slice(1) ?? []));
     }
   }
-  return sortCards(names);
+  return sortCards(names, phrases.language);
 }
 
-function sortCards(names: string[]): Cards {
+function sortCards(names: string[], language: Language = "en"): Cards {
   const sorted: Cards = { pokemon: [], trainers: [], energy: [], unknown: [] };
-  for (const name of new Set(names)) {
-    const card = cards.findCard(name.replaceAll("’", "'"));
+  const basicEnergy =
+    PHRASES.find((phrases) => phrases.language === language)?.basicEnergy ??
+    ENGLISH.basicEnergy;
+  for (const english of new Set(
+    names.map((name) => toEnglish(name, language)),
+  )) {
+    const card = cards.findCard(english.replaceAll("’", "'"));
     const kind = card
       ? KINDS[card.category]
-      : name.endsWith(" Energy")
+      : basicEnergy.test(english)
         ? "energy"
         : "unknown";
-    sorted[kind].push(name);
+    sorted[kind].push(english);
   }
   return sorted;
 }
