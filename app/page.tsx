@@ -19,7 +19,8 @@ export default function Home() {
     >
       <div className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between border-b-2 border-border pb-2">
-          <Caption>Pokémon TCG Live</Caption>
+          <Caption>RTM-01</Caption>
+          <Caption>Alpha</Caption>
         </div>
 
         <h1
