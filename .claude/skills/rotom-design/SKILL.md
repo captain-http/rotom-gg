@@ -1,14 +1,18 @@
 ---
 name: rotom-design
-description: The rotom.gg visual language — retro, lo-fi technical, after departuremono.com. Load before building or restyling any page, component, or style in app/.
+description: The rotom.gg visual language — a modern mullet: gruvbox color, IBM Plex for reading, Departure Mono for the machine, Game Boy menus. Load before building or restyling any page, component, or style in app/.
 ---
 
 # rotom.gg design
 
-rotom.gg is a trainer's research lab: games are field reports filed on paper.
-The look is taken from [departuremono.com](https://www.departuremono.com/) —
-paper grounds, soft ink, one amber accent, highlighter blocks, and a pixel
-font kept on its grid. Calm and technical, never glossy.
+rotom.gg is a **modern mullet**: business in front, party in the back. The
+front — reading a log, adding a game, checking a record — is calm, legible,
+and modern. The back — labels, menus, cursors, the wordmark, rare effects —
+is proudly retro: an NES, a Game Boy playing Pokémon Red, a C64, an IBM PC, a
+Kraftwerk sleeve. Worn with pride, never as a costume. If a retro touch costs
+legibility, it goes: **legibility wins every tie.**
+
+Why each decision was made is in `docs/intent/ui-styleguide.md`.
 
 Tokens and utilities live in `app/globals.css`. Primitives live in
 `app/components/ui/`. **`/styleguide`** (`app/styleguide/page.tsx`) renders
@@ -18,135 +22,167 @@ building, and compare your work against it.
 Three checks back this document up, all in `bin/verify`:
 
 - **The theme only knows rotom.gg tokens.** Tailwind's default palette,
-  weights, radii, and shadows are removed, so `bg-white` or `font-bold`
-  render nothing.
+  radii, and shadows are removed, so `bg-white` or `rounded-lg` render
+  nothing.
 - **ESLint rejects off-system classes** (`eslint-rules/design-classes.js`)
   with the reason and the token to use instead.
 - **Screenshot tests** (`test/e2e/visual.spec.ts`) compare `/` and
   `/styleguide` in light, dark, mobile, and desktop against committed images.
 
-## Typography
+## Type: two faces, two jobs
 
-- **One face, one weight:** Departure Mono. Never use `font-bold`,
-  `font-semibold`, or any weight — it only has 400, and the browser fakes the
-  rest. Make contrast with size, uppercase, tracking, and color instead.
-  IBM Plex Sans is the single exception: display type on the sleeve only,
-  through `.wordmark`, never in the app. Everything that is a label, a figure
-  or a log is Departure Mono, everywhere, including on the sleeve.
-- **Sizes are multiples of 11px**, the grid the font is drawn on, so its
-  pixels stay crisp. Only these exist (Tailwind's defaults are removed):
+| Face               | Job          | Class       | Sets                                                     |
+| ------------------ | ------------ | ----------- | -------------------------------------------------------- |
+| **IBM Plex Sans**  | the business | `font-sans` | body text, names, descriptions, forms, buttons, headings |
+| **Departure Mono** | the party    | `font-mono` | labels, figures, records, logs, menu items, panel titles |
+
+`font-sans` is the default on `body`: reach for `font-mono` on purpose.
+
+- **Plex has two weights**, `font-normal` (400) and `font-semibold` (600).
+  Headings and emphasis use 600. No other weights, no italics.
+- **Departure Mono has one weight** and is never bolded — the browser would
+  fake it. Its contrast comes from size, uppercase, tracking, and color.
+- **Sizes are multiples of 11px**, the grid Departure Mono is drawn on. Plex
+  uses the same scale so the two faces share a rhythm. Only these exist:
 
   | Class          | Size   | Use                                         |
   | -------------- | ------ | ------------------------------------------- |
-  | `text-meta`    | 11px   | labels, counts, facts, logs                 |
+  | `text-meta`    | 11px   | mono labels, counts, facts, logs            |
   | `text-body`    | 16.5px | default text, buttons, inputs (no iOS zoom) |
-  | `text-title`   | 22px   | the header wordmark                         |
+  | `text-title`   | 22px   | panel headings, the header wordmark         |
   | `text-heading` | 33px   | page headings                               |
-  | `text-display` | 44px   | hero on mobile                              |
-  | `text-hero`    | 88px   | hero from `md:` up                          |
+  | `text-display` | 44px   | the wordmark on mobile                      |
+  | `text-hero`    | 88px   | the wordmark from `md:` up                  |
 
-- **Labels are uppercase and tracked:** `text-meta tracking-wider uppercase
-text-muted`. Section headings, empty states, and facts use this.
-- **Headings sit on a highlight block:** `self-start bg-highlight px-1
-text-highlight-foreground`, like a redacted or highlighted title.
+- **Labels** are `font-mono text-meta tracking-wider uppercase text-muted` —
+  use `Caption`, not the classes.
+- **Figures line up**: records, counts, and win rates are Departure Mono so
+  digits sit in columns.
 - **Links are prefixed with a glyph**, not underlined: `> Decks` forward,
   `< Decks` back, `+ New` for creating.
 
-## Color
+## Color: a closed gruvbox palette
 
-Only the semantic tokens below. Never raw colors (`bg-white`, `text-gray-*`,
-hex values) in components. Every token has a light and dark value.
+The palette is [gruvbox](https://github.com/morhetz/gruvbox) — warm, muted,
+retro, and built to be stared at all day. It is **closed**: every color in
+the app is a token below, and every token has a job. No raw hex in
+components, no Tailwind palette, no new colors without a new job.
 
-| Token                            | Light            | Dark            | Use                                           |
-| -------------------------------- | ---------------- | --------------- | --------------------------------------------- |
-| `background` / `foreground`      | enamel / dark    | carbon / cement | the page                                      |
-| `surface` / `surface-foreground` | white / carbon   | soot / enamel   | paper sheets: cards, fields                   |
-| `muted`                          | clay             | ash             | labels, secondary text                        |
-| `border`                         | aluminum         | dark            | field borders, rules                          |
-| `highlight` (+ `-foreground`)    | aluminum         | dark            | blocks behind headings                        |
-| `mark` (+ `-foreground`)         | foam (sage)      | clay            | hover highlighter, blinking cursor            |
-| `accent` (+ `-foreground`)       | amber            | amber           | the only accent: hover on buttons, focus ring |
-| `inverse` (+ `-foreground`)      | dark / enamel    | cement / carbon | buttons                                       |
-| `win` / `loss` (+ `-foreground`) | amber / aluminum | amber / dark    | results and records                           |
+| Token                            | Light                 | Dark                  | Job                                          |
+| -------------------------------- | --------------------- | --------------------- | -------------------------------------------- |
+| `background` / `foreground`      | `#fbf1c7` / `#3c3836` | `#282828` / `#ebdbb2` | the screen                                   |
+| `surface` / `surface-foreground` | `#f2e5bc` / `#3c3836` | `#32302f` / `#ebdbb2` | panels, fields — opaque, over the CRT ground |
+| `muted`                          | `#665c54`             | `#a89984`             | labels, secondary text                       |
+| `border`                         | `#928374`             | `#928374`             | frames: panels, fields, buttons              |
+| `rule`                           | `#d5c4a1`             | `#504945`             | hairlines between rows, never a frame        |
+| `accent` (+ `-foreground`)       | `#d79921` / `#282828` | `#fabd2f` / `#282828` | focus, selection, the `▶` cursor, hover      |
+| `win` (+ `-foreground`)          | `#98971a` / `#282828` | `#b8bb26` / `#282828` | wins and winning records                     |
+| `loss` (+ `-foreground`)         | `#9d0006` / `#fbf1c7` | `#fb4934` / `#1d2021` | losses                                       |
+| `info`                           | `#076678`             | `#83a598`             | links in running text, neutral notices       |
 
-Amber is scarce on purpose. It marks wins, focus, and a button under the
-cursor — nothing decorative. Never use it for text on paper (too little
-contrast); put dark text on an amber block instead.
+Every text pair above clears 4.5:1, and frames clear 3:1 against the ground.
+Check a new pair before adding it.
 
-## Surfaces and texture
+- **Yellow is the cursor.** It means "you are here": focus, selection, hover.
+  Don't use it for decoration or for wins.
+- **Wins are green, losses red** — and the `W`/`L` letter always travels with
+  the color, so the record reads without it.
+- **Reserved:** gruvbox's aqua, purple, and orange have no job yet. They are
+  held for Pokémon energy types (see _Open_), not free to use.
+- **Both schemes are first-class.** Light is not a fallback: judge every
+  screen in both.
 
-- **The page is graph paper:** a faint dot grid on `body`. Don't add other
-  backgrounds, gradients, or shadows. The sleeve is the one exception, and it
-  is deliberately not a precedent — see below.
-- **Cards are sheets:** `notch bg-surface text-surface-foreground` — the
-  `notch` utility cuts the top-right corner like a filed report. No
-  `rounded-*`, no `shadow-*`.
-- **Logs render as printouts:** `<pre>` with `text-meta whitespace-pre-wrap
-border-l-2 border-border pl-3` — a ruled margin down the left edge.
-- **Callouts** carry a thick left bar: `border-l-[7px] border-muted pl-3
-text-meta uppercase text-muted`.
+## Shape: square, flat, framed
+
+- **No radius, no shadows, no gradients** in components. Depth comes from
+  frames and fills, like a Game Boy menu drawn in tiles.
+- **Panels** are the unit of layout: `Panel` — a 2px `border` frame on
+  `surface`, with an optional title set into the top edge in Departure Mono
+  (`─ DECKS ──────`, the `panel-title` utility), the way a TUI or a Pokémon
+  menu labels a box. Pass `flush` when it holds a `Menu`.
+- **The double frame is the signature.** A focused control gets its own 2px
+  border in `accent` (`focus-visible:border-accent`, built into the
+  primitives) plus the global `:focus-visible` outline, 2px `accent` sitting
+  2px outside it — two nested frames. Menu rows have no border, so they
+  pull the outline inside the panel and show the `▶` cursor instead.
+- **Rows inside a panel** are separated by `rule` hairlines, never by frames
+  nested in frames.
+
+## Structure: the Game Boy menu
+
+The model is Pokémon Red/Blue's menus, not a full terminal app.
+
+- **Menus** (`Menu`, `MenuItem`) are lists of choices inside a panel. The
+  hovered or focused item shows a `▶` cursor in `accent`; its column is
+  always reserved, so nothing shifts.
+- **The text box** (`TextBox`) is for messages from the app — a confirmation,
+  an empty state, an error: a framed panel at full width with a blinking `▼`
+  at the end of the line.
+- **Status lines** are mono `text-meta` rows of `KEY VALUE` pairs, like the
+  sleeve's `SYSTEM` block.
+- **Box-drawing characters** (`─ │ ┌ ┐`) are allowed in panel titles and logs.
+  Never draw a frame out of characters where a border would do.
+- **The mouse and touch come first.** No keyboard-only interactions; a
+  shortcut may be added only as a shortcut to something clickable.
+
+## Atmosphere: CRT in the back
+
+- **The ground is a screen at night**: `body` carries a faint scanline
+  texture (the `body` rule in `globals.css`). Panels, fields, and text boxes
+  are opaque, so data never sits on the texture.
+- **Effects are moments, not styles**: at most one per page, never on data.
+  - `.corrupt` — MissingNo.: bands of the wordmark slip sideways on a rare
+    beat, stepped. Needs `data-text` matching its own text.
+  - `animate-power-on` — a CRT power-on flicker, for the sleeve's first
+    paint.
+- **No** scanlines on panels, glow on text, screen curvature, or flicker
+  that repeats.
+
+## The wordmark
+
+`.wordmark` sets IBM Plex Sans 600 with Paul Rand's eight bars cut through
+the letterforms. It's the brand, and it appears in two places: large on `/`,
+at `text-title` in the header. Nothing else uses the stripes.
 
 ## The sleeve
 
-`/` is the pre-release waitlist page, and the only route that leaves the paper
-ground. It is the sleeve, not the record: the app behind it is unchanged, and
-nothing here is a precedent for the rest of the app. Four references, each
-doing one job and no more:
-
-| Reference      | Job        | How it shows up                          |
-| -------------- | ---------- | ---------------------------------------- |
-| **IBM**        | Structure  | Hairline 88px grid, numbered caps labels |
-| **Kraftwerk**  | Discipline | Flat panels, symmetry, stepped motion    |
-| **Tomita**     | Atmosphere | Deep indigo sky, amber horizon, stars    |
-| **MissingNo.** | Disruption | One rare tile-corruption on the wordmark |
-
-- **`data-ground="cosmos"` on `<main>` switches the tokens** for the whole
-  document, via `body:has()` in `globals.css`. Every primitive keeps working
-  unchanged — the sleeve adds no landing-page variants of `Button` or `Input`.
-- **The ground is dark in both schemes.** A sleeve is an image, not an
-  interface, and Tomita's were never printed light.
-- **`.wordmark`** sets IBM Plex Sans 600 with Paul Rand's eight bars cut
-  through the letterforms. Plex is a variable face with real weights, so 600
-  is a weight it actually has — the one-weight rule belongs to Departure Mono,
-  which still sets every label, figure and log on the page.
-- **`.corrupt`** needs `data-text` matching its own text. Bands slip sideways
-  on a rare beat, stepped, then snap back; the amber band is the only place
-  the accent appears outside focus and hover. Keep it rare — the grid has to
-  look intact for the break to mean anything. `prefers-reduced-motion` stops
-  it with everything else.
-
-Gradients live here and nowhere else. If a second page ever needs this ground,
-it becomes a primitive first.
+`/` is the pre-release waitlist page. It's built from the same tokens and
+primitives as the app — the loudest page in the system, not its own world.
+It may use the wordmark at `text-hero`, `.corrupt`, and `animate-power-on`;
+it may not add colors, grounds, or variants of primitives.
 
 ## Motion
 
-CSS only, few moments, and snappy — stepped, not smooth.
+CSS only, few moments, and snappy — stepped, not smooth (Kraftwerk, not
+Apple).
 
-- **Hover:** `transition-colors duration-75 ease-flick` with `hover:bg-mark
-hover:text-mark-foreground` on links and cards; buttons go to `bg-accent`.
-- **Lists reveal on load:** `animate-reveal
-[animation-delay:calc(var(--i)*60ms)]` with `style={{ "--i": index } as
-CSSProperties}` on each item.
-- **The blinking cursor** (`animate-blink`) is for the hero only.
+- **Hover:** `transition-colors duration-75 ease-flick`. Menu items show the
+  `▶` cursor; buttons fill with `accent`.
+- **Lists step in on load:** `Reveal index={i}`.
+- **Blinking** (`animate-blink`) is for the text box's `▼` only.
 - `prefers-reduced-motion` turns all of it off globally; don't re-enable it.
 
 ## Primitives
 
-- `Button` — inverse panel, uppercase `text-body`. Spreads props, so Clerk
-  wrappers like `<SignInButton>` can use it as their child. `ButtonLink`
-  looks the same but navigates — for actions that open a page, like
-  `+ Add game` → `/decks/1/games/new`.
-- `Input`, `Textarea` — a paper sheet with a 2px border that turns amber on
-  focus.
-- `Mark tone="win" | "loss" | "neutral"` — a small uppercase highlighter
-  block. Use `neutral` for unknowns and zero counts, so amber only appears
-  when something was actually won.
-- `Heading` — a page title on a highlight block. `Caption` — uppercase
-  muted meta text; pass `as="h2" | "label" | "span"`.
+- `Panel title?` — the framed box everything sits in.
+- `Menu`, `MenuItem` — choices with the `▶` cursor. `MenuItem` renders a
+  link or a button.
+- `TextBox` — a message from the app, with the blinking `▼`.
+- `GlyphLink` — a mono link that says where it goes with its glyph; fills
+  yellow under the cursor.
+- `Button` — 2px frame, Plex `text-body`, fills with `accent` on hover.
+  Spreads props, so Clerk wrappers like `<SignInButton>` can use it as their
+  child. `ButtonLink` looks the same but navigates.
+- `Input`, `Textarea` — a 2px frame on `surface`; the double frame on focus.
+- `Mark tone="win" | "loss" | "neutral"` — a small mono block. `neutral`
+  for unknowns and zero counts, so color appears only when something
+  happened.
+- `Heading` — a page title in Plex 600. `Caption` — mono label; pass
+  `as="h2" | "label" | "span"`.
 - `Reveal index={i}` — a list item that steps in on load.
-- `DeckCard`, `GameCard` — the deck and game sheets.
-- `RecordBadge wins losses winRate` — a record as joined `W 05` / `L 02`
-  halves with the win rate beside it; pass `findWinRate(deck)` for the rate.
+- `DeckCard`, `GameCard` — decks and games as menu items in a panel.
+- `RecordBadge wins losses winRate` — `W 05` / `L 02` as joined halves,
+  with the win rate beside it.
 
 Reach for a primitive before writing classes. A pattern used on two routes
 becomes a primitive in `app/components/ui/` and gets a section in
@@ -158,18 +194,27 @@ becomes a primitive in `app/components/ui/` and gets a section in
 py-6`.
 - Spacing steps by 5.5px (`--spacing`), so `p-2` is 11px and `p-4` is 22px —
   the same grid as the type.
-- Tabular data renders as cards on mobile and a table from `md:` up.
+- Tabular data renders as a menu on mobile and a table from `md:` up.
 
 ## Avoid
 
-- Font weights, italics, or any second font.
-- Tailwind's default text sizes (`text-sm`, `text-lg`, …) — they don't exist
-  here, and off-grid sizes blur the pixels.
-- Rounded corners, drop shadows, gradients, glassmorphism, emoji as icons —
-  outside the sleeve, which owns the only gradients in the app.
-- Pure black or pure white text on the page ground.
-- Amber as decoration, or more than one accent color.
+- Departure Mono in paragraphs, or Plex for labels and figures.
+- Weights other than Plex 400/600; any weight on Departure Mono; italics.
+- Tailwind's default text sizes (`text-sm`, `text-lg`, …).
+- Rounded corners, shadows, gradients, glassmorphism, emoji as icons.
+- Any color outside the table, or a reserved color used without a job.
+- Retro that costs legibility: scanlines or glow on text, pixel fonts at
+  length, frames drawn in characters.
 - Client components for effects — motion is CSS.
+
+## Open
+
+Decided by the guide's author, not yet by the owner — confirm or change:
+
+- Energy types for the reserved colors: Fire red, Water blue, Grass green,
+  Lightning yellow, Psychic purple, Fighting orange, Darkness and Metal
+  from the neutrals — if the app ever colors cards by type.
+- The palette is gruvbox's own values, not a variant of them.
 
 ## Verify your work
 
