@@ -14,7 +14,7 @@
   --drop-shadow-*: initial;
   --text-shadow-*: initial;
 
-  /* The two weights IBM Plex Sans is loaded with. Departure Mono has only
+  /* The two weights IBM Plex Mono is loaded with. Departure Mono has only
      400, and eslint-rules/design-classes.js keeps 600 off it. */
   --font-weight-normal: 400;
   --font-weight-semibold: 600;
@@ -77,9 +77,9 @@
   --color-spectrum-orange: var(--orange);
   --color-spectrum-blue: var(--blue);
   --color-spectrum-purple: var(--purple);
-  /* The business and the party: Plex for reading, Departure Mono for the
+  /* The business and the party: Plex Mono for reading, Departure Mono for the
      machine — labels, figures, logs, menus. */
-  --font-sans: var(--font-ibm-plex-sans);
+  --font-sans: var(--font-ibm-plex-mono);
   --font-mono: var(--font-departure-mono);
 }
 

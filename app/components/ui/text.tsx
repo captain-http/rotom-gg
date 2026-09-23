@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-// A page heading in Plex semibold: the business, read first.
+// A page heading in Plex Mono semibold: the business, read first.
 export function Heading({
   children,
   className = "",

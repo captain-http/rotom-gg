@@ -24,8 +24,8 @@ const departureMono = localFont({
 });
 
 // IBM Plex Sans by Mike Abbink and Bold Monday for IBM, SIL OFL
-// (./fonts/LICENSE-IBMPlexSans). The business: everything read at length,
-// and the wordmark. Variable, 400–600.
+// (./fonts/LICENSE-IBMPlexSans). The wordmark only: its bars are cut to
+// Plex Sans's metrics. Variable, 400–600.
 const ibmPlexSans = localFont({
   src: "./fonts/IBMPlexSans-Variable.woff2",
   variable: "--font-ibm-plex-sans",
@@ -40,6 +40,19 @@ const ibmPlexSans = localFont({
   ],
 });
 
+// IBM Plex Mono by Mike Abbink and Bold Monday for IBM, SIL OFL
+// (./fonts/LICENSE-IBMPlexMono). The business: everything read at length.
+// Two static weights, 400 and 600.
+const ibmPlexMono = localFont({
+  src: [
+    { path: "./fonts/IBMPlexMono-Regular.woff2", weight: "400" },
+    { path: "./fonts/IBMPlexMono-SemiBold.woff2", weight: "600" },
+  ],
+  variable: "--font-ibm-plex-mono",
+  display: "swap",
+  fallback: ["ui-monospace", "Menlo", "Consolas", "monospace"],
+});
+
 export const metadata: Metadata = {
   title: "rotom.gg",
   description: "Field reports for your Pokémon TCG Live games.",
@@ -49,7 +62,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${departureMono.variable} ${ibmPlexSans.variable} h-full antialiased`}
+      className={`${departureMono.variable} ${ibmPlexSans.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
         <ClerkProvider>

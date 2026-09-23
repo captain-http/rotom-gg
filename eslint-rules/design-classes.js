@@ -12,7 +12,7 @@ const FORBIDDEN = [
   {
     pattern: /^font-(thin|extralight|light|medium|bold|extrabold|black)$/,
     message:
-      "IBM Plex Sans is loaded at 400 and 600 only. Use font-normal or font-semibold.",
+      "IBM Plex Mono is loaded at 400 and 600 only. Use font-normal or font-semibold.",
   },
   { pattern: /^italic$/, message: "No italics. Use uppercase or color." },
   {

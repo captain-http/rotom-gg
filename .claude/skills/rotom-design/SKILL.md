@@ -1,6 +1,6 @@
 ---
 name: rotom-design
-description: The rotom.gg visual language — a modern mullet: gruvbox color, IBM Plex for reading, Departure Mono for the machine, Game Boy menus. Load before building or restyling any page, component, or style in app/.
+description: The rotom.gg visual language — a modern mullet: gruvbox color, IBM Plex Mono for reading, Departure Mono for the machine, Game Boy menus. Load before building or restyling any page, component, or style in app/.
 ---
 
 # rotom.gg design
@@ -33,16 +33,19 @@ Three checks back this document up, all in `bin/verify`:
 
 | Face               | Job          | Class       | Sets                                                     |
 | ------------------ | ------------ | ----------- | -------------------------------------------------------- |
-| **IBM Plex Sans**  | the business | `font-sans` | body text, names, descriptions, forms, buttons, headings |
+| **IBM Plex Mono**  | the business | `font-sans` | body text, names, descriptions, forms, buttons, headings |
 | **Departure Mono** | the party    | `font-mono` | labels, figures, records, logs, menu items, panel titles |
 
-`font-sans` is the default on `body`: reach for `font-mono` on purpose.
+`font-sans` is the default on `body`: reach for `font-mono` on purpose. The
+class keeps Tailwind's name, but it sets Plex Mono — both faces are
+monospaced. They still read apart: Plex Mono is smooth, Departure Mono is
+pixels. Plex Mono runs wider than a sans, so leave names room to truncate.
 
-- **Plex has two weights**, `font-normal` (400) and `font-semibold` (600).
+- **Plex Mono has two weights**, `font-normal` (400) and `font-semibold` (600).
   Headings and emphasis use 600. No other weights, no italics.
 - **Departure Mono has one weight** and is never bolded — the browser would
   fake it. Its contrast comes from size, uppercase, tracking, and color.
-- **Sizes are multiples of 11px**, the grid Departure Mono is drawn on. Plex
+- **Sizes are multiples of 11px**, the grid Departure Mono is drawn on. Plex Mono
   uses the same scale so the two faces share a rhythm. Only these exist:
 
   | Class          | Size   | Use                                         |
@@ -152,7 +155,8 @@ The model is Pokémon Red/Blue's menus, not a full terminal app.
 ## The wordmark
 
 `.wordmark` sets IBM Plex Sans 600 with Paul Rand's bars cut through the
-letterforms. It's the brand, and it appears in two places: large on `/`, in
+letterforms. It's the only use of Plex Sans: the bars are tuned to its
+metrics. It's the brand, and it appears in two places: large on `/`, in
 the spectrum (`.spectrum`), and at `text-title` in the header, in plain ink.
 Nothing else uses the bars.
 
@@ -182,14 +186,14 @@ Apple).
 - `TextBox` — a message from the app, with the blinking `▼`.
 - `GlyphLink` — a mono link that says where it goes with its glyph; fills
   yellow under the cursor.
-- `Button` — 2px frame, Plex `text-body`, fills with `accent` on hover.
+- `Button` — 2px frame, Plex Mono `text-body`, fills with `accent` on hover.
   Spreads props, so Clerk wrappers like `<SignInButton>` can use it as their
   child. `ButtonLink` looks the same but navigates.
 - `Input`, `Textarea` — a 2px frame on `surface`; the double frame on focus.
 - `Mark tone="win" | "loss" | "neutral"` — a small mono block. `neutral`
   for unknowns and zero counts, so color appears only when something
   happened.
-- `Heading` — a page title in Plex 600. `Caption` — mono label; pass
+- `Heading` — a page title in Plex Mono 600. `Caption` — mono label; pass
   `as="h2" | "label" | "span"`.
 - `StatusList lines` — terminal status lines; each line is `{ key, value,
 tone? }` with `tone` one of `ok`, `orange`, `blue`, `purple`.
@@ -212,8 +216,8 @@ py-6`.
 
 ## Avoid
 
-- Departure Mono in paragraphs, or Plex for labels and figures.
-- Weights other than Plex 400/600; any weight on Departure Mono; italics.
+- Departure Mono in paragraphs, or Plex Mono for labels and figures.
+- Weights other than Plex Mono 400/600; Plex Sans outside the wordmark; any weight on Departure Mono; italics.
 - Tailwind's default text sizes (`text-sm`, `text-lg`, …).
 - Rounded corners, shadows, gradients, glassmorphism, emoji as icons.
 - Any color outside the tables, or a spectrum hue outside its two jobs.

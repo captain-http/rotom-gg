@@ -110,7 +110,7 @@ export default function StyleguidePage() {
     <main className="mx-auto flex w-full max-w-xl flex-col gap-10 px-4 py-6">
       <Heading>Styleguide</Heading>
 
-      <Section title="Type · IBM Plex Sans, the business">
+      <Section title="Type · IBM Plex Mono, the business">
         <p className="wordmark text-hero">88</p>
         <p className="text-display font-semibold">Display 44</p>
         <p className="text-heading font-semibold">Heading 33</p>

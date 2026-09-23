@@ -18,8 +18,11 @@ Red or Blue, an NES. A TUI person.
 
 ## Decisions
 
-- **Type.** IBM Plex Sans is the business: reading, forms, body. Departure Mono
+- **Type.** IBM Plex Mono is the business: reading, forms, body. Departure Mono
   is the party: labels, figures, records, logs, menus.
+  Changed from Plex Sans on 2026-09-22: the owner found the sans boring. Two
+  monospaces still read apart — Plex Mono is smooth, Departure Mono is pixels —
+  and the wordmark stays in Plex Sans, whose metrics its bars are cut to.
 - **Color.** Gruvbox over NES: a closed, warm, muted, named palette. Every
   color has a job; nothing outside the palette.
 - **Dark only.** Changed on 2026-09-22, after seeing both schemes live: the
