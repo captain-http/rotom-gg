@@ -27,7 +27,7 @@ Three checks back this document up, all in `bin/verify`:
 - **ESLint rejects off-system classes** (`eslint-rules/design-classes.js`)
   with the reason and the token to use instead.
 - **Screenshot tests** (`test/e2e/visual.spec.ts`) compare `/` and
-  `/styleguide` in light, dark, mobile, and desktop against committed images.
+  `/styleguide` on mobile and desktop against committed images.
 
 ## Type: two faces, two jobs
 
@@ -68,17 +68,17 @@ retro, and built to be stared at all day. It is **closed**: every color in
 the app is a token below, and every token has a job. No raw hex in
 components, no Tailwind palette, no new colors without a new job.
 
-| Token                            | Light                 | Dark                  | Job                                          |
-| -------------------------------- | --------------------- | --------------------- | -------------------------------------------- |
-| `background` / `foreground`      | `#fbf1c7` / `#3c3836` | `#282828` / `#ebdbb2` | the screen                                   |
-| `surface` / `surface-foreground` | `#f2e5bc` / `#3c3836` | `#32302f` / `#ebdbb2` | panels, fields — opaque, over the CRT ground |
-| `muted`                          | `#665c54`             | `#a89984`             | labels, secondary text                       |
-| `border`                         | `#928374`             | `#928374`             | frames: panels, fields, buttons              |
-| `rule`                           | `#d5c4a1`             | `#504945`             | hairlines between rows, never a frame        |
-| `accent` (+ `-foreground`)       | `#d79921` / `#282828` | `#fabd2f` / `#282828` | focus, selection, the `▶` cursor, hover      |
-| `win` (+ `-foreground`)          | `#98971a` / `#282828` | `#b8bb26` / `#282828` | wins and winning records                     |
-| `loss` (+ `-foreground`)         | `#9d0006` / `#fbf1c7` | `#fb4934` / `#1d2021` | losses                                       |
-| `info`                           | `#076678`             | `#83a598`             | links in running text, neutral notices       |
+| Token                            | Value                 | Job                                          |
+| -------------------------------- | --------------------- | -------------------------------------------- |
+| `background` / `foreground`      | `#282828` / `#ebdbb2` | the screen                                   |
+| `surface` / `surface-foreground` | `#32302f` / `#ebdbb2` | panels, fields — opaque, over the CRT ground |
+| `muted`                          | `#a89984`             | labels, secondary text                       |
+| `border`                         | `#928374`             | frames: panels, fields, buttons              |
+| `rule`                           | `#504945`             | hairlines between rows, never a frame        |
+| `accent` (+ `-foreground`)       | `#fabd2f` / `#282828` | focus, selection, the `▶` cursor, hover      |
+| `win` (+ `-foreground`)          | `#b8bb26` / `#282828` | wins and winning records                     |
+| `loss` (+ `-foreground`)         | `#fb4934` / `#1d2021` | losses                                       |
+| `info`                           | `#83a598`             | links in running text, neutral notices       |
 
 Every text pair above clears 4.5:1, and frames clear 3:1 against the ground.
 Check a new pair before adding it.
@@ -89,16 +89,18 @@ Check a new pair before adding it.
   the color, so the record reads without it.
 - **The spectrum** is gruvbox's seven hues as their own tokens (`--red`,
   `--orange`, `--yellow`, `--green`, `--aqua`, `--blue`, `--purple`; the
-  faded set on light). It has two jobs and no others:
+  gruvbox dark's bright set). It has two jobs and no others:
   - **The sleeve's wordmark** (`.wordmark.spectrum`): one hue per bar, red
     to purple, like the rainbow stripes on 80s computer boxes. The loudest
     thing in the system, and only there.
   - **Status values** (`StatusList`): colored by kind, the way an editor
     colors code. Only `text-spectrum-orange`, `-blue`, and `-purple` are
-    classes — the others don't read as small text on a panel in both
-    schemes. A good state is a green `ok` block, like a win.
-- **Both schemes are first-class.** Light is not a fallback: judge every
-  screen in both.
+    classes — red doesn't read as small text on a panel, and yellow,
+    green, and aqua already mean the cursor, a win, and nothing yet. A good state is a green `ok` block, like a win.
+- **One scheme: dark.** rotom.gg is a screen at night, whatever the system
+  asks for — `color-scheme: dark` on `:root`, no `prefers-color-scheme`
+  queries, no `dark:` variants. The owner chose this on 2026-09-22 after
+  seeing both live.
 
 ## Shape: square, flat, framed
 
@@ -233,7 +235,7 @@ Decided by the guide's author, not yet by the owner — confirm or change:
 Before calling UI work done:
 
 1. `bin/verify` passes — lint catches off-system classes.
-2. Look at the page yourself: screenshot it with Playwright in light and dark,
+2. Look at the page yourself: screenshot it with Playwright
    at 390px and 1280px wide. Compare with `/styleguide`, and check it
    against **Avoid**.
 3. Anything new and reusable is added to `/styleguide`.

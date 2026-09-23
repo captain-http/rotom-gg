@@ -22,60 +22,41 @@
 
 /*
  * rotom.gg design tokens — see .claude/skills/rotom-design/SKILL.md.
- * A closed palette from gruvbox (github.com/morhetz/gruvbox): every color
- * here has a job, and nothing outside it is used. Text pairs clear 4.5:1,
- * frames 3:1 against the ground.
+ * A closed palette from gruvbox dark (github.com/morhetz/gruvbox): every
+ * color here has a job, and nothing outside it is used. Text pairs clear
+ * 4.5:1, frames 3:1 against the ground.
+ *
+ * One scheme, dark, whatever the system asks for: rotom.gg is a screen at
+ * night. color-scheme tells the browser, so native controls and scrollbars
+ * match.
  */
 :root {
-  --background: #fbf1c7;
-  --foreground: #3c3836;
-  --surface: #f2e5bc;
-  --surface-foreground: #3c3836;
-  --muted: #665c54;
+  color-scheme: dark;
+
+  --background: #282828;
+  --foreground: #ebdbb2;
+  --surface: #32302f;
+  --surface-foreground: #ebdbb2;
+  --muted: #a89984;
   --border: #928374;
-  --rule: #d5c4a1;
-  --accent: #d79921;
+  --rule: #504945;
+  --accent: #fabd2f;
   --accent-foreground: #282828;
-  --win: #98971a;
+  --win: #b8bb26;
   --win-foreground: #282828;
-  --loss: #9d0006;
-  --loss-foreground: #fbf1c7;
-  --info: #076678;
+  --loss: #fb4934;
+  --loss-foreground: #1d2021;
+  --info: #83a598;
 
-  /* The spectrum: gruvbox's seven hues, the faded set on light. Only the
-     sleeve's wordmark uses all seven; orange, blue, and purple also read as
-     text on panels and color status values (see StatusList). */
-  --red: #9d0006;
-  --orange: #af3a03;
-  --yellow: #b57614;
-  --green: #79740e;
-  --aqua: #427b58;
-  --blue: #076678;
-  --purple: #8f3f71;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #282828;
-    --foreground: #ebdbb2;
-    --surface: #32302f;
-    --surface-foreground: #ebdbb2;
-    --muted: #a89984;
-    --rule: #504945;
-    --accent: #fabd2f;
-    --win: #b8bb26;
-    --loss: #fb4934;
-    --loss-foreground: #1d2021;
-    --info: #83a598;
-
-    --red: #fb4934;
-    --orange: #fe8019;
-    --yellow: #fabd2f;
-    --green: #b8bb26;
-    --aqua: #8ec07c;
-    --blue: #83a598;
-    --purple: #d3869b;
-  }
+  /* The spectrum: gruvbox's seven hues. Only the sleeve's wordmark uses all
+     seven; orange, blue, and purple also color status values (StatusList). */
+  --red: #fb4934;
+  --orange: #fe8019;
+  --yellow: #fabd2f;
+  --green: #b8bb26;
+  --aqua: #8ec07c;
+  --blue: #83a598;
+  --purple: #d3869b;
 }
 
 @theme inline {

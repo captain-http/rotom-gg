@@ -13,22 +13,24 @@ const viewports = [
   { name: "mobile", width: 390, height: 844 },
   { name: "desktop", width: 1280, height: 800 },
 ];
-const schemes = ["light", "dark"] as const;
 
+// rotom.gg has one scheme, dark, so there is one screenshot per page and
+// viewport. The light emulation proves the system setting doesn't leak in.
 for (const { name, path } of pages) {
   for (const viewport of viewports) {
-    for (const colorScheme of schemes) {
-      test(`${name} ${viewport.name} ${colorScheme}`, async ({ page }) => {
-        await page.setViewportSize(viewport);
-        await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
-        await page.goto(path);
-        await page.evaluate(() => document.fonts.ready);
-
-        await expect(page).toHaveScreenshot(
-          `${name}-${viewport.name}-${colorScheme}.png`,
-          { fullPage: true, animations: "disabled" },
-        );
+    test(`${name} ${viewport.name}`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.emulateMedia({
+        colorScheme: "light",
+        reducedMotion: "reduce",
       });
-    }
+      await page.goto(path);
+      await page.evaluate(() => document.fonts.ready);
+
+      await expect(page).toHaveScreenshot(`${name}-${viewport.name}.png`, {
+        fullPage: true,
+        animations: "disabled",
+      });
+    });
   }
 }

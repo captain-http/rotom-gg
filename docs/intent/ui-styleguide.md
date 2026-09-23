@@ -20,8 +20,10 @@ Red or Blue, an NES. A TUI person.
 
 - **Type.** IBM Plex Sans is the business: reading, forms, body. Departure Mono
   is the party: labels, figures, records, logs, menus.
-- **Color.** Gruvbox over NES: a closed, warm, muted, named palette in light
-  and dark. Every color has a job; nothing outside the palette.
+- **Color.** Gruvbox over NES: a closed, warm, muted, named palette. Every
+  color has a job; nothing outside the palette.
+- **Dark only.** Changed on 2026-09-22, after seeing both schemes live: the
+  owner's feeling is that it looks better on a dark theme than a light one.
 - **Shape.** Square, flat, no radius, no shadows. The waitlist field's double
   frame on focus (border plus offset outline) is kept and becomes the
   signature for focus and selection.
