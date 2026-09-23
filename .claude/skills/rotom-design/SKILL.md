@@ -154,7 +154,7 @@ The model is Pokémon Red/Blue's menus, not a full terminal app.
 
 ## The wordmark
 
-`.wordmark` sets IBM Plex Sans 600 with Paul Rand's bars cut through the
+`.wordmark` sets IBM Plex Sans 700, untracked, with Paul Rand's bars cut through the
 letterforms. It's the only use of Plex Sans: the bars are tuned to its
 metrics. It's the brand, and it appears in two places: large on `/`, in
 the spectrum (`.spectrum`), and at `text-title` in the header, in plain ink.

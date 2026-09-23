@@ -25,11 +25,11 @@ const departureMono = localFont({
 
 // IBM Plex Sans by Mike Abbink and Bold Monday for IBM, SIL OFL
 // (./fonts/LICENSE-IBMPlexSans). The wordmark only: its bars are cut to
-// Plex Sans's metrics. Variable, 400–600.
+// Plex Sans's metrics. Variable, 400–700.
 const ibmPlexSans = localFont({
   src: "./fonts/IBMPlexSans-Variable.woff2",
   variable: "--font-ibm-plex-sans",
-  weight: "400 600",
+  weight: "400 700",
   display: "swap",
   fallback: [
     "ui-sans-serif",

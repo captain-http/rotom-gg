@@ -196,15 +196,15 @@ body:has([data-sleeve]) header [data-wordmark] {
   visibility: hidden;
 }
 
-/* The wordmark: IBM Plex Sans 600, tight, with Paul Rand's eight bars cut
+/* The wordmark: IBM Plex Sans 700, untracked, with Paul Rand's eight bars cut
    through the letterforms. The bars are a mask, sized in em so their count
    holds from the header to the hero, and --fill paints whatever shows
    through them: plain ink by default, the spectrum on the sleeve. */
 .wordmark {
   --fill: linear-gradient(var(--foreground), var(--foreground));
   font-family: var(--font-ibm-plex-sans), sans-serif;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  letter-spacing: 0;
   background-image: var(--fill);
   background-clip: text;
   -webkit-background-clip: text;
