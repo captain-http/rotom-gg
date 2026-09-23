@@ -146,7 +146,9 @@ The model is Pokémon Red/Blue's menus, not a full terminal app.
   are opaque, so data never sits on the texture.
 - **Effects are moments, not styles**: at most one per page, never on data.
   - `.corrupt` — MissingNo.: bands of the wordmark slip sideways on a rare
-    beat, stepped. Needs `data-text` matching its own text.
+    beat, stepped. Needs `data-text` matching its own text. On the sleeve's
+    wordmark and the header's, which the sleeve hides, so it's the one
+    effect on every other page.
   - `animate-power-on` — a CRT power-on flicker, for the sleeve's first
     paint.
 - **No** scanlines on panels, glow on text, screen curvature, or flicker
