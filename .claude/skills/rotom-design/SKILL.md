@@ -52,8 +52,8 @@ pixels. Plex Mono runs wider than a sans, so leave names room to truncate.
   | -------------- | ------ | ------------------------------------------- |
   | `text-meta`    | 11px   | mono labels, counts, facts, logs            |
   | `text-body`    | 16.5px | default text, buttons, inputs (no iOS zoom) |
-  | `text-title`   | 22px   | panel headings, the header wordmark         |
-  | `text-heading` | 33px   | page headings                               |
+  | `text-title`   | 22px   | panel headings                              |
+  | `text-heading` | 33px   | page headings, the header wordmark          |
   | `text-display` | 44px   | the wordmark on mobile                      |
   | `text-hero`    | 88px   | the wordmark from `md:` up                  |
 
@@ -157,7 +157,7 @@ The model is Pokémon Red/Blue's menus, not a full terminal app.
 `.wordmark` sets IBM Plex Sans 700, untracked, with Paul Rand's bars cut through the
 letterforms. It's the only use of Plex Sans: the bars are tuned to its
 metrics. It's the brand, and it appears in two places: large on `/`, in
-the spectrum (`.spectrum`), and at `text-title` in the header, in the
+the spectrum (`.spectrum`), and at `text-heading` in the header, in the
 spectrum too.
 Nothing else uses the bars.
 

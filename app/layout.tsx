@@ -70,7 +70,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Link
               href="/"
               data-wordmark
-              className="wordmark spectrum text-title"
+              className="wordmark spectrum text-heading"
             >
               ROTOM.GG
             </Link>
