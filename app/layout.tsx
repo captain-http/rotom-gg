@@ -42,7 +42,7 @@ const ibmPlexSans = localFont({
 
 export const metadata: Metadata = {
   title: "rotom.gg",
-  description: "Track your Pokémon TCG Live games.",
+  description: "Field reports for your Pokémon TCG Live games.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
