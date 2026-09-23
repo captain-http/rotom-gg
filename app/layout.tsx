@@ -23,6 +23,23 @@ const departureMono = localFont({
   ],
 });
 
+// IBM Plex Sans by Mike Abbink and Bold Monday for IBM, SIL OFL
+// (./fonts/LICENSE-IBMPlexSans). The wordmark only: its bars are cut to
+// Plex Sans's metrics. Variable, 400–600.
+const ibmPlexSans = localFont({
+  src: "./fonts/IBMPlexSans-Variable.woff2",
+  variable: "--font-ibm-plex-sans",
+  weight: "400 600",
+  display: "swap",
+  fallback: [
+    "ui-sans-serif",
+    "system-ui",
+    "Segoe UI",
+    "Helvetica",
+    "sans-serif",
+  ],
+});
+
 // IBM Plex Mono by Mike Abbink and Bold Monday for IBM, SIL OFL
 // (./fonts/LICENSE-IBMPlexMono). The business: everything read at length.
 // Two static weights, 400 and 600.
@@ -45,7 +62,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${departureMono.variable} ${ibmPlexMono.variable} h-full antialiased`}
+      className={`${departureMono.variable} ${ibmPlexSans.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
         <ClerkProvider>

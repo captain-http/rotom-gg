@@ -22,8 +22,7 @@ Red or Blue, an NES. A TUI person.
   is the party: labels, figures, records, logs, menus.
   Changed from Plex Sans on 2026-09-22: the owner found the sans boring. Two
   monospaces still read apart — Plex Mono is smooth, Departure Mono is pixels —
-  The wordmark moved from Plex Sans to Departure Mono on 2026-09-23, its bars
-  recut to the pixel grid: one per pixel row.
+  and the wordmark stays in Plex Sans, whose metrics its bars are cut to.
 - **Color.** Gruvbox over NES: a closed, warm, muted, named palette. Every
   color has a job; nothing outside the palette.
 - **Dark only.** Changed on 2026-09-22, after seeing both schemes live: the
@@ -35,7 +34,7 @@ Red or Blue, an NES. A TUI person.
   bordered boxes, a `▶` cursor, a text box. ncurses is flavor only.
 - **Atmosphere.** CRT and a Stranger Things vibe only as a background texture
   or a rare effect — never on text or data.
-- **Carried over.** Stepped, snappy motion (Kraftwerk). The wordmark with
+- **Carried over.** Stepped, snappy motion (Kraftwerk). The Plex wordmark with
   Rand's stripes and the MissingNo. corruption, as party moments.
 - **One system.** Every page, including `/`: the sleeve is rebuilt in it, not
   kept as its own world.
