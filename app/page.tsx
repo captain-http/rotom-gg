@@ -3,6 +3,7 @@ import { joinWaitlistAction } from "./actions";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/field";
 import { Panel } from "./components/ui/panel";
+import { StatusList } from "./components/ui/status-list";
 import { Caption } from "./components/ui/text";
 import { TextBox } from "./components/ui/text-box";
 
@@ -32,7 +33,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
         </div>
 
         <h1
-          className="wordmark corrupt text-center text-display md:text-hero"
+          className="wordmark spectrum corrupt text-center text-display md:text-hero"
           data-text="ROTOM.GG"
         >
           ROTOM.GG
@@ -71,12 +72,14 @@ export default async function Home({ searchParams }: PageProps<"/">) {
       )}
 
       <Panel title="02 · System">
-        <pre className="font-mono text-meta whitespace-pre-wrap text-muted">
-          {`LOG PARSER      ONLINE
-LANGUAGES       EN FR DE IT ES PT
-FORMAT          STANDARD
-READS           DECKS · GAMES · WIN RATE`}
-        </pre>
+        <StatusList
+          lines={[
+            { key: "Log parser", value: "Online", tone: "ok" },
+            { key: "Languages", value: "EN FR DE IT ES PT", tone: "blue" },
+            { key: "Format", value: "Standard", tone: "purple" },
+            { key: "Reads", value: "Decks · Games · Win rate", tone: "orange" },
+          ]}
+        />
       </Panel>
     </main>
   );

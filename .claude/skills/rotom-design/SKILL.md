@@ -87,8 +87,16 @@ Check a new pair before adding it.
   Don't use it for decoration or for wins.
 - **Wins are green, losses red** — and the `W`/`L` letter always travels with
   the color, so the record reads without it.
-- **Reserved:** gruvbox's aqua, purple, and orange have no job yet. They are
-  held for Pokémon energy types (see _Open_), not free to use.
+- **The spectrum** is gruvbox's seven hues as their own tokens (`--red`,
+  `--orange`, `--yellow`, `--green`, `--aqua`, `--blue`, `--purple`; the
+  faded set on light). It has two jobs and no others:
+  - **The sleeve's wordmark** (`.wordmark.spectrum`): one hue per bar, red
+    to purple, like the rainbow stripes on 80s computer boxes. The loudest
+    thing in the system, and only there.
+  - **Status values** (`StatusList`): colored by kind, the way an editor
+    colors code. Only `text-spectrum-orange`, `-blue`, and `-purple` are
+    classes — the others don't read as small text on a panel in both
+    schemes. A good state is a green `ok` block, like a win.
 - **Both schemes are first-class.** Light is not a fallback: judge every
   screen in both.
 
@@ -118,8 +126,9 @@ The model is Pokémon Red/Blue's menus, not a full terminal app.
 - **The text box** (`TextBox`) is for messages from the app — a confirmation,
   an empty state, an error: a framed panel at full width with a blinking `▼`
   at the end of the line.
-- **Status lines** are mono `text-meta` rows of `KEY VALUE` pairs, like the
-  sleeve's `SYSTEM` block.
+- **Status lines** (`StatusList`) are mono `text-meta` rows of `KEY VALUE`
+  pairs, like the sleeve's `SYSTEM` block: muted keys, values in a
+  spectrum color by kind.
 - **Box-drawing characters** (`─ │ ┌ ┐`) are allowed in panel titles and logs.
   Never draw a frame out of characters where a border would do.
 - **The mouse and touch come first.** No keyboard-only interactions; a
@@ -140,9 +149,10 @@ The model is Pokémon Red/Blue's menus, not a full terminal app.
 
 ## The wordmark
 
-`.wordmark` sets IBM Plex Sans 600 with Paul Rand's eight bars cut through
-the letterforms. It's the brand, and it appears in two places: large on `/`,
-at `text-title` in the header. Nothing else uses the stripes.
+`.wordmark` sets IBM Plex Sans 600 with Paul Rand's bars cut through the
+letterforms. It's the brand, and it appears in two places: large on `/`, in
+the spectrum (`.spectrum`), and at `text-title` in the header, in plain ink.
+Nothing else uses the bars.
 
 ## The sleeve
 
@@ -179,6 +189,8 @@ Apple).
   happened.
 - `Heading` — a page title in Plex 600. `Caption` — mono label; pass
   `as="h2" | "label" | "span"`.
+- `StatusList lines` — terminal status lines; each line is `{ key, value,
+tone? }` with `tone` one of `ok`, `orange`, `blue`, `purple`.
 - `Reveal index={i}` — a list item that steps in on load.
 - `DeckCard`, `GameCard` — decks and games as menu items in a panel.
 - `RecordBadge wins losses winRate` — `W 05` / `L 02` as joined halves,
@@ -202,7 +214,7 @@ py-6`.
 - Weights other than Plex 400/600; any weight on Departure Mono; italics.
 - Tailwind's default text sizes (`text-sm`, `text-lg`, …).
 - Rounded corners, shadows, gradients, glassmorphism, emoji as icons.
-- Any color outside the table, or a reserved color used without a job.
+- Any color outside the tables, or a spectrum hue outside its two jobs.
 - Retro that costs legibility: scanlines or glow on text, pixel fonts at
   length, frames drawn in characters.
 - Client components for effects — motion is CSS.
@@ -211,9 +223,9 @@ py-6`.
 
 Decided by the guide's author, not yet by the owner — confirm or change:
 
-- Energy types for the reserved colors: Fire red, Water blue, Grass green,
-  Lightning yellow, Psychic purple, Fighting orange, Darkness and Metal
-  from the neutrals — if the app ever colors cards by type.
+- Energy types, if the app ever colors cards by type: Fire red, Water
+  blue, Grass green, Lightning yellow, Psychic purple, Fighting orange,
+  Darkness and Metal from the neutrals — a third job for the spectrum.
 - The palette is gruvbox's own values, not a variant of them.
 
 ## Verify your work

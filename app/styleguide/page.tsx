@@ -11,6 +11,7 @@ import { Mark } from "../components/ui/mark";
 import { Menu } from "../components/ui/menu";
 import { Panel } from "../components/ui/panel";
 import { RecordBadge } from "../components/ui/record-badge";
+import { StatusList } from "../components/ui/status-list";
 import { Reveal } from "../components/ui/reveal";
 import { Caption, Heading } from "../components/ui/text";
 import { TextBox } from "../components/ui/text-box";
@@ -149,6 +150,24 @@ export default function StyleguidePage() {
           <Swatch className="bg-loss text-loss-foreground">loss</Swatch>
           <Swatch className="bg-info text-background">info</Swatch>
         </ul>
+        <ul className="grid grid-cols-3 gap-2 font-mono text-meta uppercase">
+          <Swatch className="border-2 border-border text-spectrum-orange">
+            spectrum-orange
+          </Swatch>
+          <Swatch className="border-2 border-border text-spectrum-blue">
+            spectrum-blue
+          </Swatch>
+          <Swatch className="border-2 border-border text-spectrum-purple">
+            spectrum-purple
+          </Swatch>
+        </ul>
+      </Section>
+
+      <Section title="Wordmark">
+        <p className="wordmark spectrum text-center text-display md:text-hero">
+          ROTOM.GG
+        </p>
+        <p className="wordmark text-title">ROTOM.GG</p>
       </Section>
 
       <Section title="Panel">
@@ -156,10 +175,15 @@ export default function StyleguidePage() {
           <p>A framed box on the surface, with its title cut into the edge.</p>
         </Panel>
         <Panel title="02 · System">
-          <pre className="font-mono text-meta whitespace-pre-wrap text-muted">
-            {`LOG PARSER      ONLINE
-FORMAT          STANDARD`}
-          </pre>
+          <StatusList
+            lines={[
+              { key: "Log parser", value: "Online", tone: "ok" },
+              { key: "Languages", value: "EN FR DE", tone: "blue" },
+              { key: "Format", value: "Standard", tone: "purple" },
+              { key: "Reads", value: "Decks · Games", tone: "orange" },
+              { key: "Turns", value: "08" },
+            ]}
+          />
         </Panel>
       </Section>
 

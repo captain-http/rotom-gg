@@ -41,6 +41,17 @@
   --loss: #9d0006;
   --loss-foreground: #fbf1c7;
   --info: #076678;
+
+  /* The spectrum: gruvbox's seven hues, the faded set on light. Only the
+     sleeve's wordmark uses all seven; orange, blue, and purple also read as
+     text on panels and color status values (see StatusList). */
+  --red: #9d0006;
+  --orange: #af3a03;
+  --yellow: #b57614;
+  --green: #79740e;
+  --aqua: #427b58;
+  --blue: #076678;
+  --purple: #8f3f71;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -56,6 +67,14 @@
     --loss: #fb4934;
     --loss-foreground: #1d2021;
     --info: #83a598;
+
+    --red: #fb4934;
+    --orange: #fe8019;
+    --yellow: #fabd2f;
+    --green: #b8bb26;
+    --aqua: #8ec07c;
+    --blue: #83a598;
+    --purple: #d3869b;
   }
 }
 
@@ -74,6 +93,9 @@
   --color-loss: var(--loss);
   --color-loss-foreground: var(--loss-foreground);
   --color-info: var(--info);
+  --color-spectrum-orange: var(--orange);
+  --color-spectrum-blue: var(--blue);
+  --color-spectrum-purple: var(--purple);
   /* The business and the party: Plex for reading, Departure Mono for the
      machine — labels, figures, logs, menus. */
   --font-sans: var(--font-ibm-plex-sans);
@@ -194,21 +216,41 @@ body:has([data-sleeve]) header [data-wordmark] {
 }
 
 /* The wordmark: IBM Plex Sans 600, tight, with Paul Rand's eight bars cut
-   through the letterforms. The stripe is sized in em so the bar count holds
-   from the header to the hero. */
+   through the letterforms. The bars are a mask, sized in em so their count
+   holds from the header to the hero, and --fill paints whatever shows
+   through them: plain ink by default, the spectrum on the sleeve. */
 .wordmark {
-  --ink: var(--foreground);
+  --fill: linear-gradient(var(--foreground), var(--foreground));
   font-family: var(--font-ibm-plex-sans), sans-serif;
   font-weight: 600;
   letter-spacing: -0.02em;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    var(--ink) 0 0.062em,
-    transparent 0.062em 0.098em
-  );
+  background-image: var(--fill);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
+  mask-image: repeating-linear-gradient(
+    to bottom,
+    #000 0 0.062em,
+    transparent 0.062em 0.098em
+  );
+}
+
+/* The spectrum: one gruvbox hue per bar, red at the top to purple at the
+   bottom, like the rainbow stripes on 80s computer boxes. The stops fall on
+   the 0.098em bar period; with Plex's metrics and line-height 1, bars two to
+   eight are the ones that cross the capitals, so each gets its own hue. The
+   loudest thing in the system, and only ever on the sleeve's wordmark. */
+.spectrum {
+  --fill: linear-gradient(
+    to bottom,
+    var(--red) 0 0.294em,
+    var(--orange) 0.294em 0.392em,
+    var(--yellow) 0.392em 0.49em,
+    var(--green) 0.49em 0.588em,
+    var(--aqua) 0.588em 0.686em,
+    var(--blue) 0.686em 0.784em,
+    var(--purple) 0.784em
+  );
 }
 
 /* MissingNo.: bands of the wordmark slip sideways like misread tile data,
@@ -220,20 +262,15 @@ body:has([data-sleeve]) header [data-wordmark] {
   position: relative;
 }
 
-/* The gradient is restated rather than inherited: background-image: inherit
-   would carry the parent's already-resolved --ink, and the yellow band below
-   depends on resolving it per element. */
+/* The copies paint with the wordmark's --fill, and its bar mask covers them
+   too, so the bars stay put while the letters under them slip. */
 .corrupt::before,
 .corrupt::after {
   content: attr(data-text);
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    var(--ink) 0 0.062em,
-    transparent 0.062em 0.098em
-  );
+  background-image: var(--fill);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -248,7 +285,7 @@ body:has([data-sleeve]) header [data-wordmark] {
 }
 
 .corrupt::after {
-  --ink: var(--accent);
+  --fill: linear-gradient(var(--accent), var(--accent));
   animation: tile-slip-b 11s steps(1) infinite;
 }
 
