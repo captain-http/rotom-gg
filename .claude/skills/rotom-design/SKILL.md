@@ -212,6 +212,9 @@ becomes a primitive in `app/components/ui/` and gets a section in
 
 - Mobile first. Pages are `mx-auto w-full max-w-xl flex flex-col gap-6 px-4
 py-6`.
+- The header runs full width, ruled off below by a 2px `border` bar — the
+  same bar as the sleeve's masthead. The sleeve hides it, since its masthead
+  already draws one.
 - Spacing steps by 5.5px (`--spacing`), so `p-2` is 11px and `p-4` is 22px —
   the same grid as the type.
 - Tabular data renders as a menu on mobile and a table from `md:` up.

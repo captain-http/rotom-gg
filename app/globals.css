@@ -196,6 +196,12 @@ body:has([data-sleeve]) header [data-wordmark] {
   visibility: hidden;
 }
 
+/* The sleeve rules off its own masthead, so the header's rule would stack a
+   second bar just above it. Transparent, not removed, so nothing shifts. */
+body:has([data-sleeve]) header {
+  border-color: transparent;
+}
+
 /* The wordmark: IBM Plex Sans 700, untracked, with Paul Rand's eight bars cut
    through the letterforms. The bars are a mask, sized in em so their count
    holds from the header to the hero, and --fill paints whatever shows
