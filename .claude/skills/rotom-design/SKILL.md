@@ -163,8 +163,9 @@ Nothing else uses the bars.
 
 ## The sleeve
 
-`/` is the pre-release waitlist page. It's built from the same tokens and
-primitives as the app — the loudest page in the system, not its own world.
+`/` is the landing page: the wordmark, what rotom.gg does, and its status.
+It's built from the same tokens and primitives as the app — the loudest page
+in the system, not its own world.
 It may use the wordmark at `text-hero`, `.corrupt`, and `animate-power-on`;
 it may not add colors, grounds, or variants of primitives.
 

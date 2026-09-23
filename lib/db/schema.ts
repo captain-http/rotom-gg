@@ -114,19 +114,6 @@ export const tournamentPages = pgTable("tournament_pages", {
     .defaultNow(),
 });
 
-// People who asked to hear when rotom.gg opens, from the waitlist on "/".
-// There is no Clerk user yet, so the address is the identity: one row each,
-// and signing up twice changes nothing.
-export const waitlist = pgTable("waitlist", {
-  id: bigint("id", { mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
-  // Trimmed and lowercased before it gets here, so the unique constraint
-  // means what it looks like it means.
-  email: text("email").notNull().unique(),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-});
-
 /** One card in a typical list of an archetype. */
 export type ArchetypeCard = {
   name: string;

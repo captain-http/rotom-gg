@@ -171,7 +171,7 @@ export default function StyleguidePage() {
       </Section>
 
       <Section title="Panel">
-        <Panel title="01 · Request access">
+        <Panel title="01 · Decks">
           <p>A framed box on the surface, with its title cut into the edge.</p>
         </Panel>
         <Panel title="02 · System">

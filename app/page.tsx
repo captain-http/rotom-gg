@@ -1,26 +1,17 @@
 import type { Metadata } from "next";
-import { joinWaitlistAction } from "./actions";
-import { Button } from "./components/ui/button";
-import { Input } from "./components/ui/field";
 import { Panel } from "./components/ui/panel";
 import { StatusList } from "./components/ui/status-list";
 import { Caption } from "./components/ui/text";
-import { TextBox } from "./components/ui/text-box";
 
 export const metadata: Metadata = {
   title: "rotom.gg",
-  description:
-    "Field reports for your Pokémon TCG Live games. Join the waitlist.",
+  description: "Field reports for your Pokémon TCG Live games.",
 };
 
-// The sleeve: the pre-release landing page. Built from the app's own tokens
+// The sleeve: the landing page. Built from the app's own tokens
 // and primitives — the loudest page in the system, not a world of its own.
 // data-sleeve hides the header's copy of the wordmark (app/globals.css).
-export default async function Home({ searchParams }: PageProps<"/">) {
-  const { status } = await searchParams;
-  const filed = status === "filed";
-  const rejected = status === "rejected";
-
+export default function Home() {
   return (
     <main
       data-sleeve
@@ -29,7 +20,6 @@ export default async function Home({ searchParams }: PageProps<"/">) {
       <div className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between border-b-2 border-border pb-2">
           <Caption>Pokémon TCG Live</Caption>
-          <Caption>Pre-release</Caption>
         </div>
 
         <h1
@@ -44,34 +34,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
         </p>
       </div>
 
-      {filed ? (
-        <TextBox role="status">
-          You&apos;re on the list. One mail when it opens, nothing else.
-        </TextBox>
-      ) : (
-        <Panel title="01 · Request access">
-          <form action={joinWaitlistAction} className="flex gap-2">
-            <Input
-              type="email"
-              name="email"
-              required
-              maxLength={254}
-              placeholder="you@example.com"
-              aria-label="Email address"
-              autoComplete="email"
-              className="min-w-0 flex-1"
-            />
-            <Button type="submit">Join</Button>
-          </form>
-          <Caption>
-            {rejected
-              ? "That address didn't parse. Try again."
-              : "One mail when it opens. Nothing else, ever."}
-          </Caption>
-        </Panel>
-      )}
-
-      <Panel title="02 · System">
+      <Panel title="01 · System">
         <StatusList
           lines={[
             { key: "Log parser", value: "Online", tone: "ok" },
