@@ -67,7 +67,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col">
         <ClerkProvider>
           <header className="flex items-center justify-between gap-4 px-4 py-4">
-            <Link href="/" data-wordmark className="wordmark spectrum text-title">
+            <Link
+              href="/"
+              data-wordmark
+              className="wordmark spectrum text-title"
+            >
               ROTOM.GG
             </Link>
             <Show when="signed-out">
