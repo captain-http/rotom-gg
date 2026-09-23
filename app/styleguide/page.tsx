@@ -6,10 +6,14 @@ import { Button, ButtonLink } from "../components/ui/button";
 import { DeckCard } from "../components/ui/deck-card";
 import { Input, Textarea } from "../components/ui/field";
 import { GameCard } from "../components/ui/game-card";
+import { GlyphLink } from "../components/ui/glyph-link";
 import { Mark } from "../components/ui/mark";
+import { Menu } from "../components/ui/menu";
+import { Panel } from "../components/ui/panel";
 import { RecordBadge } from "../components/ui/record-badge";
 import { Reveal } from "../components/ui/reveal";
 import { Caption, Heading } from "../components/ui/text";
+import { TextBox } from "../components/ui/text-box";
 
 export const metadata: Metadata = { title: "Styleguide · rotom.gg" };
 
@@ -103,41 +107,64 @@ export default function StyleguidePage() {
 
   return (
     <main className="mx-auto flex w-full max-w-xl flex-col gap-10 px-4 py-6">
-      <Heading className="uppercase">Styleguide</Heading>
+      <Heading>Styleguide</Heading>
 
-      <Section title="Type">
-        <p className="text-hero">88</p>
-        <p className="text-display">Display 44</p>
-        <p className="text-heading">Heading 33</p>
-        <p className="text-title">Title 22</p>
+      <Section title="Type · IBM Plex Sans, the business">
+        <p className="wordmark text-hero">88</p>
+        <p className="text-display font-semibold">Display 44</p>
+        <p className="text-heading font-semibold">Heading 33</p>
+        <p className="text-title">Title 22 — field reports for your games.</p>
         <p className="text-body">
-          Body 16.5 — Red drew Lillie&apos;s Determination.
+          Body 16.5 — Red drew Lillie&apos;s Determination and played it.
         </p>
-        <p className="text-meta">
+        <p className="text-body font-semibold">Body 16.5 semibold</p>
+      </Section>
+
+      <Section title="Type · Departure Mono, the party">
+        <p className="font-mono text-body">MONO 16.5 — W 05 · L 02 · 71%</p>
+        <p className="font-mono text-meta">
           Meta 11 — Blue took 130 more damage because of Fighting Weakness.
         </p>
         <Caption>Caption — games on file: 3</Caption>
+        <p className="flex flex-wrap gap-4">
+          <GlyphLink href="/styleguide">&gt; Decks</GlyphLink>
+          <GlyphLink href="/styleguide">&lt; Back</GlyphLink>
+          <GlyphLink href="/styleguide">x Delete deck</GlyphLink>
+        </p>
       </Section>
 
       <Section title="Color">
-        <ul className="grid grid-cols-2 gap-2 text-meta uppercase">
-          <Swatch className="bg-background text-foreground border border-border">
+        <ul className="grid grid-cols-2 gap-2 font-mono text-meta uppercase">
+          <Swatch className="border-2 border-border bg-background text-foreground">
             background
           </Swatch>
-          <Swatch className="bg-surface text-surface-foreground">
+          <Swatch className="border-2 border-border bg-surface text-surface-foreground">
             surface
           </Swatch>
-          <Swatch className="bg-highlight text-highlight-foreground">
-            highlight
-          </Swatch>
-          <Swatch className="bg-mark text-mark-foreground">mark</Swatch>
+          <Swatch className="bg-muted text-background">muted</Swatch>
+          <Swatch className="bg-border text-accent-foreground">border</Swatch>
+          <Swatch className="bg-rule text-foreground">rule</Swatch>
           <Swatch className="bg-accent text-accent-foreground">accent</Swatch>
-          <Swatch className="bg-inverse text-inverse-foreground">
-            inverse
-          </Swatch>
           <Swatch className="bg-win text-win-foreground">win</Swatch>
           <Swatch className="bg-loss text-loss-foreground">loss</Swatch>
+          <Swatch className="bg-info text-background">info</Swatch>
         </ul>
+      </Section>
+
+      <Section title="Panel">
+        <Panel title="01 · Request access">
+          <p>A framed box on the surface, with its title cut into the edge.</p>
+        </Panel>
+        <Panel title="02 · System">
+          <pre className="font-mono text-meta whitespace-pre-wrap text-muted">
+            {`LOG PARSER      ONLINE
+FORMAT          STANDARD`}
+          </pre>
+        </Panel>
+      </Section>
+
+      <Section title="Text box">
+        <TextBox>No decks on file yet. Name one above to start.</TextBox>
       </Section>
 
       <Section title="Marks">
@@ -163,49 +190,40 @@ export default function StyleguidePage() {
           />
           <Button>+ New</Button>
         </div>
-        <ButtonLink href="/styleguide" className="self-start">
-          + Add game
-        </ButtonLink>
+        <div className="flex flex-wrap gap-2">
+          <ButtonLink href="/styleguide">+ Add game</ButtonLink>
+          <Button disabled>Filing…</Button>
+        </div>
         <Textarea
           rows={3}
           placeholder="Paste a game log from Pokémon TCG Live"
           aria-label="Game log"
-          className="text-meta"
+          className="font-mono text-meta"
         />
-        <p className="flex items-center gap-4 tracking-wider uppercase">
-          <span className="px-1">&gt; Link</span>
-          <span className="bg-mark px-1 text-mark-foreground">
-            &gt; Link hovered
-          </span>
-        </p>
       </Section>
 
-      <Section title="Callout">
-        <p className="border-l-[7px] border-muted py-2 pl-3 text-meta tracking-wider text-muted uppercase">
-          Field reports for your
-          <br />
-          Pokémon TCG Live games
-        </p>
+      <Section title="Menu · decks">
+        <Panel title={`Decks · ${decks.length}`} flush>
+          <Menu>
+            {decks.map((deck, index) => (
+              <Reveal key={deck.id} index={index}>
+                <DeckCard deck={deck} />
+              </Reveal>
+            ))}
+          </Menu>
+        </Panel>
       </Section>
 
-      <Section title="Decks">
-        <ul className="flex flex-col gap-2">
-          {decks.map((deck, index) => (
-            <Reveal key={deck.id} index={index}>
-              <DeckCard deck={deck} />
-            </Reveal>
-          ))}
-        </ul>
-      </Section>
-
-      <Section title="Games">
-        <ul className="flex flex-col gap-2">
-          {games.map((game, index) => (
-            <Reveal key={game.id} index={index}>
-              <GameCard game={game} open={index === 0} />
-            </Reveal>
-          ))}
-        </ul>
+      <Section title="Menu · games">
+        <Panel title={`Games · ${games.length}`} flush>
+          <Menu>
+            {games.map((game, index) => (
+              <Reveal key={game.id} index={index}>
+                <GameCard game={game} open={index === 0} />
+              </Reveal>
+            ))}
+          </Menu>
+        </Panel>
       </Section>
     </main>
   );
@@ -220,7 +238,9 @@ function Section({
 }) {
   return (
     <section className="flex flex-col gap-3">
-      <Caption as="h2">{title}</Caption>
+      <Caption as="h2" className="border-b-2 border-border pb-1">
+        {title}
+      </Caption>
       {children}
     </section>
   );

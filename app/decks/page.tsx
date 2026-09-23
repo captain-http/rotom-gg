@@ -4,7 +4,10 @@ import { Button } from "../components/ui/button";
 import { DeckCard } from "../components/ui/deck-card";
 import { Input } from "../components/ui/field";
 import { Reveal } from "../components/ui/reveal";
-import { Caption, Heading } from "../components/ui/text";
+import { Menu } from "../components/ui/menu";
+import { Panel } from "../components/ui/panel";
+import { Heading } from "../components/ui/text";
+import { TextBox } from "../components/ui/text-box";
 import { createDeckAction } from "./actions";
 
 export default async function DecksPage() {
@@ -13,7 +16,7 @@ export default async function DecksPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-6">
-      <Heading className="uppercase">Decks</Heading>
+      <Heading>Decks</Heading>
 
       <form action={createDeckAction} className="flex gap-2">
         <Input
@@ -28,15 +31,17 @@ export default async function DecksPage() {
       </form>
 
       {decks.length === 0 ? (
-        <Caption>No decks on file yet.</Caption>
+        <TextBox>No decks on file yet. Name one above to start.</TextBox>
       ) : (
-        <ul className="flex flex-col gap-2">
-          {decks.map((deck, index) => (
-            <Reveal key={deck.id} index={index}>
-              <DeckCard deck={deck} />
-            </Reveal>
-          ))}
-        </ul>
+        <Panel title={`Decks · ${decks.length}`} flush>
+          <Menu>
+            {decks.map((deck, index) => (
+              <Reveal key={deck.id} index={index}>
+                <DeckCard deck={deck} />
+              </Reveal>
+            ))}
+          </Menu>
+        </Panel>
       )}
     </main>
   );

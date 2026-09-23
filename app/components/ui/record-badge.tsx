@@ -1,7 +1,7 @@
 // A deck's record as one badge of two joined halves — wins, then losses — with
 // the win rate beside it in muted text: the record is the fact, the rate a
 // reading of it. Counts are padded to two digits so badges line up, and a
-// zero half stays neutral so amber only marks real wins. Leave out winRate
+// zero half stays neutral so color only marks what happened. Leave out winRate
 // where the rate is shown elsewhere, or where nothing is decided yet.
 export function RecordBadge({
   wins,
@@ -14,7 +14,7 @@ export function RecordBadge({
   winRate?: number;
 }) {
   return (
-    <span className="flex flex-wrap items-center gap-x-3 gap-y-1 tracking-wider uppercase">
+    <span className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono tracking-wider uppercase">
       <span className="flex text-body">
         <span
           className={`border-2 px-2 ${wins > 0 ? "border-win bg-win text-win-foreground" : "border-border text-muted"}`}

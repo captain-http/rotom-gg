@@ -13,47 +13,49 @@
   --inset-shadow-*: initial;
   --drop-shadow-*: initial;
   --text-shadow-*: initial;
+
+  /* The two weights IBM Plex Sans is loaded with. Departure Mono has only
+     400, and eslint-rules/design-classes.js keeps 600 off it. */
+  --font-weight-normal: 400;
+  --font-weight-semibold: 600;
 }
 
 /*
  * rotom.gg design tokens — see .claude/skills/rotom-design/SKILL.md.
- * Palette after departuremono.com: paper grounds, soft ink, one amber accent.
+ * A closed palette from gruvbox (github.com/morhetz/gruvbox): every color
+ * here has a job, and nothing outside it is used. Text pairs clear 4.5:1,
+ * frames 3:1 against the ground.
  */
 :root {
-  --background: #eeeeee; /* enamel */
-  --foreground: #444444; /* dark */
-  --surface: #ffffff; /* a sheet of paper */
-  --surface-foreground: #222222; /* carbon */
-  --muted: #6c6c58; /* clay */
-  --border: #cccccc; /* aluminum */
-  --highlight: #cccccc; /* block behind headings */
-  --highlight-foreground: #333333; /* soot */
-  --mark: #bccabb; /* foam: highlighter */
-  --mark-foreground: #222222;
-  --accent: #ffa133; /* amber: the only accent */
-  --accent-foreground: #222222;
-  --inverse: #444444;
-  --inverse-foreground: #eeeeee;
-  --win: var(--accent);
-  --win-foreground: var(--accent-foreground);
-  --loss: var(--highlight);
-  --loss-foreground: var(--highlight-foreground);
+  --background: #fbf1c7;
+  --foreground: #3c3836;
+  --surface: #f2e5bc;
+  --surface-foreground: #3c3836;
+  --muted: #665c54;
+  --border: #928374;
+  --rule: #d5c4a1;
+  --accent: #d79921;
+  --accent-foreground: #282828;
+  --win: #98971a;
+  --win-foreground: #282828;
+  --loss: #9d0006;
+  --loss-foreground: #fbf1c7;
+  --info: #076678;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #222222; /* carbon */
-    --foreground: #c0c0c0; /* cement */
-    --surface: #333333; /* soot */
-    --surface-foreground: #eeeeee;
-    --muted: #8e8e8e; /* ash */
-    --border: #444444;
-    --highlight: #444444;
-    --highlight-foreground: #eeeeee;
-    --mark: #6c6c58; /* clay */
-    --mark-foreground: #eeeeee;
-    --inverse: #c0c0c0;
-    --inverse-foreground: #222222;
+    --background: #282828;
+    --foreground: #ebdbb2;
+    --surface: #32302f;
+    --surface-foreground: #ebdbb2;
+    --muted: #a89984;
+    --rule: #504945;
+    --accent: #fabd2f;
+    --win: #b8bb26;
+    --loss: #fb4934;
+    --loss-foreground: #1d2021;
+    --info: #83a598;
   }
 }
 
@@ -64,28 +66,23 @@
   --color-surface-foreground: var(--surface-foreground);
   --color-muted: var(--muted);
   --color-border: var(--border);
-  --color-highlight: var(--highlight);
-  --color-highlight-foreground: var(--highlight-foreground);
-  --color-mark: var(--mark);
-  --color-mark-foreground: var(--mark-foreground);
+  --color-rule: var(--rule);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-inverse: var(--inverse);
-  --color-inverse-foreground: var(--inverse-foreground);
   --color-win: var(--win);
   --color-win-foreground: var(--win-foreground);
   --color-loss: var(--loss);
   --color-loss-foreground: var(--loss-foreground);
-  --font-sans: var(--font-departure-mono);
+  --color-info: var(--info);
+  /* The business and the party: Plex for reading, Departure Mono for the
+     machine — labels, figures, logs, menus. */
+  --font-sans: var(--font-ibm-plex-sans);
   --font-mono: var(--font-departure-mono);
-  /* IBM Plex Sans, for display type only — see app/fonts/LICENSE-IBMPlexSans.
-     Departure Mono still sets every piece of data, label and log. */
-  --font-plex: var(--font-ibm-plex-sans);
 }
 
 @theme {
   /* Departure Mono is drawn on an 11px grid: sizes are multiples of 11px, so
-     its pixels stay crisp, and spacing steps by half of that. */
+     its pixels stay crisp, and Plex shares the scale. Spacing steps by half. */
   --spacing: 5.5px;
   --text-*: initial;
   --text-meta: 11px;
@@ -105,14 +102,11 @@
 
   --animate-blink: blink 1s steps(1) infinite;
   --animate-reveal: reveal 240ms steps(3) both;
+  --animate-power-on: power-on 480ms steps(4) both;
 
   @keyframes blink {
-    0%,
-    100% {
-      background-color: transparent;
-    }
     50% {
-      background-color: var(--mark);
+      opacity: 0;
     }
   }
 
@@ -122,27 +116,47 @@
       translate: 0 5.5px;
     }
   }
+
+  /* A CRT warming up: a bright line that opens into the picture. */
+  @keyframes power-on {
+    0% {
+      opacity: 0;
+      scale: 1 0.01;
+    }
+    25% {
+      opacity: 1;
+      scale: 1 0.01;
+      filter: brightness(3);
+    }
+    75% {
+      scale: 1 1;
+      filter: brightness(1.6);
+    }
+  }
 }
 
 @layer base {
+  /* The ground is a screen at night: faint scanlines, every 3px. Panels and
+     fields are opaque, so text and data never sit on them. */
   body {
     background-color: var(--background);
-    /* Graph paper: a faint dot every 22px. */
-    background-image: radial-gradient(
-      color-mix(in srgb, var(--border) 60%, transparent) 1px,
-      transparent 1px
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0 2px,
+      color-mix(in srgb, var(--foreground) 5%, transparent) 2px 3px
     );
-    background-size: 22px 22px;
     color: var(--foreground);
     font-size: var(--text-body);
     line-height: var(--text-body--line-height);
   }
 
   ::selection {
-    background-color: var(--foreground);
-    color: var(--background);
+    background-color: var(--accent);
+    color: var(--accent-foreground);
   }
 
+  /* The double frame: a control's own border turns yellow (the primitives
+     do that) and a second frame sits 2px outside it. */
   :focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
@@ -158,143 +172,33 @@
   }
 }
 
-/* A sheet with its top-right corner cut, like a filed report. */
-@utility notch {
-  clip-path: polygon(0 0, calc(100% - 11px) 0, 100% 11px, 100% 100%, 0 100%);
-}
-
-/* ───────────────────────────────────────────────────────────────────────────
- * The sleeve — "/" only.
- *
- * The landing page is the sleeve, not the record. Four references, each with
- * one job: IBM gives the grid and the display type, Kraftwerk the discipline
- * and the stepped motion, Tomita the ground, and MissingNo. the one thing out
- * of place. The app behind it stays on paper and is untouched.
- *
- * The tokens are redefined for the whole document while the landing page is
- * on screen, so every primitive keeps working with no landing-page variant.
- * :has() does the scoping, which keeps the root layout ignorant of all this.
- * ─────────────────────────────────────────────────────────────────────────── */
-
-body:has([data-ground="cosmos"]) {
-  --background: #070615;
-  --foreground: #b9b6d8;
-  --surface: #12102b;
-  --surface-foreground: #ebe9fa;
-  --muted: #6f6c9c;
-  --border: #272348;
-  --highlight: #1b1838;
-  --highlight-foreground: #ebe9fa;
-  --mark: #2b2760;
-  --mark-foreground: #f2f0ff;
-  --inverse: #ebe9fa;
-  --inverse-foreground: #0b0920;
-  /* Amber is still the only accent; the ground carries the rest. */
-  --accent-foreground: #1a1024;
-
-  /* The sleeve draws its own sky — the graph paper would fight it. */
-  background-image: none;
-  /* So the fixed sky below sits above the canvas but under the content. */
-  isolation: isolate;
-}
-
-/* The sky, one fixed layer behind everything so it covers the header too and
-   holds still while the page scrolls. Top to bottom: IBM's hairline rules on
-   the 88px type grid, a star field of six tiles whose sizes share no factor
-   so the dots never resolve into a pattern, then the airbrush — a low amber
-   sun, a violet bloom, and a colder one off to the right. */
-body:has([data-ground="cosmos"])::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-color: var(--background);
-  background-image:
-    repeating-linear-gradient(
-      to right,
-      color-mix(in oklab, var(--border) 32%, transparent) 0 1px,
-      transparent 1px 88px
-    ),
-    repeating-linear-gradient(
-      to bottom,
-      color-mix(in oklab, var(--border) 32%, transparent) 0 1px,
-      transparent 1px 88px
-    ),
-    radial-gradient(1px 1px at 17% 23%, #ffffffe6, transparent),
-    radial-gradient(1px 1px at 68% 11%, #ffffffc0, transparent),
-    radial-gradient(1px 1px at 41% 77%, #ffffffd0, transparent),
-    radial-gradient(1px 1px at 88% 61%, #ffffffa8, transparent),
-    radial-gradient(1px 1px at 9% 58%, #ffffff98, transparent),
-    radial-gradient(1px 1px at 55% 42%, #ffffffc0, transparent),
-    radial-gradient(
-      ellipse 92% 34% at 50% 103%,
-      color-mix(in oklab, var(--accent) 52%, transparent) 0%,
-      color-mix(in oklab, var(--accent) 12%, transparent) 42%,
-      transparent 72%
-    ),
-    radial-gradient(
-      ellipse 96% 62% at 14% -12%,
-      color-mix(in oklab, #6b58ff 26%, transparent) 0%,
-      transparent 68%
-    ),
-    radial-gradient(
-      ellipse 70% 50% at 92% 8%,
-      color-mix(in oklab, #2f7fd0 16%, transparent) 0%,
-      transparent 70%
-    );
-  background-size:
-    auto,
-    auto,
-    317px 289px,
-    211px 193px,
-    463px 397px,
-    271px 331px,
-    181px 227px,
-    389px 353px,
-    auto,
-    auto,
-    auto;
+/* A panel's title, set into its top frame like a TUI or a Pokémon menu. It
+   straddles the 2px border, so it paints the ground above the line and the
+   panel below it, and the frame looks cut rather than covered. */
+@utility panel-title {
+  position: absolute;
+  top: -6px;
+  left: 11px;
+  padding-inline: 5.5px;
+  background-image: linear-gradient(
+    to bottom,
+    var(--background) 0 7px,
+    var(--surface) 7px
+  );
 }
 
 /* On the sleeve the hero is the wordmark, so the header's copy of it would
-   sit directly above a much larger one. The header keeps its sign-in only,
-   and has to re-anchor it: justify-between strands a lone child on the left. */
-body:has([data-ground="cosmos"]) header [data-wordmark] {
-  display: none;
+   sit directly above a much larger one. The header keeps its sign-in only. */
+body:has([data-sleeve]) header [data-wordmark] {
+  visibility: hidden;
 }
 
-body:has([data-ground="cosmos"]) header {
-  justify-content: flex-end;
-}
-
-/* Dark in both schemes on purpose: a sleeve is an image, not an interface,
-   and Tomita's were never printed on white. */
-@media (prefers-color-scheme: dark) {
-  body:has([data-ground="cosmos"]) {
-    --background: #070615;
-    --foreground: #b9b6d8;
-    --surface: #12102b;
-    --surface-foreground: #ebe9fa;
-    --muted: #6f6c9c;
-    --border: #272348;
-    --highlight: #1b1838;
-    --highlight-foreground: #ebe9fa;
-    --mark: #2b2760;
-    --mark-foreground: #f2f0ff;
-    --inverse: #ebe9fa;
-    --inverse-foreground: #0b0920;
-  }
-}
-
-/* The wordmark: IBM Plex Sans, tight, with Paul Rand's eight bars cut through
-   the letterforms. The stripe is sized in em so the bar count holds from 44px
-   on a phone to 88px on a desktop. Plex is a variable face with real weights,
-   so 600 here is a weight the font actually has — the one-weight rule is
-   Departure Mono's, and Departure Mono still sets everything else. */
+/* The wordmark: IBM Plex Sans 600, tight, with Paul Rand's eight bars cut
+   through the letterforms. The stripe is sized in em so the bar count holds
+   from the header to the hero. */
 .wordmark {
-  --ink: var(--surface-foreground);
-  font-family: var(--font-plex), sans-serif;
+  --ink: var(--foreground);
+  font-family: var(--font-ibm-plex-sans), sans-serif;
   font-weight: 600;
   letter-spacing: -0.02em;
   background-image: repeating-linear-gradient(
@@ -309,15 +213,15 @@ body:has([data-ground="cosmos"]) header {
 
 /* MissingNo.: bands of the wordmark slip sideways like misread tile data,
    then snap back. Rare on purpose — the grid has to look intact for the break
-   to mean anything — and stepped, never smoothly tweened. The amber band is
-   the only place the accent appears outside focus and hover.
+   to mean anything — and stepped, never smoothly tweened. The yellow band is
+   the one place the accent is decoration rather than a cursor.
    prefers-reduced-motion stops all of it, globally, above. */
 .corrupt {
   position: relative;
 }
 
 /* The gradient is restated rather than inherited: background-image: inherit
-   would carry the parent's already-resolved --ink, and the amber band below
+   would carry the parent's already-resolved --ink, and the yellow band below
    depends on resolving it per element. */
 .corrupt::before,
 .corrupt::after {
@@ -335,7 +239,7 @@ body:has([data-ground="cosmos"]) header {
   color: transparent;
   /* Hidden by default, not just by the first keyframe: prefers-reduced-motion
      strips the animation entirely, and an unclipped overlay would cover the
-     wordmark in solid amber. */
+     wordmark in solid yellow. */
   clip-path: inset(50% 0 50% 0);
 }
 

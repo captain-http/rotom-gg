@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-// A page heading on a highlight block.
+// A page heading in Plex semibold: the business, read first.
 export function Heading({
   children,
   className = "",
@@ -9,15 +9,11 @@ export function Heading({
   className?: string;
 }) {
   return (
-    <h1
-      className={`self-start bg-highlight px-1 text-heading text-highlight-foreground ${className}`}
-    >
-      {children}
-    </h1>
+    <h1 className={`text-heading font-semibold ${className}`}>{children}</h1>
   );
 }
 
-// Small uppercase muted text: section labels, empty states, facts.
+// A mono label, uppercase and muted: section labels, facts, status lines.
 export function Caption({
   as: Tag = "p",
   children,
@@ -31,7 +27,7 @@ export function Caption({
 }) {
   return (
     <Tag
-      className={`text-meta tracking-wider text-muted uppercase ${className}`}
+      className={`font-mono text-meta tracking-wider text-muted uppercase ${className}`}
       {...(Tag === "label" ? { htmlFor } : {})}
     >
       {children}

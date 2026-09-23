@@ -1,13 +1,16 @@
 import { auth } from "@clerk/nextjs/server";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { findDeck, findWinRate } from "@/lib/domain/decks";
 import { listGames } from "@/lib/domain/games";
 import { ButtonLink } from "../../components/ui/button";
 import { GameCard } from "../../components/ui/game-card";
+import { GlyphLink } from "../../components/ui/glyph-link";
+import { Menu } from "../../components/ui/menu";
+import { Panel } from "../../components/ui/panel";
 import { formatWinRate, RecordBadge } from "../../components/ui/record-badge";
 import { Reveal } from "../../components/ui/reveal";
-import { Caption, Heading } from "../../components/ui/text";
+import { Heading } from "../../components/ui/text";
+import { TextBox } from "../../components/ui/text-box";
 
 export default async function DeckPage({
   params,
@@ -29,12 +32,9 @@ export default async function DeckPage({
 
   return (
     <main className="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-6">
-      <Link
-        href="/decks"
-        className="self-start px-1 text-meta tracking-wider text-muted uppercase transition-colors duration-75 ease-flick hover:bg-mark hover:text-mark-foreground"
-      >
+      <GlyphLink href="/decks" className="self-start">
         &lt; Decks
-      </Link>
+      </GlyphLink>
       <div className="flex flex-col gap-3">
         <Heading>{deck.title}</Heading>
         {/* The record and the action that changes it share a row. The win
@@ -47,28 +47,26 @@ export default async function DeckPage({
         </div>
       </div>
 
-      <Caption as="h2">
-        Games on file: {games.length}
-        {winRate !== undefined && ` · ${formatWinRate(winRate)}`}
-      </Caption>
       {games.length === 0 ? (
-        <Caption>No games yet.</Caption>
+        <TextBox>No games on file yet. Add one to start the record.</TextBox>
       ) : (
-        <ul className="flex flex-col gap-2">
-          {games.map((game, index) => (
-            <Reveal key={game.id} index={index}>
-              <GameCard game={game} />
-            </Reveal>
-          ))}
-        </ul>
+        <Panel
+          title={`Games · ${games.length}${winRate !== undefined ? ` · ${formatWinRate(winRate)}` : ""}`}
+          flush
+        >
+          <Menu>
+            {games.map((game, index) => (
+              <Reveal key={game.id} index={index}>
+                <GameCard game={game} />
+              </Reveal>
+            ))}
+          </Menu>
+        </Panel>
       )}
 
-      <Link
-        href={`/decks/${deck.id}/delete`}
-        className="self-start px-1 text-meta tracking-wider text-muted uppercase transition-colors duration-75 ease-flick hover:bg-mark hover:text-mark-foreground"
-      >
+      <GlyphLink href={`/decks/${deck.id}/delete`} className="self-start">
         x Delete deck
-      </Link>
+      </GlyphLink>
     </main>
   );
 }

@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 
 const TONES = {
-  win: "bg-win text-win-foreground",
-  loss: "bg-loss text-loss-foreground",
-  neutral: "border border-border text-muted",
+  win: "border-win bg-win text-win-foreground",
+  loss: "border-loss bg-loss text-loss-foreground",
+  neutral: "border-border text-muted",
 };
 
-// A highlighter block around a short uppercase label: results and records.
+// A small mono block around a short uppercase label: results and records.
 export function Mark({
   tone,
   children,
@@ -16,7 +16,7 @@ export function Mark({
 }) {
   return (
     <span
-      className={`inline-block px-1 text-meta tracking-wider uppercase ${TONES[tone]}`}
+      className={`inline-block border px-1 font-mono text-meta tracking-wider uppercase ${TONES[tone]}`}
     >
       {children}
     </span>

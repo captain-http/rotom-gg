@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import { Button } from "../../../../components/ui/button";
 import { Textarea } from "../../../../components/ui/field";
 import { Caption } from "../../../../components/ui/text";
+import { TextBox } from "../../../../components/ui/text-box";
 
 // The battle log textarea with a button that fills it from the clipboard, so
 // a log copied in Pokémon TCG Live takes one tap instead of a long-press.
@@ -40,11 +41,7 @@ export function LogField() {
         </Caption>
         <Button onClick={paste}>Paste from clipboard</Button>
       </div>
-      {message && (
-        <p role="status" className="text-meta tracking-wider uppercase">
-          <span className="bg-mark px-1 text-mark-foreground">{message}</span>
-        </p>
-      )}
+      {message && <TextBox role="status">{message}</TextBox>}
       <Textarea
         ref={field}
         id="log"
@@ -52,7 +49,7 @@ export function LogField() {
         required
         rows={16}
         placeholder="Paste a game log from Pokémon TCG Live"
-        className="text-meta"
+        className="font-mono text-meta"
       />
     </>
   );

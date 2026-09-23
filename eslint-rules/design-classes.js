@@ -10,10 +10,9 @@ const COLOR_UTILITIES =
 
 const FORBIDDEN = [
   {
-    pattern:
-      /^font-(thin|extralight|light|normal|medium|semibold|bold|extrabold|black)$/,
+    pattern: /^font-(thin|extralight|light|medium|bold|extrabold|black)$/,
     message:
-      "Departure Mono has one weight. Use size, uppercase, tracking, or color.",
+      "IBM Plex Sans is loaded at 400 and 600 only. Use font-normal or font-semibold.",
   },
   { pattern: /^italic$/, message: "No italics. Use uppercase or color." },
   {
@@ -23,11 +22,11 @@ const FORBIDDEN = [
   },
   {
     pattern: /^rounded(?!-none$)(-.+)?$/,
-    message: "No rounded corners. Use the notch utility for sheets.",
+    message: "No rounded corners. Frames are square.",
   },
   {
     pattern: /^(shadow|drop-shadow|inset-shadow|text-shadow)(?!-none$)(-.+)?$/,
-    message: "No shadows. Surfaces are flat paper.",
+    message: "No shadows. Depth comes from frames and fills.",
   },
   {
     pattern: new RegExp(`^(${COLOR_UTILITIES})-(${PALETTE})(-\\d+)?(/\\d+)?$`),
@@ -50,7 +49,16 @@ function baseClass(token) {
 }
 
 function check(context, node, text) {
-  for (const token of text.split(/\s+/)) {
+  const tokens = text.split(/\s+/);
+  const classes = new Set(tokens.map(baseClass));
+  if (classes.has("font-mono") && classes.has("font-semibold")) {
+    context.report({
+      node,
+      message:
+        '"font-semibold" on font-mono: Departure Mono has one weight, and the browser would fake a bold. Use size, uppercase, tracking, or color. See .claude/skills/rotom-design/SKILL.md.',
+    });
+  }
+  for (const token of tokens) {
     const cls = baseClass(token);
     const rule = FORBIDDEN.find(({ pattern }) => pattern.test(cls));
     if (rule) {

@@ -1,18 +1,30 @@
 import type { Game } from "@/lib/domain/games";
-import { Caption } from "./text";
 import { Mark } from "./mark";
+import { MENU_ROW } from "./menu";
+import { Caption } from "./text";
 
-// A game as a notched sheet that opens to its log, printed with a ruled
-// left margin.
+// A game as a menu row that opens to its log, printed in mono with a ruled
+// left margin. Goes in a Menu, inside an <li>.
 export function GameCard({ game, open }: { game: Game; open?: boolean }) {
   return (
-    <details open={open} className="notch bg-surface text-surface-foreground">
-      <summary className="flex cursor-pointer flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3">
-        <span>Game #{game.id}</span>
-        <ResultMark result={game.result} />
-        <GameFacts game={game} />
+    <details open={open} className="group/game">
+      <summary
+        className={`${MENU_ROW} cursor-pointer list-none [&::-webkit-details-marker]:hidden`}
+      >
+        {/* The menu cursor, turned down while the log is open. */}
+        <span
+          aria-hidden
+          className="invisible inline-block font-mono text-meta text-accent group-hover:visible group-focus-visible:visible group-open/game:visible group-open/game:rotate-90"
+        >
+          ▶
+        </span>
+        <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <span>Game #{game.id}</span>
+          <ResultMark result={game.result} />
+          <GameFacts game={game} />
+        </span>
       </summary>
-      <pre className="mx-4 mb-3 overflow-x-auto border-l-2 border-border pl-3 text-meta whitespace-pre-wrap">
+      <pre className="mr-3 mb-3 ml-7 overflow-x-auto border-l-2 border-rule pl-3 font-mono text-meta whitespace-pre-wrap">
         {game.log}
       </pre>
     </details>
