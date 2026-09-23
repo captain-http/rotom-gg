@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import pkg from "@/package.json" with { type: "json" };
 import { Panel } from "./components/ui/panel";
 import { StatusList } from "./components/ui/status-list";
 import { Caption } from "./components/ui/text";
@@ -19,7 +20,9 @@ export default function Home() {
     >
       <div className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between border-b-2 border-border pb-2">
-          <Caption>RTM-01</Caption>
+          {/* RTM-01 is the model and stays put; the build is package.json's
+              semver, bumped by hand when a change counts as a release. */}
+          <Caption>RTM-01 · Build {pkg.version}</Caption>
           <Caption>Alpha</Caption>
         </div>
 

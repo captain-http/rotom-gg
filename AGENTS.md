@@ -15,6 +15,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Pushing to `main` deploys to production, including migrations.
 - Ask before a migration that drops, renames, or rewrites existing data — a revert can't undo it.
 - Never force-push or rewrite history.
+- The landing page shows `package.json`'s `version` as the build (`RTM-01 · Build 0.1.0`); `RTM-01` is the model and doesn't change. Bump the version by hand, not on every push: patch for fixes and visual tweaks, minor for a new feature, `1.0.0` when the sleeve drops `Alpha`.
 - Never add `minimumReleaseAgeExclude` entries. If pnpm rejects a version as too new, pin the newest one it accepts.
 
 # Conventions
