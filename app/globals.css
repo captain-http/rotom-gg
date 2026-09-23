@@ -199,8 +199,17 @@ body:has([data-sleeve]) header [data-wordmark] {
 /* The wordmark: IBM Plex Sans 700, untracked, with Paul Rand's eight bars cut
    through the letterforms. The bars are a mask, sized in em so their count
    holds from the header to the hero, and --fill paints whatever shows
-   through them: plain ink by default, the spectrum on the sleeve. */
+   through them: plain ink by default, the spectrum on the sleeve.
+
+   The eight bars span the capitals exactly, the first flush with their top
+   and the last with the baseline, so no letter looks trimmed; the overshoot
+   of O, G, and the dot falls into the gaps beyond them. Plex's capitals are
+   0.698em tall, and eight bars with seven gaps at Rand's ratio (bar 0.633 of
+   the period) give the period below. --cap-top finds the capitals' top from
+   Plex's metrics (ascent 1.025em, descent 0.275em) at any line-height. */
 .wordmark {
+  --cap-top: calc((1lh - 1.3em) / 2 + 0.327em);
+  --bar-period: 0.09145em;
   --fill: linear-gradient(var(--foreground), var(--foreground));
   font-family: var(--font-ibm-plex-sans), sans-serif;
   font-weight: 700;
@@ -209,28 +218,32 @@ body:has([data-sleeve]) header [data-wordmark] {
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
-  mask-image: repeating-linear-gradient(
-    to bottom,
-    #000 0 0.062em,
-    transparent 0.062em 0.098em
-  );
+  mask-image: linear-gradient(to bottom, #000 0 0.05786em, transparent 0);
+  mask-size: 100% var(--bar-period);
+  mask-position: 0 var(--cap-top);
+  mask-repeat: repeat-y;
 }
 
 /* The spectrum: one gruvbox hue per bar, red at the top to purple at the
-   bottom, like the rainbow stripes on 80s computer boxes. The stops fall on
-   the 0.098em bar period; with Plex's metrics and line-height 1, bars two to
-   eight are the ones that cross the capitals, so each gets its own hue. The
-   loudest thing in the system, and only ever on the sleeve's wordmark. */
+   bottom, like the rainbow stripes on 80s computer boxes. Eight bars and
+   seven hues, so red takes the first two; each stop falls where a bar
+   starts. The loudest thing in the system, and only ever on the sleeve's
+   wordmark. */
 .spectrum {
   --fill: linear-gradient(
     to bottom,
-    var(--red) 0 0.294em,
-    var(--orange) 0.294em 0.392em,
-    var(--yellow) 0.392em 0.49em,
-    var(--green) 0.49em 0.588em,
-    var(--aqua) 0.588em 0.686em,
-    var(--blue) 0.686em 0.784em,
-    var(--purple) 0.784em
+    var(--red) 0 calc(var(--cap-top) + 2 * var(--bar-period)),
+    var(--orange) calc(var(--cap-top) + 2 * var(--bar-period))
+      calc(var(--cap-top) + 3 * var(--bar-period)),
+    var(--yellow) calc(var(--cap-top) + 3 * var(--bar-period))
+      calc(var(--cap-top) + 4 * var(--bar-period)),
+    var(--green) calc(var(--cap-top) + 4 * var(--bar-period))
+      calc(var(--cap-top) + 5 * var(--bar-period)),
+    var(--aqua) calc(var(--cap-top) + 5 * var(--bar-period))
+      calc(var(--cap-top) + 6 * var(--bar-period)),
+    var(--blue) calc(var(--cap-top) + 6 * var(--bar-period))
+      calc(var(--cap-top) + 7 * var(--bar-period)),
+    var(--purple) calc(var(--cap-top) + 7 * var(--bar-period))
   );
 }
 
