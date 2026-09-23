@@ -66,7 +66,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col">
         <ClerkProvider>
-          <header className="flex items-center justify-between gap-4 border-b-2 border-border px-4 py-4">
+          <header className="flex items-center justify-between gap-4 px-4 py-4">
             <Link
               href="/"
               data-wordmark
