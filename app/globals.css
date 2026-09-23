@@ -196,41 +196,43 @@ body:has([data-sleeve]) header [data-wordmark] {
   visibility: hidden;
 }
 
-/* The wordmark: IBM Plex Sans 600, tight, with Paul Rand's eight bars cut
-   through the letterforms. The bars are a mask, sized in em so their count
-   holds from the header to the hero, and --fill paints whatever shows
-   through them: plain ink by default, the spectrum on the sleeve. */
+/* The wordmark: Departure Mono with Paul Rand's bars cut through the
+   letterforms. The font is drawn in pixels 1/11em square, capitals eight
+   tall, so the bars are too: one per pixel row, its top half inked, sized in
+   em so they hold from the header to the hero. At line-height 1 the capitals
+   start 1.5 pixels down, which puts each bar on a row's top half. --fill
+   paints whatever shows through them: plain ink by default, the spectrum on
+   the sleeve. */
 .wordmark {
   --fill: linear-gradient(var(--foreground), var(--foreground));
-  font-family: var(--font-ibm-plex-sans), sans-serif;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-family: var(--font-departure-mono), monospace;
+  line-height: 1;
   background-image: var(--fill);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
   mask-image: repeating-linear-gradient(
     to bottom,
-    #000 0 0.062em,
-    transparent 0.062em 0.098em
+    transparent 0 calc(0.5em / 11),
+    #000 calc(0.5em / 11) calc(1em / 11)
   );
 }
 
 /* The spectrum: one gruvbox hue per bar, red at the top to purple at the
-   bottom, like the rainbow stripes on 80s computer boxes. The stops fall on
-   the 0.098em bar period; with Plex's metrics and line-height 1, bars two to
-   eight are the ones that cross the capitals, so each gets its own hue. The
-   loudest thing in the system, and only ever on the sleeve's wordmark. */
+   bottom, like the rainbow stripes on 80s computer boxes. Eight bars cross
+   the capitals and there are seven hues, so red takes the top two; each stop
+   falls in the gap below a bar. The loudest thing in the system, and only
+   ever on the sleeve's wordmark. */
 .spectrum {
   --fill: linear-gradient(
     to bottom,
-    var(--red) 0 0.294em,
-    var(--orange) 0.294em 0.392em,
-    var(--yellow) 0.392em 0.49em,
-    var(--green) 0.49em 0.588em,
-    var(--aqua) 0.588em 0.686em,
-    var(--blue) 0.686em 0.784em,
-    var(--purple) 0.784em
+    var(--red) 0 calc(3.25em / 11),
+    var(--orange) calc(3.25em / 11) calc(4.25em / 11),
+    var(--yellow) calc(4.25em / 11) calc(5.25em / 11),
+    var(--green) calc(5.25em / 11) calc(6.25em / 11),
+    var(--aqua) calc(6.25em / 11) calc(7.25em / 11),
+    var(--blue) calc(7.25em / 11) calc(8.25em / 11),
+    var(--purple) calc(8.25em / 11)
   );
 }
 

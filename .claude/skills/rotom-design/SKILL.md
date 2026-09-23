@@ -154,9 +154,10 @@ The model is Pokémon Red/Blue's menus, not a full terminal app.
 
 ## The wordmark
 
-`.wordmark` sets IBM Plex Sans 600 with Paul Rand's bars cut through the
-letterforms. It's the only use of Plex Sans: the bars are tuned to its
-metrics. It's the brand, and it appears in two places: large on `/`, in
+`.wordmark` sets Departure Mono with Paul Rand's bars cut through the
+letterforms: one bar per pixel row, its top half inked, eight across the
+capitals. The bars are tuned to Departure Mono's 11px grid at line-height 1,
+so don't change either. It's the brand, and it appears in two places: large on `/`, in
 the spectrum (`.spectrum`), and at `text-title` in the header, in plain ink.
 Nothing else uses the bars.
 
@@ -217,7 +218,7 @@ py-6`.
 ## Avoid
 
 - Departure Mono in paragraphs, or Plex Mono for labels and figures.
-- Weights other than Plex Mono 400/600; Plex Sans outside the wordmark; any weight on Departure Mono; italics.
+- Weights other than Plex Mono 400/600; any weight on Departure Mono; italics.
 - Tailwind's default text sizes (`text-sm`, `text-lg`, …).
 - Rounded corners, shadows, gradients, glassmorphism, emoji as icons.
 - Any color outside the tables, or a spectrum hue outside its two jobs.
