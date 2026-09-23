@@ -93,9 +93,9 @@ Check a new pair before adding it.
 - **The spectrum** is gruvbox's seven hues as their own tokens (`--red`,
   `--orange`, `--yellow`, `--green`, `--aqua`, `--blue`, `--purple`; the
   gruvbox dark's bright set). It has two jobs and no others:
-  - **The sleeve's wordmark** (`.wordmark.spectrum`): one hue per bar, red
-    to purple, like the rainbow stripes on 80s computer boxes. The loudest
-    thing in the system, and only there.
+  - **The wordmark** (`.wordmark.spectrum`): one hue per bar, red to
+    purple, like the rainbow stripes on 80s computer boxes, on the sleeve
+    and in the header. The loudest thing in the system, and only there.
   - **Status values** (`StatusList`): colored by kind, the way an editor
     colors code. Only `text-spectrum-orange`, `-blue`, and `-purple` are
     classes — red doesn't read as small text on a panel, and yellow,
@@ -157,7 +157,8 @@ The model is Pokémon Red/Blue's menus, not a full terminal app.
 `.wordmark` sets IBM Plex Sans 700, untracked, with Paul Rand's bars cut through the
 letterforms. It's the only use of Plex Sans: the bars are tuned to its
 metrics. It's the brand, and it appears in two places: large on `/`, in
-the spectrum (`.spectrum`), and at `text-title` in the header, in plain ink.
+the spectrum (`.spectrum`), and at `text-title` in the header, in the
+spectrum too.
 Nothing else uses the bars.
 
 ## The sleeve

@@ -35,7 +35,9 @@ Red or Blue, an NES. A TUI person.
 - **Atmosphere.** CRT and a Stranger Things vibe only as a background texture
   or a rare effect — never on text or data.
 - **Carried over.** Stepped, snappy motion (Kraftwerk). The Plex wordmark with
-  Rand's stripes and the MissingNo. corruption, as party moments.
+  Rand's stripes and the MissingNo. corruption, as party moments. The header's
+  wordmark wears the spectrum too since 2026-09-23, at the owner's request —
+  the sleeve's colors on every page.
 - **One system.** Every page, including `/`: the sleeve is rebuilt in it, not
   kept as its own world.
 - **Tiebreak.** Legibility wins.

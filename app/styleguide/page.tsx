@@ -167,7 +167,7 @@ export default function StyleguidePage() {
         <p className="wordmark spectrum text-center text-display md:text-hero">
           ROTOM.GG
         </p>
-        <p className="wordmark text-title">ROTOM.GG</p>
+        <p className="wordmark spectrum text-title">ROTOM.GG</p>
       </Section>
 
       <Section title="Panel">

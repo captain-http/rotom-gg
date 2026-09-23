@@ -48,7 +48,7 @@
   --loss-foreground: #1d2021;
   --info: #83a598;
 
-  /* The spectrum: gruvbox's seven hues. Only the sleeve's wordmark uses all
+  /* The spectrum: gruvbox's seven hues. Only the wordmark uses all
      seven; orange, blue, and purple also color status values (StatusList). */
   --red: #fb4934;
   --orange: #fe8019;
@@ -199,7 +199,8 @@ body:has([data-sleeve]) header [data-wordmark] {
 /* The wordmark: IBM Plex Sans 700, untracked, with Paul Rand's eight bars cut
    through the letterforms. The bars are a mask, sized in em so their count
    holds from the header to the hero, and --fill paints whatever shows
-   through them: plain ink by default, the spectrum on the sleeve.
+   through them: plain ink by default, the spectrum on the sleeve and in
+   the header.
 
    The eight bars span the capitals exactly, the first flush with their top
    and the last with the baseline, so no letter looks trimmed; the overshoot
@@ -227,7 +228,7 @@ body:has([data-sleeve]) header [data-wordmark] {
 /* The spectrum: one gruvbox hue per bar, red at the top to purple at the
    bottom, like the rainbow stripes on 80s computer boxes. Eight bars and
    seven hues, so red takes the first two; each stop falls where a bar
-   starts. The loudest thing in the system, and only ever on the sleeve's
+   starts. The loudest thing in the system, and only ever on the
    wordmark. */
 .spectrum {
   --fill: linear-gradient(
