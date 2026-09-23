@@ -32,7 +32,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
         </div>
 
         <h1
-          className="wordmark corrupt text-display md:text-hero"
+          className="wordmark corrupt text-center text-display md:text-hero"
           data-text="ROTOM.GG"
         >
           ROTOM.GG
