@@ -78,6 +78,9 @@
   --color-loss-foreground: var(--loss-foreground);
   --font-sans: var(--font-departure-mono);
   --font-mono: var(--font-departure-mono);
+  /* IBM Plex Sans, for display type only — see app/fonts/LICENSE-IBMPlexSans.
+     Departure Mono still sets every piece of data, label and log. */
+  --font-plex: var(--font-ibm-plex-sans);
 }
 
 @theme {
@@ -158,4 +161,235 @@
 /* A sheet with its top-right corner cut, like a filed report. */
 @utility notch {
   clip-path: polygon(0 0, calc(100% - 11px) 0, 100% 11px, 100% 100%, 0 100%);
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+ * The sleeve — "/" only.
+ *
+ * The landing page is the sleeve, not the record. Four references, each with
+ * one job: IBM gives the grid and the display type, Kraftwerk the discipline
+ * and the stepped motion, Tomita the ground, and MissingNo. the one thing out
+ * of place. The app behind it stays on paper and is untouched.
+ *
+ * The tokens are redefined for the whole document while the landing page is
+ * on screen, so every primitive keeps working with no landing-page variant.
+ * :has() does the scoping, which keeps the root layout ignorant of all this.
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+body:has([data-ground="cosmos"]) {
+  --background: #070615;
+  --foreground: #b9b6d8;
+  --surface: #12102b;
+  --surface-foreground: #ebe9fa;
+  --muted: #6f6c9c;
+  --border: #272348;
+  --highlight: #1b1838;
+  --highlight-foreground: #ebe9fa;
+  --mark: #2b2760;
+  --mark-foreground: #f2f0ff;
+  --inverse: #ebe9fa;
+  --inverse-foreground: #0b0920;
+  /* Amber is still the only accent; the ground carries the rest. */
+  --accent-foreground: #1a1024;
+
+  /* The sleeve draws its own sky — the graph paper would fight it. */
+  background-image: none;
+  /* So the fixed sky below sits above the canvas but under the content. */
+  isolation: isolate;
+}
+
+/* The sky, one fixed layer behind everything so it covers the header too and
+   holds still while the page scrolls. Top to bottom: IBM's hairline rules on
+   the 88px type grid, a star field of six tiles whose sizes share no factor
+   so the dots never resolve into a pattern, then the airbrush — a low amber
+   sun, a violet bloom, and a colder one off to the right. */
+body:has([data-ground="cosmos"])::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--background);
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      color-mix(in oklab, var(--border) 32%, transparent) 0 1px,
+      transparent 1px 88px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--border) 32%, transparent) 0 1px,
+      transparent 1px 88px
+    ),
+    radial-gradient(1px 1px at 17% 23%, #ffffffe6, transparent),
+    radial-gradient(1px 1px at 68% 11%, #ffffffc0, transparent),
+    radial-gradient(1px 1px at 41% 77%, #ffffffd0, transparent),
+    radial-gradient(1px 1px at 88% 61%, #ffffffa8, transparent),
+    radial-gradient(1px 1px at 9% 58%, #ffffff98, transparent),
+    radial-gradient(1px 1px at 55% 42%, #ffffffc0, transparent),
+    radial-gradient(
+      ellipse 92% 34% at 50% 103%,
+      color-mix(in oklab, var(--accent) 52%, transparent) 0%,
+      color-mix(in oklab, var(--accent) 12%, transparent) 42%,
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 96% 62% at 14% -12%,
+      color-mix(in oklab, #6b58ff 26%, transparent) 0%,
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 70% 50% at 92% 8%,
+      color-mix(in oklab, #2f7fd0 16%, transparent) 0%,
+      transparent 70%
+    );
+  background-size:
+    auto,
+    auto,
+    317px 289px,
+    211px 193px,
+    463px 397px,
+    271px 331px,
+    181px 227px,
+    389px 353px,
+    auto,
+    auto,
+    auto;
+}
+
+/* On the sleeve the hero is the wordmark, so the header's copy of it would
+   sit directly above a much larger one. The header keeps its sign-in only,
+   and has to re-anchor it: justify-between strands a lone child on the left. */
+body:has([data-ground="cosmos"]) header [data-wordmark] {
+  display: none;
+}
+
+body:has([data-ground="cosmos"]) header {
+  justify-content: flex-end;
+}
+
+/* Dark in both schemes on purpose: a sleeve is an image, not an interface,
+   and Tomita's were never printed on white. */
+@media (prefers-color-scheme: dark) {
+  body:has([data-ground="cosmos"]) {
+    --background: #070615;
+    --foreground: #b9b6d8;
+    --surface: #12102b;
+    --surface-foreground: #ebe9fa;
+    --muted: #6f6c9c;
+    --border: #272348;
+    --highlight: #1b1838;
+    --highlight-foreground: #ebe9fa;
+    --mark: #2b2760;
+    --mark-foreground: #f2f0ff;
+    --inverse: #ebe9fa;
+    --inverse-foreground: #0b0920;
+  }
+}
+
+/* The wordmark: IBM Plex Sans, tight, with Paul Rand's eight bars cut through
+   the letterforms. The stripe is sized in em so the bar count holds from 44px
+   on a phone to 88px on a desktop. Plex is a variable face with real weights,
+   so 600 here is a weight the font actually has — the one-weight rule is
+   Departure Mono's, and Departure Mono still sets everything else. */
+.wordmark {
+  --ink: var(--surface-foreground);
+  font-family: var(--font-plex), sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--ink) 0 0.062em,
+    transparent 0.062em 0.098em
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* MissingNo.: bands of the wordmark slip sideways like misread tile data,
+   then snap back. Rare on purpose — the grid has to look intact for the break
+   to mean anything — and stepped, never smoothly tweened. The amber band is
+   the only place the accent appears outside focus and hover.
+   prefers-reduced-motion stops all of it, globally, above. */
+.corrupt {
+  position: relative;
+}
+
+/* The gradient is restated rather than inherited: background-image: inherit
+   would carry the parent's already-resolved --ink, and the amber band below
+   depends on resolving it per element. */
+.corrupt::before,
+.corrupt::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--ink) 0 0.062em,
+    transparent 0.062em 0.098em
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  /* Hidden by default, not just by the first keyframe: prefers-reduced-motion
+     strips the animation entirely, and an unclipped overlay would cover the
+     wordmark in solid amber. */
+  clip-path: inset(50% 0 50% 0);
+}
+
+.corrupt::before {
+  animation: tile-slip-a 11s steps(1) infinite;
+}
+
+.corrupt::after {
+  --ink: var(--accent);
+  animation: tile-slip-b 11s steps(1) infinite;
+}
+
+@keyframes tile-slip-a {
+  0%,
+  91%,
+  100% {
+    clip-path: inset(50% 0 50% 0);
+    translate: 0;
+  }
+  91.5% {
+    clip-path: inset(13% 0 67% 0);
+    translate: -0.07em 0;
+  }
+  92.5% {
+    clip-path: inset(54% 0 28% 0);
+    translate: 0.1em 0;
+  }
+  93.5% {
+    clip-path: inset(31% 0 51% 0);
+    translate: -0.04em 0;
+  }
+  94.5% {
+    clip-path: inset(74% 0 9% 0);
+    translate: 0.06em 0;
+  }
+}
+
+@keyframes tile-slip-b {
+  0%,
+  91.5%,
+  100% {
+    clip-path: inset(50% 0 50% 0);
+    translate: 0;
+  }
+  92% {
+    clip-path: inset(44% 0 44% 0);
+    translate: 0.13em 0;
+  }
+  93% {
+    clip-path: inset(66% 0 22% 0);
+    translate: -0.09em 0;
+  }
+  94% {
+    clip-path: inset(20% 0 70% 0);
+    translate: 0.05em 0;
+  }
 }

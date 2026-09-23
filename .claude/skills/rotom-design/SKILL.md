@@ -30,6 +30,9 @@ Three checks back this document up, all in `bin/verify`:
 - **One face, one weight:** Departure Mono. Never use `font-bold`,
   `font-semibold`, or any weight — it only has 400, and the browser fakes the
   rest. Make contrast with size, uppercase, tracking, and color instead.
+  IBM Plex Sans is the single exception: display type on the sleeve only,
+  through `.wordmark`, never in the app. Everything that is a label, a figure
+  or a log is Departure Mono, everywhere, including on the sleeve.
 - **Sizes are multiples of 11px**, the grid the font is drawn on, so its
   pixels stay crisp. Only these exist (Tailwind's defaults are removed):
 
@@ -73,7 +76,8 @@ contrast); put dark text on an amber block instead.
 ## Surfaces and texture
 
 - **The page is graph paper:** a faint dot grid on `body`. Don't add other
-  backgrounds, gradients, or shadows.
+  backgrounds, gradients, or shadows. The sleeve is the one exception, and it
+  is deliberately not a precedent — see below.
 - **Cards are sheets:** `notch bg-surface text-surface-foreground` — the
   `notch` utility cuts the top-right corner like a filed report. No
   `rounded-*`, no `shadow-*`.
@@ -81,6 +85,38 @@ contrast); put dark text on an amber block instead.
 border-l-2 border-border pl-3` — a ruled margin down the left edge.
 - **Callouts** carry a thick left bar: `border-l-[7px] border-muted pl-3
 text-meta uppercase text-muted`.
+
+## The sleeve
+
+`/` is the pre-release waitlist page, and the only route that leaves the paper
+ground. It is the sleeve, not the record: the app behind it is unchanged, and
+nothing here is a precedent for the rest of the app. Four references, each
+doing one job and no more:
+
+| Reference      | Job        | How it shows up                          |
+| -------------- | ---------- | ---------------------------------------- |
+| **IBM**        | Structure  | Hairline 88px grid, numbered caps labels |
+| **Kraftwerk**  | Discipline | Flat panels, symmetry, stepped motion    |
+| **Tomita**     | Atmosphere | Deep indigo sky, amber horizon, stars    |
+| **MissingNo.** | Disruption | One rare tile-corruption on the wordmark |
+
+- **`data-ground="cosmos"` on `<main>` switches the tokens** for the whole
+  document, via `body:has()` in `globals.css`. Every primitive keeps working
+  unchanged — the sleeve adds no landing-page variants of `Button` or `Input`.
+- **The ground is dark in both schemes.** A sleeve is an image, not an
+  interface, and Tomita's were never printed light.
+- **`.wordmark`** sets IBM Plex Sans 600 with Paul Rand's eight bars cut
+  through the letterforms. Plex is a variable face with real weights, so 600
+  is a weight it actually has — the one-weight rule belongs to Departure Mono,
+  which still sets every label, figure and log on the page.
+- **`.corrupt`** needs `data-text` matching its own text. Bands slip sideways
+  on a rare beat, stepped, then snap back; the amber band is the only place
+  the accent appears outside focus and hover. Keep it rare — the grid has to
+  look intact for the break to mean anything. `prefers-reduced-motion` stops
+  it with everything else.
+
+Gradients live here and nowhere else. If a second page ever needs this ground,
+it becomes a primitive first.
 
 ## Motion
 
@@ -129,7 +165,8 @@ py-6`.
 - Font weights, italics, or any second font.
 - Tailwind's default text sizes (`text-sm`, `text-lg`, …) — they don't exist
   here, and off-grid sizes blur the pixels.
-- Rounded corners, drop shadows, gradients, glassmorphism, emoji as icons.
+- Rounded corners, drop shadows, gradients, glassmorphism, emoji as icons —
+  outside the sleeve, which owns the only gradients in the app.
 - Pure black or pure white text on the page ground.
 - Amber as decoration, or more than one accent color.
 - Client components for effects — motion is CSS.

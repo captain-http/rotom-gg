@@ -64,6 +64,13 @@
       "when": 1789850396947,
       "tag": "0008_add_language",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1790128690996,
+      "tag": "0009_add_waitlist",
+      "breakpoints": true
     }
   ]
 }
