@@ -1,7 +1,7 @@
 ---
 name: prompt-builder
 model: fable
-description: Builds and rewrites prompts for Claude following Anthropic's prompting best practices. Use this whenever the user asks you to write, build, draft, design, improve, fix, review or tighten a prompt — a system prompt for an app or API call, instructions for an agent, subagent, skill or CLAUDE.md, a prompt template with variables, or a one-off message to paste into a chat — even if they only say "write me a prompt that…", "turn this into a prompt", or "why isn't my prompt working".
+description: Use this skill whenever the deliverable is text that Claude (or another LLM) will read as its instructions, and the user wants it written, rewritten, fixed, or reviewed so the model behaves a certain way. That covers system prompts for an app or API call, agent and subagent instructions, skill files, CLAUDE.md rules, MCP server instruction fields, tool descriptions, prompt templates with variables, and one-off messages to paste into a chat. Trigger even when the word "prompt" never appears: "what should I put in CLAUDE.md so it stops doing X", "how do I word the instructions so it calls the tool first", "turn this into something I can give claude", "why does it ignore this rule". Do not use when "prompt" means a UI dialog or user-facing copy, when the user wants a prompt translated or summarized rather than improved, or when the problem is API mechanics like caching or token limits rather than the wording the model reads.
 ---
 
 # Prompt builder
