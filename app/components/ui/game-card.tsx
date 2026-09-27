@@ -32,9 +32,27 @@ export function GameCard({ game, open }: { game: Game; open?: boolean }) {
 }
 
 function ResultMark({ result }: { result: Game["result"] }) {
-  if (result === "win") return <Mark tone="win">Win</Mark>;
+  if (result === "win")
+    return (
+      <Mark tone="win">
+        <AsWideAsLoss>Win</AsWideAsLoss>
+      </Mark>
+    );
   if (result === "loss") return <Mark tone="loss">Loss</Mark>;
   return <Mark tone="neutral">Unknown</Mark>;
+}
+
+// Centers the label in a box as wide as "Loss", so a column of results lines
+// up whichever way each game went.
+function AsWideAsLoss({ children }: { children: string }) {
+  return (
+    <span className="inline-grid text-center">
+      <span className="col-start-1 row-start-1">{children}</span>
+      <span aria-hidden className="invisible col-start-1 row-start-1">
+        Loss
+      </span>
+    </span>
+  );
 }
 
 function GameFacts({ game }: { game: Game }) {
