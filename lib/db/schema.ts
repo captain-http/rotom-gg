@@ -50,6 +50,11 @@ export const games = pgTable(
     turnCount: integer("turn_count"),
     // Pokémon the opponent put on the board, in order of first appearance.
     opponentPokemon: text("opponent_pokemon").array(),
+    // The archetype the opponent most likely played, by the name Limitless
+    // gives it (archetypes.findOpponentMatch), guessed when the game was
+    // filed. Null when the log didn't show enough to tell. Kept as guessed:
+    // the format moves on, and a rebuild shouldn't rewrite past games.
+    opponentArchetype: text("opponent_archetype"),
     // Most damage from a single attack, Weakness included.
     maxDamage: integer("max_damage"),
     opponentMaxDamage: integer("opponent_max_damage"),

@@ -1,6 +1,7 @@
 import { desc, sql } from "drizzle-orm";
-import { db as defaultDb, type Db } from "../db";
-import { archetypes } from "../db/schema";
+import { db as defaultDb, type Db } from "../db/index.ts";
+import { archetypes } from "../db/schema.ts";
+import * as gameLog from "./game-log.ts";
 
 export type Archetype = typeof archetypes.$inferSelect;
 
@@ -149,6 +150,25 @@ export function findMatch(
       confidence: Math.round((weights[index + 1]! / total) * 100) / 100,
     })),
   };
+}
+
+/**
+ * Which archetype the opponent in a battle log most likely played, from every
+ * card the log shows them with.
+ *
+ * @param log - The raw battle log.
+ * @param candidates - The archetypes to choose between, from listCandidates.
+ * @returns The best match, or undefined as findMatch gives it.
+ */
+export function findOpponentMatch(
+  log: string,
+  candidates: Candidate[],
+): Match | undefined {
+  const seen = gameLog.getOpponentCards(log);
+  return findMatch(
+    [...seen.pokemon, ...seen.trainers, ...seen.energy],
+    candidates,
+  );
 }
 
 // log P(archetype) + Σ log P(card | archetype), all in percentages.

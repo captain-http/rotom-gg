@@ -57,10 +57,21 @@ function AsWideAsLoss({ children }: { children: string }) {
 
 function GameFacts({ game }: { game: Game }) {
   const facts = [
+    game.opponentArchetype !== null && `vs ${game.opponentArchetype}`,
     game.turnCount !== null && `${game.turnCount} turns`,
     game.wentFirst !== null && (game.wentFirst ? "Went first" : "Went second"),
-  ].filter(Boolean);
+  ].filter((fact) => fact !== false);
   if (facts.length === 0) return null;
 
-  return <Caption as="span">{facts.join(" · ")}</Caption>;
+  // A line breaks between facts, never inside one.
+  return (
+    <Caption as="span">
+      {facts.map((fact, index) => (
+        <span key={fact}>
+          {index > 0 && " · "}
+          <span className="whitespace-nowrap">{fact}</span>
+        </span>
+      ))}
+    </Caption>
+  );
 }

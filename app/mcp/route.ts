@@ -161,11 +161,7 @@ function toDeck(deck: decks.DeckWithRecord) {
 // The raw log is deliberately left out: one is hundreds of lines, so a deck's
 // worth of them would crowd out everything else in the client's context.
 function toGame(game: games.Game, format: archetypes.Candidate[]) {
-  const seen = gameLog.getOpponentCards(game.log);
-  const match = archetypes.findMatch(
-    [...seen.pokemon, ...seen.trainers, ...seen.energy],
-    format,
-  );
+  const match = archetypes.findOpponentMatch(game.log, format);
   return {
     id: game.id,
     deckId: game.deckId,

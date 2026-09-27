@@ -6,7 +6,7 @@
  * doesn't say.
  */
 
-import * as cards from "./cards";
+import * as cards from "./cards.ts";
 import type { Language } from "./cards";
 
 export type Result = "win" | "loss";

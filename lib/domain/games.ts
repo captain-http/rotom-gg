@@ -1,6 +1,7 @@
 import { and, count, desc, eq, getTableColumns } from "drizzle-orm";
 import { db as defaultDb, type Db } from "../db";
 import { decks, games } from "../db/schema";
+import * as archetypes from "./archetypes";
 import { findDeck } from "./decks";
 import * as gameLog from "./game-log";
 import type { Language } from "./log-check";
@@ -39,6 +40,11 @@ export async function createGame(
       // The parser knows the language for certain when it can read the log;
       // Jev's answer is for the languages it can't.
       language: gameLog.findLanguage(input.log) ?? input.language ?? null,
+      opponentArchetype:
+        archetypes.findOpponentMatch(
+          input.log,
+          await archetypes.listCandidates(db),
+        )?.name ?? null,
     })
     .returning();
   if (!game) {

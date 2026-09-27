@@ -85,6 +85,13 @@
       "when": 1790532242028,
       "tag": "0011_add_archetype_play_rates",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1790532433115,
+      "tag": "0012_add_game_opponent_archetype",
+      "breakpoints": true
     }
   ]
 }

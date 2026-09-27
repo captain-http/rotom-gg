@@ -2,7 +2,7 @@ import { attachDatabasePool } from "@vercel/functions";
 import { drizzle, type NodePgQueryResultHKT } from "drizzle-orm/node-postgres";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 import { Pool } from "pg";
-import * as schema from "./schema";
+import * as schema from "./schema.ts";
 
 // The pooled URL on Vercel; migrations use the direct one (drizzle.config.ts).
 const connectionString = process.env.DATABASE_URL;

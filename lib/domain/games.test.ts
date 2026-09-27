@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test } from "vitest";
 import { withRollback } from "../../test/db";
+import { archetypes } from "../db/schema";
 import { createDeck, findDeck } from "./decks";
 import { countGames, createGame, findGame, listGames } from "./games";
 
@@ -50,6 +51,47 @@ test("createGame stores the facts summarized from the log", () =>
       maxDamage: 260,
       opponentMaxDamage: 20,
     });
+  }));
+
+test("createGame stores the archetype the opponent most likely played", () =>
+  withRollback(async (db) => {
+    const deck = await createDeck({ userId: "user_red", title: "Deck" }, db);
+    const deckOf = (name: string, playRates: Record<string, number>) => ({
+      slug: name.toLowerCase().replaceAll(" ", "-"),
+      name,
+      share: 10,
+      lists: 100,
+      cards: [],
+      pokemon: {},
+      playRates,
+    });
+    await db.insert(archetypes).values([
+      deckOf("Toxtricity Box", {
+        Toxel: 100,
+        Toxtricity: 100,
+        "Darkness Energy": 100,
+      }),
+      deckOf("Dragapult ex", { Dreepy: 100, "Psychic Energy": 100 }),
+    ]);
+    const log = readFileSync(
+      join(
+        import.meta.dirname,
+        "../../test/fixtures/logs/win-bench-out-opponent-timeouts.txt",
+      ),
+      "utf8",
+    );
+
+    const game = await createGame(
+      { userId: "user_red", deckId: deck.id, log },
+      db,
+    );
+    const unsure = await createGame(
+      { userId: "user_red", deckId: deck.id, log: "Turn 1" },
+      db,
+    );
+
+    expect(game?.opponentArchetype).toBe("Toxtricity Box");
+    expect(unsure?.opponentArchetype).toBeNull();
   }));
 
 test("createGame stores the language the log is in", () =>
