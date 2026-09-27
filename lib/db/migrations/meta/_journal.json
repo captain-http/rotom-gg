@@ -78,6 +78,13 @@
       "when": 1790163535046,
       "tag": "0010_drop_waitlist",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1790532242028,
+      "tag": "0011_add_archetype_play_rates",
+      "breakpoints": true
     }
   ]
 }

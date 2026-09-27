@@ -6,13 +6,18 @@ import {
   findMatch,
   listArchetypeNames,
   listArchetypes,
+  listCandidates,
   type Archetype,
 } from "./archetypes";
+
+// Every deck runs these, so they tell no archetype from another.
+const STAPLES = { "Ultra Ball": 100, "Boss's Orders": 100 };
 
 function archetype(
   slug: string,
   share: number,
   pokemon: Record<string, number>,
+  others: Record<string, number> = {},
 ): Archetype {
   return {
     slug,
@@ -21,23 +26,24 @@ function archetype(
     lists: 100,
     cards: [],
     pokemon,
+    playRates: { ...pokemon, ...STAPLES, ...others },
     updatedAt: new Date(),
   };
 }
 
 // Two decks that share their basics and differ in what they evolve into.
-const DRAGAPULT = archetype("dragapult", 12, {
-  Dreepy: 100,
-  Drakloak: 100,
-  "Dragapult ex": 100,
-  "Fezandipiti ex": 60,
-});
-const BLAZIKEN = archetype("dragapult-blaziken", 3, {
-  Dreepy: 100,
-  Drakloak: 100,
-  "Dragapult ex": 100,
-  "Blaziken ex": 100,
-});
+const DRAGAPULT = archetype(
+  "dragapult",
+  12,
+  { Dreepy: 100, Drakloak: 100, "Dragapult ex": 100, "Fezandipiti ex": 60 },
+  { "Psychic Energy": 100, "Fire Energy": 5 },
+);
+const BLAZIKEN = archetype(
+  "dragapult-blaziken",
+  3,
+  { Dreepy: 100, Drakloak: 100, "Dragapult ex": 100, "Blaziken ex": 100 },
+  { "Psychic Energy": 100, "Fire Energy": 100, "Magma Basin": 90 },
+);
 const ZOROARK = archetype("zoroark", 7, {
   "N's Zorua": 100,
   "N's Zoroark ex": 100,
@@ -81,6 +87,24 @@ test("findMatch prefers the commoner deck when the Pokémon fit both", () => {
   expect(match?.slug).toBe("dragapult");
 });
 
+test("findMatch tells two decks apart by a Trainer only one plays", () => {
+  const match = findMatch(["Dreepy", "Drakloak", "Magma Basin"], ALL);
+
+  expect(match?.slug).toBe("dragapult-blaziken");
+});
+
+test("findMatch reads a log's Basic Energy as a decklist names it", () => {
+  const match = findMatch(["Dreepy", "Basic Fire Energy"], ALL);
+
+  expect(match?.slug).toBe("dragapult-blaziken");
+});
+
+test("findMatch learns nothing from staples every deck plays", () => {
+  expect(
+    findMatch(["Fezandipiti ex", "Ultra Ball", "Boss's Orders"], ALL),
+  ).toEqual(findMatch(["Fezandipiti ex"], ALL));
+});
+
 test("findMatch gives up when a Pokémon could be almost anything", () => {
   expect(findMatch(["Fezandipiti ex"], ALL)).toBeUndefined();
 });
@@ -114,6 +138,29 @@ test("listArchetypes returns the commonest first", () =>
     expect((await listArchetypes(db)).map((a) => a.slug)).toEqual([
       "dragapult",
       "zoroark",
+    ]);
+  }));
+
+test("listCandidates returns what findMatch scores, commonest first", () =>
+  withRollback(async (db) => {
+    await db.insert(table).values([
+      { ...ZOROARK, lists: 50 },
+      { ...DRAGAPULT, lists: 300 },
+    ]);
+
+    expect(await listCandidates(db)).toEqual([
+      {
+        slug: "dragapult",
+        name: "dragapult",
+        share: 12,
+        playRates: DRAGAPULT.playRates,
+      },
+      {
+        slug: "zoroark",
+        name: "zoroark",
+        share: 7,
+        playRates: ZOROARK.playRates,
+      },
     ]);
   }));
 

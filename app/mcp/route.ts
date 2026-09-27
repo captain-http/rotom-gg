@@ -160,8 +160,12 @@ function toDeck(deck: decks.DeckWithRecord) {
 
 // The raw log is deliberately left out: one is hundreds of lines, so a deck's
 // worth of them would crowd out everything else in the client's context.
-function toGame(game: games.Game, format: archetypes.Archetype[]) {
-  const match = archetypes.findMatch(game.opponentPokemon ?? [], format);
+function toGame(game: games.Game, format: archetypes.Candidate[]) {
+  const seen = gameLog.getOpponentCards(game.log);
+  const match = archetypes.findMatch(
+    [...seen.pokemon, ...seen.trainers, ...seen.energy],
+    format,
+  );
   return {
     id: game.id,
     deckId: game.deckId,
@@ -368,7 +372,7 @@ const handler = createMcpHandler(
         const userId = getUserId(context);
         const [played, format] = await Promise.all([
           games.listGames({ userId, deckId, limit }),
-          archetypes.listArchetypes(),
+          archetypes.listCandidates(),
         ]);
         return result({ games: played.map((game) => toGame(game, format)) });
       },
@@ -477,7 +481,7 @@ const handler = createMcpHandler(
         const userId = getUserId(context);
         const [game, format] = await Promise.all([
           games.findGame({ userId, gameId }),
-          archetypes.listArchetypes(),
+          archetypes.listCandidates(),
         ]);
         return result({
           game: game

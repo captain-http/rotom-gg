@@ -4,7 +4,7 @@ import { archetypes } from "../db/schema";
 
 export type Archetype = typeof archetypes.$inferSelect;
 
-/** A guess at which archetype a deck was, from the Pokémon it showed. */
+/** A guess at which archetype a deck was, from the cards it showed. */
 export type Match = {
   slug: string;
   name: string;
@@ -16,10 +16,16 @@ export type Match = {
   alternatives: { slug: string; name: string; confidence: number }[];
 };
 
+/** What findMatch needs of an archetype: none of the decklist. */
+export type Candidate = Pick<
+  Archetype,
+  "slug" | "name" | "share" | "playRates"
+>;
+
 // Below this the guess isn't worth showing — a short game reveals two
-// Pokémon, and two Pokémon are often common to a dozen decks.
+// Pokémon and a few staples, and those are often common to a dozen decks.
 const MIN_CONFIDENCE = 0.5;
-// A Pokémon no list of an archetype ran isn't impossible, just unlikely.
+// A card no list of an archetype ran isn't impossible, just unlikely.
 const FLOOR = 0.5;
 
 /**
@@ -71,32 +77,54 @@ export async function listArchetypeNames(
 }
 
 /**
- * Which archetype a deck most likely was, from the Pokémon it was seen with.
+ * Every archetype in the format with what findMatch scores it by, commonest
+ * first. Cheap next to listArchetypes, which carries the decklists.
  *
- * Scores each archetype by how usual those Pokémon are in its lists, weighted
- * by how common the archetype is. Pokémon that aren't named count for
+ * @param db - The database or a transaction; defaults to the shared client.
+ * @returns The candidates, or an empty array before the first rebuild.
+ */
+export async function listCandidates(db: Db = defaultDb): Promise<Candidate[]> {
+  return db
+    .select({
+      slug: archetypes.slug,
+      name: archetypes.name,
+      share: archetypes.share,
+      playRates: archetypes.playRates,
+    })
+    .from(archetypes)
+    .orderBy(desc(archetypes.lists));
+}
+
+/**
+ * Which archetype a deck most likely was, from the cards it was seen with.
+ *
+ * Scores each archetype by how usual those cards are in its lists, weighted
+ * by how common the archetype is. Pokémon, Trainers and Energy all count: a
+ * staple every deck runs moves no archetype ahead of another, while a card
+ * few decks run moves the ones that do. Cards that aren't named count for
  * nothing: a battle log shows what was played, not what was in the deck.
  *
- * @param pokemon - The Pokémon seen, e.g. games.opponentPokemon.
- * @param candidates - The archetypes to choose between, from listArchetypes.
+ * @param seen - Card names seen, as gameLog.getOpponentCards sorts them:
+ *   its pokemon, trainers and energy together.
+ * @param candidates - The archetypes to choose between, from listCandidates.
  * @returns The best match, or undefined when nothing fits well enough —
  *   which is the honest answer for a two-turn game, or for a deck nobody
  *   brings to tournaments.
  * @example
- * archetypes.findMatch(["Dreepy", "Drakloak", "Blaziken ex"], all);
- * // { slug: "dragapult-blaziken", name: "Dragapult Blaziken", confidence: 0.91, … }
+ * archetypes.findMatch(["Dreepy", "Unfair Stamp", "Basic Psychic Energy"], all);
+ * // { slug: "dragapult-ex", name: "Dragapult ex", confidence: 0.56, … }
  */
 export function findMatch(
-  pokemon: string[],
-  candidates: Archetype[],
+  seen: string[],
+  candidates: Candidate[],
 ): Match | undefined {
-  const seen = [...new Set(pokemon)];
-  if (seen.length === 0 || candidates.length === 0) {
+  const names = [...new Set(seen.map(toListName))];
+  if (names.length === 0 || candidates.length === 0) {
     return undefined;
   }
 
   const scored = candidates
-    .map((candidate) => ({ candidate, score: score(seen, candidate) }))
+    .map((candidate) => ({ candidate, score: score(names, candidate) }))
     .sort((a, b) => b.score - a.score);
 
   // Softmax over the log scores, so confidence says "how much better than the
@@ -123,11 +151,17 @@ export function findMatch(
   };
 }
 
-// log P(archetype) + Σ log P(pokemon | archetype), all in percentages.
-function score(seen: string[], candidate: Archetype): number {
+// log P(archetype) + Σ log P(card | archetype), all in percentages.
+function score(names: string[], candidate: Candidate): number {
   let total = Math.log(candidate.share);
-  for (const name of seen) {
-    total += Math.log((candidate.pokemon[name] ?? 0) + FLOOR);
+  for (const name of names) {
+    total += Math.log((candidate.playRates[name] ?? 0) + FLOOR);
   }
   return total;
+}
+
+// A log names Basic Energy "Basic Psychic Energy"; a decklist, "Psychic
+// Energy".
+function toListName(name: string): string {
+  return name.replace(/^Basic (?=\S+ Energy$)/, "");
 }

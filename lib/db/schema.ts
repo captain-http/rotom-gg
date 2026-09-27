@@ -96,6 +96,14 @@ export const archetypes = pgTable("archetypes", {
   // { "Dreepy": 98, … }. Pokémon only — Trainers are too alike across decks
   // to tell archetypes apart, and a log names the Pokémon anyway.
   pokemon: jsonb("pokemon").$type<Record<string, number>>().notNull(),
+  // How often each card appears in a list by name, as a percentage, with no
+  // cutoff: Pokémon, Trainers and Energy alike, { "Dreepy": 98,
+  // "Unfair Stamp": 95, "Psychic Energy": 100, … }. What archetypes.findMatch
+  // scores a log's cards against. Empty until the next rebuild.
+  playRates: jsonb("play_rates")
+    .$type<Record<string, number>>()
+    .notNull()
+    .default({}),
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

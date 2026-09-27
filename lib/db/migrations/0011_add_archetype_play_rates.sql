@@ -1,0 +1,1 @@
+ALTER TABLE "archetypes" ADD COLUMN "play_rates" jsonb DEFAULT '{}'::jsonb NOT NULL;

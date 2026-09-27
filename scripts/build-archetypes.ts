@@ -138,6 +138,7 @@ function summarize(entries: Entry[]) {
 
     const counted = new Map<string, { counts: number[]; uses: Card[] }>();
     const pokemonLists = new Map<string, number>();
+    const nameLists = new Map<string, number>();
     for (const list of lists) {
       // A list can split one Trainer across printings: 2 of one, 2 of another.
       const inList = new Map<string, Card[]>();
@@ -153,6 +154,9 @@ function summarize(entries: Entry[]) {
       // By name, because a battle log never says which printing it was.
       for (const name of new Set(list.pokemon.map((card) => card.name))) {
         pokemonLists.set(name, (pokemonLists.get(name) ?? 0) + 1);
+      }
+      for (const name of new Set(list.cards.map((card) => card.name))) {
+        nameLists.set(name, (nameLists.get(name) ?? 0) + 1);
       }
     }
 
@@ -170,12 +174,17 @@ function summarize(entries: Entry[]) {
       .filter((card) => card.playRate >= MIN_PLAY_RATE)
       .sort((a, b) => b.playRate - a.playRate || a.name.localeCompare(b.name));
 
-    const pokemon = Object.fromEntries(
-      [...pokemonLists].map(([name, count]) => [
-        name,
-        Math.round((count / lists.length) * 100),
-      ]),
-    );
+    const toRates = (counts: Map<string, number>) =>
+      Object.fromEntries(
+        [...counts].map(([name, count]) => [
+          name,
+          Math.round((count / lists.length) * 100),
+        ]),
+      );
+    const pokemon = toRates(pokemonLists);
+    // Every card, however rare: a card only a tenth of lists run still says
+    // more about a deck than one nobody runs.
+    const playRates = toRates(nameLists);
 
     rows.push({
       slug,
@@ -184,6 +193,7 @@ function summarize(entries: Entry[]) {
       lists: lists.length,
       cards,
       pokemon,
+      playRates,
       updatedAt: sql`now()`,
     });
   }
