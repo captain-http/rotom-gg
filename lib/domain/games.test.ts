@@ -94,6 +94,70 @@ test("createGame stores the archetype the opponent most likely played", () =>
     expect(unsure?.opponentArchetype).toBeNull();
   }));
 
+test("createGame stores the Signature Pokémon of the opponent's archetype", () =>
+  withRollback(async (db) => {
+    const deck = await createDeck({ userId: "user_red", title: "Deck" }, db);
+    await db.insert(archetypes).values({
+      slug: "toxtricity-box",
+      name: "Toxtricity Box",
+      share: 10,
+      lists: 100,
+      cards: [],
+      pokemon: {},
+      playRates: { Toxel: 100, Toxtricity: 100, "Darkness Energy": 100 },
+      icons: ["toxtricity", "absol-mega"],
+    });
+    const log = readFileSync(
+      join(
+        import.meta.dirname,
+        "../../test/fixtures/logs/win-bench-out-opponent-timeouts.txt",
+      ),
+      "utf8",
+    );
+
+    const game = await createGame(
+      { userId: "user_red", deckId: deck.id, log },
+      db,
+    );
+    const unsure = await createGame(
+      { userId: "user_red", deckId: deck.id, log: "Turn 1" },
+      db,
+    );
+
+    expect(game?.opponentArchetypeIcons).toEqual(["toxtricity", "absol-mega"]);
+    expect(unsure?.opponentArchetypeIcons).toBeNull();
+  }));
+
+test("createGame leaves the Signature Pokémon for later when the archetype has none yet", () =>
+  withRollback(async (db) => {
+    const deck = await createDeck({ userId: "user_red", title: "Deck" }, db);
+    // Archetypes rebuilt before Signature Pokémon were stored have none.
+    await db.insert(archetypes).values({
+      slug: "toxtricity-box",
+      name: "Toxtricity Box",
+      share: 10,
+      lists: 100,
+      cards: [],
+      pokemon: {},
+      playRates: { Toxel: 100, Toxtricity: 100, "Darkness Energy": 100 },
+    });
+    const log = readFileSync(
+      join(
+        import.meta.dirname,
+        "../../test/fixtures/logs/win-bench-out-opponent-timeouts.txt",
+      ),
+      "utf8",
+    );
+
+    const game = await createGame(
+      { userId: "user_red", deckId: deck.id, log },
+      db,
+    );
+
+    expect(game?.opponentArchetype).toBe("Toxtricity Box");
+    expect(game?.opponentArchetypeIcons).toBeNull();
+  }));
+
 test("createGame stores the language the log is in", () =>
   withRollback(async (db) => {
     const deck = await createDeck({ userId: "user_red", title: "Deck" }, db);

@@ -56,6 +56,16 @@ project this size. Serverless has no persistent disk, so SQLite is out — and
 Postgres means a second user needs no migration, with window functions
 first-class for the stats queries.
 
+## Images
+
+Pokémon sprites load straight from Limitless (r2.limitlesstcg.net), unoptimized.
+The one we can't do without, the Substitute, is served from public/. Tests
+serve copies from test/fixtures/sprites/.
+
+Why: they're a few hundred bytes of pixel art each, named as Limitless's
+archetype data names them, so there is nothing to resize or look up. Copying
+them all would mean tracking every new Pokémon Limitless adds.
+
 ## Background work
 
 No queue. Work happens in the request.

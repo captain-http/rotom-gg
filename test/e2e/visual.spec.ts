@@ -1,3 +1,4 @@
+import { join } from "node:path";
 import { expect, test } from "@playwright/test";
 
 // Visual regression for the design language. A failure means the look
@@ -19,6 +20,19 @@ const viewports = [
 for (const { name, path } of pages) {
   for (const viewport of viewports) {
     test(`${name} ${viewport.name}`, async ({ page }) => {
+      // Sprites come from Limitless in production; here, from copies, so the
+      // screenshots don't depend on their server.
+      await page.route(
+        "https://r2.limitlesstcg.net/pokemon/gen9/*.png",
+        (route) =>
+          route.fulfill({
+            path: join(
+              import.meta.dirname,
+              "../fixtures/sprites",
+              new URL(route.request().url()).pathname.split("/").pop()!,
+            ),
+          }),
+      );
       await page.setViewportSize(viewport);
       await page.emulateMedia({
         colorScheme: "light",

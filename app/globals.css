@@ -190,6 +190,11 @@
   );
 }
 
+/* Pixel art scaled to a box keeps hard pixels instead of blurring. */
+@utility pixelated {
+  image-rendering: pixelated;
+}
+
 /* On the sleeve the hero is the wordmark, so the header's copy of it would
    sit directly above a much larger one. The header keeps its sign-in only. */
 body:has([data-sleeve]) header [data-wordmark] {

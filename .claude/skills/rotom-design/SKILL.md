@@ -203,6 +203,9 @@ Apple).
 tone? }` with `tone` one of `ok`, `orange`, `blue`, `purple`.
 - `Reveal index={i}` — a list item that steps in on load.
 - `DeckCard`, `GameCard` — decks and games as menu items in a panel.
+- `SignaturePokemon name signaturePokemon` — an archetype as its one or two
+  sprites, pixelated in 33px boxes, in a slot always two wide; the
+  Substitute when it's unknown. The name is its label and tooltip.
 - `RecordBadge wins losses winRate` — `W 05` / `L 02` as joined halves,
   with the win rate beside it.
 

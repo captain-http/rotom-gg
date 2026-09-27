@@ -75,6 +75,7 @@ const game = (overrides: Partial<Game>): Game => ({
   turnCount: null,
   opponentPokemon: null,
   opponentArchetype: null,
+  opponentArchetypeIcons: null,
   maxDamage: null,
   opponentMaxDamage: null,
   language: null,
@@ -90,7 +91,9 @@ const games: Game[] = [
     coinTossChoice: "first",
     wentFirst: false,
     turnCount: 8,
-    opponentArchetype: "Toxtricity Box",
+    // One Signature Pokémon, one row with two, and one never guessed.
+    opponentArchetype: "Mega Excadrill",
+    opponentArchetypeIcons: ["excadrill-mega"],
   }),
   game({
     id: 2,
@@ -100,6 +103,7 @@ const games: Game[] = [
     wentFirst: true,
     turnCount: 12,
     opponentArchetype: "Dragapult Dusknoir",
+    opponentArchetypeIcons: ["dragapult", "dusknoir"],
   }),
   game({ id: 1 }),
 ];

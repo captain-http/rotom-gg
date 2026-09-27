@@ -11,6 +11,11 @@ export type Match = {
   name: string;
   /** Share of the format, as a percentage of recent tournament lists. */
   share: number;
+  /**
+   * The archetype's Signature Pokémon, as Limitless names their sprites, or
+   * null when the archetypes were rebuilt before those were stored.
+   */
+  signaturePokemon: string[] | null;
   /** 0 to 1. How much better this fits than everything else it could be. */
   confidence: number;
   /** The next best guesses, most likely first. */
@@ -20,7 +25,7 @@ export type Match = {
 /** What findMatch needs of an archetype: none of the decklist. */
 export type Candidate = Pick<
   Archetype,
-  "slug" | "name" | "share" | "playRates"
+  "slug" | "name" | "share" | "playRates" | "icons"
 >;
 
 // Below this the guess isn't worth showing — a short game reveals two
@@ -91,6 +96,7 @@ export async function listCandidates(db: Db = defaultDb): Promise<Candidate[]> {
       name: archetypes.name,
       share: archetypes.share,
       playRates: archetypes.playRates,
+      icons: archetypes.icons,
     })
     .from(archetypes)
     .orderBy(desc(archetypes.lists));
@@ -143,6 +149,7 @@ export function findMatch(
     slug: best.slug,
     name: best.name,
     share: best.share,
+    signaturePokemon: best.icons.length > 0 ? best.icons : null,
     confidence: Math.round(confidence * 100) / 100,
     alternatives: scored.slice(1, 4).map((entry, index) => ({
       slug: entry.candidate.slug,

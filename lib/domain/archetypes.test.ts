@@ -27,6 +27,7 @@ function archetype(
     cards: [],
     pokemon,
     playRates: { ...pokemon, ...STAPLES, ...others },
+    icons: [slug],
     updatedAt: new Date(),
   };
 }
@@ -38,12 +39,15 @@ const DRAGAPULT = archetype(
   { Dreepy: 100, Drakloak: 100, "Dragapult ex": 100, "Fezandipiti ex": 60 },
   { "Psychic Energy": 100, "Fire Energy": 5 },
 );
-const BLAZIKEN = archetype(
-  "dragapult-blaziken",
-  3,
-  { Dreepy: 100, Drakloak: 100, "Dragapult ex": 100, "Blaziken ex": 100 },
-  { "Psychic Energy": 100, "Fire Energy": 100, "Magma Basin": 90 },
-);
+const BLAZIKEN = {
+  ...archetype(
+    "dragapult-blaziken",
+    3,
+    { Dreepy: 100, Drakloak: 100, "Dragapult ex": 100, "Blaziken ex": 100 },
+    { "Psychic Energy": 100, "Fire Energy": 100, "Magma Basin": 90 },
+  ),
+  icons: ["dragapult", "blaziken"],
+};
 const ZOROARK = archetype("zoroark", 7, {
   "N's Zorua": 100,
   "N's Zoroark ex": 100,
@@ -78,6 +82,12 @@ test("findMatch separates two decks by the card that tells them apart", () => {
   const match = findMatch(["Dreepy", "Drakloak", "Blaziken ex"], ALL);
 
   expect(match?.slug).toBe("dragapult-blaziken");
+});
+
+test("findMatch gives the archetype's Signature Pokémon", () => {
+  const match = findMatch(["Dreepy", "Drakloak", "Blaziken ex"], ALL);
+
+  expect(match?.signaturePokemon).toEqual(["dragapult", "blaziken"]);
 });
 
 test("findMatch prefers the commoner deck when the Pokémon fit both", () => {
@@ -154,12 +164,14 @@ test("listCandidates returns what findMatch scores, commonest first", () =>
         name: "dragapult",
         share: 12,
         playRates: DRAGAPULT.playRates,
+        icons: ["dragapult"],
       },
       {
         slug: "zoroark",
         name: "zoroark",
         share: 7,
         playRates: ZOROARK.playRates,
+        icons: ["zoroark"],
       },
     ]);
   }));

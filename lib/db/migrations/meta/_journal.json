@@ -92,6 +92,20 @@
       "when": 1790532433115,
       "tag": "0012_add_game_opponent_archetype",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1790547858797,
+      "tag": "0013_add_archetype_icons",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1790547894509,
+      "tag": "0014_add_game_opponent_archetype_icons",
+      "breakpoints": true
     }
   ]
 }

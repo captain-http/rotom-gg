@@ -55,6 +55,9 @@ export const games = pgTable(
     // filed. Null when the log didn't show enough to tell. Kept as guessed:
     // the format moves on, and a rebuild shouldn't rewrite past games.
     opponentArchetype: text("opponent_archetype"),
+    // That archetype's Signature Pokémon (archetypes.icons), kept with the
+    // name for the same reason. Null when the name is.
+    opponentArchetypeIcons: text("opponent_archetype_icons").array(),
     // Most damage from a single attack, Weakness included.
     maxDamage: integer("max_damage"),
     opponentMaxDamage: integer("opponent_max_damage"),
@@ -109,6 +112,10 @@ export const archetypes = pgTable("archetypes", {
     .$type<Record<string, number>>()
     .notNull()
     .default({}),
+  // The archetype's Signature Pokémon: one or two sprite names Limitless
+  // shows it by, e.g. ["dragapult", "dusknoir"] or ["excadrill-mega"].
+  // Empty until the next rebuild.
+  icons: text("icons").array().notNull().default([]),
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

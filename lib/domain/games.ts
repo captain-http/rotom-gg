@@ -31,6 +31,10 @@ export async function createGame(
     return undefined;
   }
 
+  const match = archetypes.findOpponentMatch(
+    input.log,
+    await archetypes.listCandidates(db),
+  );
   const [game] = await db
     .insert(games)
     .values({
@@ -40,11 +44,8 @@ export async function createGame(
       // The parser knows the language for certain when it can read the log;
       // Jev's answer is for the languages it can't.
       language: gameLog.findLanguage(input.log) ?? input.language ?? null,
-      opponentArchetype:
-        archetypes.findOpponentMatch(
-          input.log,
-          await archetypes.listCandidates(db),
-        )?.name ?? null,
+      opponentArchetype: match?.name ?? null,
+      opponentArchetypeIcons: match?.signaturePokemon ?? null,
     })
     .returning();
   if (!game) {

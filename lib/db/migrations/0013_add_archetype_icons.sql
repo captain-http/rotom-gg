@@ -1,0 +1,1 @@
+ALTER TABLE "archetypes" ADD COLUMN "icons" text[] DEFAULT '{}' NOT NULL;

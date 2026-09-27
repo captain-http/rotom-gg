@@ -46,7 +46,8 @@ const PAUSE_MS = 250;
 
 type Tournament = { id: string; players: number };
 type Standing = {
-  deck?: { id?: string; name?: string };
+  // icons: the Signature Pokémon, as Limitless names their sprites.
+  deck?: { id?: string; name?: string; icons?: string[] };
   decklist?: Record<
     string,
     { name: string; set: string; number: string; count: number }[]
@@ -55,6 +56,7 @@ type Standing = {
 type Entry = {
   slug: string;
   name: string;
+  icons: string[];
   cards: (Card & { key: string })[];
   pokemon: Card[];
 };
@@ -108,7 +110,8 @@ function toEntry(standing: Standing): Entry | undefined {
       .filter((card) => card?.name)
       .map((card) => ({ ...card, key: cardKey(kind, card) })),
   );
-  return cards.length > 0 ? { slug, name, cards, pokemon } : undefined;
+  const icons = standing.deck?.icons ?? [];
+  return cards.length > 0 ? { slug, name, icons, cards, pokemon } : undefined;
 }
 
 // Trainers and Energy of the same name are the same card in any printing, so
@@ -189,6 +192,7 @@ function summarize(entries: Entry[]) {
     rows.push({
       slug,
       name: lists[0]!.name,
+      icons: lists[0]!.icons,
       share: round((lists.length / entries.length) * 100),
       lists: lists.length,
       cards,
