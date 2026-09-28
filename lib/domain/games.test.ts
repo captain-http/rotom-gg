@@ -4,7 +4,14 @@ import { expect, test } from "vitest";
 import { withRollback } from "../../test/db";
 import { archetypes } from "../db/schema";
 import { createDeck, findDeck } from "./decks";
-import { countGames, createGame, findGame, listGames } from "./games";
+import {
+  countGames,
+  createGame,
+  findGame,
+  type Game,
+  listGames,
+  listMatchups,
+} from "./games";
 
 test("createGame stores the log on the user's deck", () =>
   withRollback(async (db) => {
@@ -267,3 +274,95 @@ test("countGames counts the games on one deck", () =>
       2,
     );
   }));
+
+// A filed game with only what listMatchups reads worth setting.
+function gameOf(
+  id: number,
+  result: Game["result"],
+  opponentArchetype: string | null,
+  opponentArchetypeIcons: string[] | null = null,
+): Game {
+  return {
+    id,
+    deckId: 1,
+    log: "",
+    result,
+    wonCoinToss: null,
+    coinTossChoice: null,
+    wentFirst: null,
+    turnCount: null,
+    opponentPokemon: null,
+    opponentArchetype,
+    opponentArchetypeIcons,
+    maxDamage: null,
+    opponentMaxDamage: null,
+    language: null,
+    createdAt: new Date(0),
+  };
+}
+
+test("listMatchups groups games by the opponent's archetype, with each record", () => {
+  const dragapultWin = gameOf(3, "win", "Dragapult Dusknoir");
+  const gardevoirLoss = gameOf(2, "loss", "Gardevoir ex");
+  const dragapultLoss = gameOf(1, "loss", "Dragapult Dusknoir");
+
+  expect(
+    listMatchups([dragapultWin, gardevoirLoss, dragapultLoss]),
+  ).toMatchObject([
+    {
+      archetype: "Dragapult Dusknoir",
+      wins: 1,
+      losses: 1,
+      games: [dragapultWin, dragapultLoss],
+    },
+    { archetype: "Gardevoir ex", wins: 0, losses: 1, games: [gardevoirLoss] },
+  ]);
+});
+
+test("listMatchups puts the most played first, then the most recently played", () => {
+  const matchups = listMatchups([
+    gameOf(4, "win", "Gardevoir ex"),
+    gameOf(3, "win", "Dragapult Dusknoir"),
+    gameOf(2, "loss", "Dragapult Dusknoir"),
+    gameOf(1, "loss", "Raging Bolt ex"),
+  ]);
+
+  expect(matchups.map((matchup) => matchup.archetype)).toEqual([
+    "Dragapult Dusknoir",
+    "Gardevoir ex",
+    "Raging Bolt ex",
+  ]);
+});
+
+test("listMatchups groups unknown and Other archetypes together, last", () => {
+  const unknown = gameOf(4, "win", null);
+  const other = gameOf(3, "loss", "Other", []);
+  const unknownAgain = gameOf(2, null, null);
+
+  expect(
+    listMatchups([
+      unknown,
+      other,
+      unknownAgain,
+      gameOf(1, "win", "Gardevoir ex"),
+    ]),
+  ).toMatchObject([
+    { archetype: "Gardevoir ex" },
+    {
+      archetype: null,
+      signaturePokemon: null,
+      wins: 1,
+      losses: 1,
+      games: [unknown, other, unknownAgain],
+    },
+  ]);
+});
+
+test("listMatchups shows an archetype by its newest game's Signature Pokémon", () => {
+  expect(
+    listMatchups([
+      gameOf(2, "win", "Dragapult Dusknoir", ["dragapult", "dusknoir"]),
+      gameOf(1, "win", "Dragapult Dusknoir", ["dragapult"]),
+    ]),
+  ).toMatchObject([{ signaturePokemon: ["dragapult", "dusknoir"] }]);
+});

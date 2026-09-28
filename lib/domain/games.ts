@@ -119,3 +119,55 @@ export async function countGames(
     .where(and(eq(decks.userId, input.userId), eq(games.deckId, input.deckId)));
   return row?.count ?? 0;
 }
+
+/** The games a deck played against one Opponent Archetype, with its record. */
+export type Matchup = {
+  /** Null for games whose archetype is unknown or Limitless's "Other". */
+  archetype: string | null;
+  signaturePokemon: string[] | null;
+  wins: number;
+  losses: number;
+  games: Game[];
+};
+
+/**
+ * Groups a deck's games into Matchups, one per Opponent Archetype.
+ *
+ * @param games - The games, newest first, as listGames returns them.
+ * @returns One Matchup per archetype, its games in the order given: the most
+ *   played first, ties broken by the most recently played. Games whose
+ *   archetype is unknown or "Other" share one Matchup, always last.
+ * @example
+ * listMatchups(await listGames({ userId, deckId }));
+ * // [{ archetype: "Dragapult Dusknoir", wins: 3, losses: 1, … }, …]
+ */
+export function listMatchups(games: Game[]): Matchup[] {
+  const matchups = new Map<string | null, Matchup>();
+  for (const game of games) {
+    // Neither an unknown archetype nor "Other" says what the opponent
+    // played, so they're shown as one.
+    const archetype =
+      game.opponentArchetype === "Other" ? null : game.opponentArchetype;
+    let matchup = matchups.get(archetype);
+    if (!matchup) {
+      matchup = {
+        archetype,
+        signaturePokemon: archetype ? game.opponentArchetypeIcons : null,
+        wins: 0,
+        losses: 0,
+        games: [],
+      };
+      matchups.set(archetype, matchup);
+    }
+    matchup.games.push(game);
+    if (game.result === "win") matchup.wins++;
+    if (game.result === "loss") matchup.losses++;
+  }
+  // Maps keep the order each archetype was first seen, newest first, and the
+  // sort is stable, so ties stay most recently played first.
+  return [...matchups.values()].sort(
+    (a, b) =>
+      Number(a.archetype === null) - Number(b.archetype === null) ||
+      b.games.length - a.games.length,
+  );
+}

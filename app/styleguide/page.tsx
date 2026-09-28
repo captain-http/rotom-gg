@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { DeckWithRecord } from "@/lib/domain/decks";
-import type { Game } from "@/lib/domain/games";
+import { type Game, listMatchups } from "@/lib/domain/games";
 import { Button, ButtonLink } from "../components/ui/button";
 import { DeckCard } from "../components/ui/deck-card";
 import { Input, Textarea } from "../components/ui/field";
 import { GameCard } from "../components/ui/game-card";
 import { GlyphLink } from "../components/ui/glyph-link";
+import { MatchupCard } from "../components/ui/matchup-card";
 import { Mark } from "../components/ui/mark";
 import { Menu } from "../components/ui/menu";
 import { Panel } from "../components/ui/panel";
@@ -106,6 +107,32 @@ const games: Game[] = [
     opponentArchetypeIcons: ["dragapult", "dusknoir"],
   }),
   game({ id: 1 }),
+];
+
+// A deck's games by Matchup: one played twice, open; one once; and the games
+// whose archetype was never guessed, last.
+const matchupGames: Game[] = [
+  game({
+    id: 7,
+    result: "win",
+    turnCount: 9,
+    opponentArchetype: "Dragapult Dusknoir",
+    opponentArchetypeIcons: ["dragapult", "dusknoir"],
+  }),
+  game({
+    id: 6,
+    result: "loss",
+    opponentArchetype: "Mega Excadrill",
+    opponentArchetypeIcons: ["excadrill-mega"],
+  }),
+  game({
+    id: 5,
+    result: "loss",
+    turnCount: 14,
+    opponentArchetype: "Dragapult Dusknoir",
+    opponentArchetypeIcons: ["dragapult", "dusknoir"],
+  }),
+  game({ id: 4 }),
 ];
 
 export default function StyleguidePage() {
@@ -251,6 +278,18 @@ export default function StyleguidePage() {
             {games.map((game, index) => (
               <Reveal key={game.id} index={index}>
                 <GameCard game={game} open={index === 0} />
+              </Reveal>
+            ))}
+          </Menu>
+        </Panel>
+      </Section>
+
+      <Section title="Menu · matchups">
+        <Panel title={`Games · ${matchupGames.length}`} flush>
+          <Menu>
+            {listMatchups(matchupGames).map((matchup, index) => (
+              <Reveal key={matchup.archetype ?? ""} index={index}>
+                <MatchupCard matchup={matchup} open={index === 0} />
               </Reveal>
             ))}
           </Menu>

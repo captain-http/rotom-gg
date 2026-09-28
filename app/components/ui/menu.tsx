@@ -8,7 +8,7 @@ export function Menu({ children }: { children: ReactNode }) {
   return <ul className="flex flex-col divide-y divide-rule">{children}</ul>;
 }
 
-// The row's layout, shared with GameCard's <summary>: the cursor's column is
+// The row's layout, shared with GameCard's and MatchupCard's <summary>: the cursor's column is
 // always there, so nothing moves when it appears.
 export const MENU_ROW =
   "group grid grid-cols-[11px_1fr] items-center gap-x-2 px-3 py-3 outline-offset-[-4px]";

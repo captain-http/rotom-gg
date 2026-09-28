@@ -1,10 +1,10 @@
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { findDeck, findWinRate } from "@/lib/domain/decks";
-import { listGames } from "@/lib/domain/games";
+import { listGames, listMatchups } from "@/lib/domain/games";
 import { ButtonLink } from "../../components/ui/button";
-import { GameCard } from "../../components/ui/game-card";
 import { GlyphLink } from "../../components/ui/glyph-link";
+import { MatchupCard } from "../../components/ui/matchup-card";
 import { Menu } from "../../components/ui/menu";
 import { Panel } from "../../components/ui/panel";
 import { formatWinRate, RecordBadge } from "../../components/ui/record-badge";
@@ -55,9 +55,9 @@ export default async function DeckPage({
           flush
         >
           <Menu>
-            {games.map((game, index) => (
-              <Reveal key={game.id} index={index}>
-                <GameCard game={game} />
+            {listMatchups(games).map((matchup, index) => (
+              <Reveal key={matchup.archetype ?? ""} index={index}>
+                <MatchupCard matchup={matchup} />
               </Reveal>
             ))}
           </Menu>

@@ -21,3 +21,7 @@ _Avoid_: Mascots, thumbnail
 
 **Substitute**:
 What stands in for the Signature Pokémon when the Opponent's Archetype is unknown or "Other".
+
+**Matchup**:
+The games a deck played against one Opponent Archetype, with their record. Games whose Archetype is unknown or "Other" share one Matchup.
+_Avoid_: Matchup stats, archetype group
