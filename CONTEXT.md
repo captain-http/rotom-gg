@@ -25,3 +25,7 @@ What stands in for the Signature Pokémon when the Opponent's Archetype is unkno
 **Matchup**:
 The games a deck played against one Opponent Archetype, with their record. Games whose Archetype is unknown or "Other" share one Matchup.
 _Avoid_: Matchup stats, archetype group
+
+**Day**:
+The games a deck played on one calendar date in the Viewer's timezone, with their record. A game's date is when it was filed; logs carry no date of their own.
+_Avoid_: Session, game day

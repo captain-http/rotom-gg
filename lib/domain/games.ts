@@ -171,3 +171,44 @@ export function listMatchups(games: Game[]): Matchup[] {
       b.games.length - a.games.length,
   );
 }
+
+/** The games a deck played on one calendar date, with its record. */
+export type Day = {
+  /** The date in the Viewer's timezone, as YYYY-MM-DD. */
+  date: string;
+  wins: number;
+  losses: number;
+  games: Game[];
+};
+
+/**
+ * Groups a deck's games into Days, by the date each was filed. Logs carry no
+ * date of their own, so filing is the nearest thing to when it was played.
+ *
+ * @param games - The games, newest first, as listGames returns them.
+ * @param timeZone - The Viewer's IANA timezone, which decides where midnight
+ *   falls.
+ * @returns One Day per date, newest first, its games in the order given.
+ * @example
+ * listDays(await listGames({ userId, deckId }), "America/Mexico_City");
+ * // [{ date: "2026-09-29", wins: 2, losses: 1, games: […] }, …]
+ */
+export function listDays(games: Game[], timeZone: string): Day[] {
+  // en-CA writes dates as YYYY-MM-DD.
+  const format = new Intl.DateTimeFormat("en-CA", { timeZone });
+  const days = new Map<string, Day>();
+  for (const game of games) {
+    const date = format.format(game.createdAt);
+    let day = days.get(date);
+    if (!day) {
+      day = { date, wins: 0, losses: 0, games: [] };
+      days.set(date, day);
+    }
+    day.games.push(game);
+    if (game.result === "win") day.wins++;
+    if (game.result === "loss") day.losses++;
+  }
+  // YYYY-MM-DD sorts as text. Games usually come newest first already, but a
+  // game filed late for an earlier day mustn't reorder the Days.
+  return [...days.values()].sort((a, b) => b.date.localeCompare(a.date));
+}

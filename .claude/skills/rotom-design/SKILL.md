@@ -203,8 +203,13 @@ Apple).
 tone? }` with `tone` one of `ok`, `orange`, `blue`, `purple`.
 - `Reveal index={i}` — a list item that steps in on load.
 - `DeckCard`, `GameCard` — decks and games as menu items in a panel.
-- `MatchupCard` — a Matchup as a menu row that opens to its `GameCard`s,
-  indented under a hairline.
+- `GamesCard` — a group of games as a menu row that opens to its
+  `GameCard`s, indented under a hairline, with its record. `MatchupCard`
+  (shown by Signature Pokémon) and `DayCard` (shown by date, in a slot as
+  wide as the longest date) are its two groupings.
+- `Tabs label tabs` — ways to look at the same things, as links with their
+  own URLs, over the panel they switch. The current one wears the `▶`
+  cursor.
 - `SignaturePokemon name signaturePokemon` — an archetype as its one or two
   sprites, pixelated in 33px boxes, in a slot always two wide; the
   Substitute when it's unknown. The name is its label and tooltip.

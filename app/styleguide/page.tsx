@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { DeckWithRecord } from "@/lib/domain/decks";
-import { type Game, listMatchups } from "@/lib/domain/games";
+import { type Game, listDays, listMatchups } from "@/lib/domain/games";
 import { Button, ButtonLink } from "../components/ui/button";
+import { DayCard } from "../components/ui/day-card";
 import { DeckCard } from "../components/ui/deck-card";
 import { Input, Textarea } from "../components/ui/field";
 import { GameCard } from "../components/ui/game-card";
@@ -15,6 +16,7 @@ import { RecordBadge } from "../components/ui/record-badge";
 import { StatusList } from "../components/ui/status-list";
 import { Reveal } from "../components/ui/reveal";
 import { Caption, Heading } from "../components/ui/text";
+import { Tabs } from "../components/ui/tabs";
 import { TextBox } from "../components/ui/text-box";
 
 export const metadata: Metadata = { title: "Styleguide · rotom.gg" };
@@ -134,6 +136,14 @@ const matchupGames: Game[] = [
   }),
   game({ id: 4 }),
 ];
+
+// The same games, filed across three days; the last in another year, so its
+// date carries the year.
+const filedOn = ["2026-09-29", "2026-09-29", "2026-09-28", "2025-12-31"];
+const dayGames: Game[] = matchupGames.map((game, index) => ({
+  ...game,
+  createdAt: new Date(`${filedOn[index]}T12:00:00Z`),
+}));
 
 export default function StyleguidePage() {
   if (process.env.VERCEL_ENV === "production") {
@@ -294,6 +304,27 @@ export default function StyleguidePage() {
             ))}
           </Menu>
         </Panel>
+      </Section>
+
+      <Section title="Tabs · days">
+        <div className="flex flex-col gap-3">
+          <Tabs
+            label="Group games by"
+            tabs={[
+              { label: "Matchups", href: "/styleguide", current: false },
+              { label: "Days", href: "/styleguide", current: true },
+            ]}
+          />
+          <Panel title={`Games · ${dayGames.length}`} flush>
+            <Menu>
+              {listDays(dayGames, "UTC").map((day, index) => (
+                <Reveal key={day.date} index={index}>
+                  <DayCard day={day} thisYear="2026" open={index === 0} />
+                </Reveal>
+              ))}
+            </Menu>
+          </Panel>
+        </div>
       </Section>
     </main>
   );

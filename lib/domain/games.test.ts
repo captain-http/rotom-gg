@@ -9,6 +9,7 @@ import {
   createGame,
   findGame,
   type Game,
+  listDays,
   listGames,
   listMatchups,
 } from "./games";
@@ -365,4 +366,48 @@ test("listMatchups shows an archetype by its newest game's Signature Pokémon", 
       gameOf(1, "win", "Dragapult Dusknoir", ["dragapult"]),
     ]),
   ).toMatchObject([{ signaturePokemon: ["dragapult", "dusknoir"] }]);
+});
+
+// A game with no archetype, filed at the given instant.
+function filedAt(id: number, result: Game["result"], iso: string): Game {
+  return { ...gameOf(id, result, null), createdAt: new Date(iso) };
+}
+
+test("listDays groups games by the date they were filed, with each record", () => {
+  const lateWin = filedAt(3, "win", "2026-09-29T20:00:00Z");
+  const earlyLoss = filedAt(2, "loss", "2026-09-29T09:00:00Z");
+  const dayBefore = filedAt(1, "win", "2026-09-28T12:00:00Z");
+
+  expect(listDays([lateWin, earlyLoss, dayBefore], "UTC")).toEqual([
+    { date: "2026-09-29", wins: 1, losses: 1, games: [lateWin, earlyLoss] },
+    { date: "2026-09-28", wins: 1, losses: 0, games: [dayBefore] },
+  ]);
+});
+
+test("listDays puts a game filed near midnight on the Viewer's date", () => {
+  // 9pm on the 28th in Mexico City, which is UTC-6.
+  const game = filedAt(1, "win", "2026-09-29T03:00:00Z");
+
+  expect(listDays([game], "America/Mexico_City")).toMatchObject([
+    { date: "2026-09-28" },
+  ]);
+  expect(listDays([game], "UTC")).toMatchObject([{ date: "2026-09-29" }]);
+});
+
+test("listDays puts the newest date first, whatever order the games come in", () => {
+  // Filed out of order, as a game added later for an earlier day would be.
+  const days = listDays(
+    [
+      filedAt(3, "win", "2026-09-27T12:00:00Z"),
+      filedAt(2, "win", "2026-09-29T12:00:00Z"),
+      filedAt(1, "loss", "2026-09-28T12:00:00Z"),
+    ],
+    "UTC",
+  );
+
+  expect(days.map((day) => day.date)).toEqual([
+    "2026-09-29",
+    "2026-09-28",
+    "2026-09-27",
+  ]);
 });

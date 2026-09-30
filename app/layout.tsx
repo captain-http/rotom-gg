@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "./components/ui/button";
 import { GlyphLink } from "./components/ui/glyph-link";
 import "./globals.css";
+import { TimeZoneSync } from "./time-zone-sync";
 
 // Departure Mono by Helena Zhang, SIL OFL (./fonts/LICENSE-DepartureMono).
 // The party: labels, figures, records, logs, menus. One weight.
@@ -89,6 +90,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </header>
           {children}
         </ClerkProvider>
+        <TimeZoneSync />
       </body>
     </html>
   );
