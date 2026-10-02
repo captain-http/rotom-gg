@@ -57,7 +57,9 @@ export function GamesCard({
             </Caption>
           )}
         </span>
-        <span className="col-start-2 flex flex-col gap-1">
+        {/* The bars run under the cursor's column too, so they sit the same
+            distance from both edges of the panel. */}
+        <span className="col-span-2 flex flex-col gap-1">
           <RecordBar
             wins={wins}
             losses={losses}
