@@ -214,8 +214,9 @@ tone? }` with `tone` one of `ok`, `orange`, `blue`, `purple`.
 - `SignaturePokemon name signaturePokemon` — an archetype as its one or two
   sprites, pixelated in 33px boxes, in a slot always two wide; the
   Substitute when it's unknown. The name is its label and tooltip.
-- `RecordBadge wins losses winRate` — `W 05` / `L 02` as joined halves,
-  with the win rate beside it.
+- `RecordBadge wins losses` — `W 05` / `L 02` as joined halves.
+- `WinRateMeter winRate` — a framed meter filled green up to the win rate,
+  with the figure beside it. The rest of the track stays empty, never red.
 
 Reach for a primitive before writing classes. A pattern used on two routes
 becomes a primitive in `app/components/ui/` and gets a section in

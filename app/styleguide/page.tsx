@@ -18,6 +18,7 @@ import { Reveal } from "../components/ui/reveal";
 import { Caption, Heading } from "../components/ui/text";
 import { Tabs } from "../components/ui/tabs";
 import { TextBox } from "../components/ui/text-box";
+import { WinRateMeter } from "../components/ui/win-rate-meter";
 
 export const metadata: Metadata = { title: "Styleguide · rotom.gg" };
 
@@ -245,9 +246,15 @@ export default function StyleguidePage() {
       </Section>
 
       <Section title="Record">
-        <RecordBadge wins={5} losses={2} winRate={71} />
-        <RecordBadge wins={0} losses={3} winRate={0} />
-        <RecordBadge wins={0} losses={0} winRate={undefined} />
+        <div className="flex items-center gap-3">
+          <RecordBadge wins={5} losses={2} />
+          <WinRateMeter winRate={71} />
+        </div>
+        <div className="flex items-center gap-3">
+          <RecordBadge wins={0} losses={3} />
+          <WinRateMeter winRate={0} />
+        </div>
+        <RecordBadge wins={0} losses={0} />
       </Section>
 
       <Section title="Controls">

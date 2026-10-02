@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { GameCard } from "./game-card";
 import { MENU_ROW } from "./menu";
 import { RecordBadge } from "./record-badge";
+import { WinRateMeter } from "./win-rate-meter";
 
 // A group of games — a Matchup, a Day — as a menu row that opens to them,
 // each of which opens to its log. The games sit indented under a hairline,
@@ -23,6 +24,7 @@ export function GamesCard({
   games: Game[];
   open?: boolean;
 }) {
+  const winRate = findWinRate({ wins, losses });
   return (
     <details open={open} className="group/games">
       <summary
@@ -35,15 +37,15 @@ export function GamesCard({
         >
           ▶
         </span>
-        {/* The rate may wrap under the record; the record stays beside the
-            label it's for. */}
-        <span className="flex items-center gap-3">
-          {label}
-          <RecordBadge
-            wins={wins}
-            losses={losses}
-            winRate={findWinRate({ wins, losses })}
-          />
+        {/* The record stays beside the label it's for. The meter sits at the
+            row's far edge, so meters make a column; on a phone it wraps under
+            the record. */}
+        <span className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+          <span className="flex items-center gap-3">
+            {label}
+            <RecordBadge wins={wins} losses={losses} />
+          </span>
+          {winRate !== undefined && <WinRateMeter winRate={winRate} />}
         </span>
       </summary>
       <ul className="ml-7 flex flex-col divide-y divide-rule border-t border-rule">
