@@ -126,9 +126,12 @@ Check a new pair before adding it.
 
 The model is Pokémon Red/Blue's menus, not a full terminal app.
 
-- **Menus** (`Menu`, `MenuItem`) are lists of choices inside a panel. The
-  hovered or focused item shows a `▶` cursor in `accent`; its column is
-  always reserved, so nothing shifts.
+- **Menus** (`Menu`, `MenuItem`) are lists of choices inside a panel. Every
+  item carries a cursor: a `muted` outline, `▷`, at rest, so a row shows it
+  can be chosen even where nothing hovers; under the pointer or focus it
+  fills in, `▶`, in `accent`. A row that opens in place keeps it filled and
+  turned down while open. Tabs are the exception: only the current one
+  wears a cursor.
 - **The text box** (`TextBox`) is for messages from the app — a confirmation,
   an empty state, an error: a framed panel at full width with a blinking `▼`
   at the end of the line.
@@ -177,8 +180,8 @@ it may not add colors, grounds, or variants of primitives.
 CSS only, few moments, and snappy — stepped, not smooth (Kraftwerk, not
 Apple).
 
-- **Hover:** `transition-colors duration-75 ease-flick`. Menu items show the
-  `▶` cursor; buttons fill with `accent`.
+- **Hover:** `transition-colors duration-75 ease-flick`. Menu items fill
+  their cursor, `▷` to `▶`; buttons fill with `accent`.
 - **Lists step in on load:** `Reveal index={i}`.
 - **Blinking** (`animate-blink`) is for the text box's `▼` only.
 - `prefers-reduced-motion` turns all of it off globally; don't re-enable it.

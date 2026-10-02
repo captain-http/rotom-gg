@@ -1,6 +1,6 @@
 import type { Game } from "@/lib/domain/games";
 import { Mark } from "./mark";
-import { MENU_ROW } from "./menu";
+import { Cursor, MENU_ROW } from "./menu";
 import { SignaturePokemon } from "./signature-pokemon";
 import { Caption } from "./text";
 
@@ -21,13 +21,7 @@ export function GameCard({
       <summary
         className={`${MENU_ROW} cursor-pointer list-none [&::-webkit-details-marker]:hidden`}
       >
-        {/* The menu cursor, turned down while the log is open. */}
-        <span
-          aria-hidden
-          className="invisible inline-block font-mono text-meta text-accent group-hover:visible group-focus-visible:visible group-open/game:visible group-open/game:rotate-90"
-        >
-          ▶
-        </span>
+        <Cursor opens="game" />
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <span>Game #{game.id}</span>
           <ResultMark result={game.result} />

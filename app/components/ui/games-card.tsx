@@ -1,7 +1,7 @@
 import type { Game } from "@/lib/domain/games";
 import type { ReactNode } from "react";
 import { GameCard } from "./game-card";
-import { MENU_ROW } from "./menu";
+import { Cursor, MENU_ROW } from "./menu";
 import { RecordBar } from "./record-bar";
 import { formatShare, ShareBar } from "./share-bar";
 import { Caption } from "./text";
@@ -37,14 +37,7 @@ export function GamesCard({
       <summary
         className={`${MENU_ROW} cursor-pointer list-none gap-y-2 [&::-webkit-details-marker]:hidden`}
       >
-        {/* The menu cursor, beside the label and turned down while the games
-            are open. */}
-        <span
-          aria-hidden
-          className="invisible inline-block font-mono text-meta text-accent group-hover:visible group-focus-visible:visible group-open/games:visible group-open/games:rotate-90"
-        >
-          ▶
-        </span>
+        <Cursor opens="games" />
         {/* Without a share, the count ends the title line as the rate ends
             the bar's, so the two figures make a column. Either way it
             counts every game, so it can run ahead of the record when a

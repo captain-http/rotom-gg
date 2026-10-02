@@ -1,7 +1,7 @@
 import type { Game } from "@/lib/domain/games";
 import { listGameFacts } from "./game-card";
 import { Mark } from "./mark";
-import { MENU_ROW } from "./menu";
+import { Cursor, MENU_ROW } from "./menu";
 import { Panel } from "./panel";
 import { SignaturePokemon } from "./signature-pokemon";
 import { Caption } from "./text";
@@ -17,13 +17,7 @@ export function LatestGameCard({ game, open }: { game: Game; open?: boolean }) {
         <summary
           className={`${MENU_ROW} cursor-pointer list-none [&::-webkit-details-marker]:hidden`}
         >
-          {/* The menu cursor, turned down while the log is open. */}
-          <span
-            aria-hidden
-            className="invisible inline-block font-mono text-meta text-accent group-hover:visible group-focus-visible:visible group-open/game:visible group-open/game:rotate-90"
-          >
-            ▶
-          </span>
+          <Cursor opens="game" />
           <span className="flex min-w-0 flex-col gap-1">
             <span className="flex min-w-0 items-center justify-between gap-2">
               {/* On a phone the game's number takes its own line, under a
