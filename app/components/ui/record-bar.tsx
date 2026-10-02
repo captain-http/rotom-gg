@@ -5,15 +5,15 @@ import { pad } from "./record-badge";
 // A row's record as a tug of war: the win count, a bar split green and red
 // in proportion to wins and losses, the loss count, and the win rate spelled
 // out. The counts are Marks in the bar's own colors, so they name what each
-// color is and the bar needs no legend. A zero count stays neutral, and with
-// no result yet the bar is empty.
+// color is and the bar needs no legend; the bar is as tall as they are. A
+// zero count stays neutral, and with no result yet the bar is empty.
 export function RecordBar({ wins, losses }: { wins: number; losses: number }) {
   const winRate = findWinRate({ wins, losses });
   return (
     <span className="flex items-center gap-3 font-mono text-meta tracking-wider whitespace-nowrap uppercase">
-      <span className="flex min-w-0 flex-1 items-center gap-2">
+      <span className="flex min-w-0 flex-1 items-stretch gap-2">
         <Mark tone={wins > 0 ? "win" : "neutral"}>W {pad(wins)}</Mark>
-        <span aria-hidden className="flex h-2 min-w-0 flex-1 bg-rule">
+        <span aria-hidden className="flex min-w-0 flex-1 bg-rule">
           {winRate !== undefined && (
             <>
               <span className="bg-win" style={{ width: `${winRate}%` }} />
