@@ -204,11 +204,11 @@ Apple).
 tone? }` with `tone` one of `ok`, `orange`, `blue`, `purple`.
 - `Reveal index={i}` — a list item that steps in on load.
 - `DeckCard`, `GameCard` — decks and games as menu items in a panel.
-- `LatestGameCard game` — a deck's Latest game as its own panel, the row
-  filled `win` or `loss` to the frame, with the result in the panel's title
-  so it reads without the color. On a fill, text is the fill's foreground
-  and quiet text is Departure Mono `text-meta`, never `muted`; the cursor
-  takes the text's color. The one place a whole row is filled.
+- `LatestGameCard game` — a deck's Latest game as its own panel: the
+  opponent's archetype and the game's number, its Signature Pokémon at the
+  line's far end, then the result `Mark` and the game's facts. Rows and
+  cards are never filled with `win` or `loss`: at that size the colors
+  overpower the page. Color stays in marks and bars.
 - `GamesCard` — a group of games as a menu row that opens to its
   `GameCard`s, indented under a hairline. The row is what the games share
   as its title, then their `RecordBar`. `MatchupCard` (titled with the
