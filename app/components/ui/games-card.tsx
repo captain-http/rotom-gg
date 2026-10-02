@@ -1,13 +1,12 @@
-import { findWinRate } from "@/lib/domain/decks";
 import type { Game } from "@/lib/domain/games";
 import type { ReactNode } from "react";
 import { GameCard } from "./game-card";
 import { MENU_ROW } from "./menu";
-import { RecordBadge } from "./record-badge";
-import { WinRateMeter } from "./win-rate-meter";
+import { RecordBar } from "./record-bar";
 
 // A group of games — a Matchup, a Day — as a menu row that opens to them,
-// each of which opens to its log. The games sit indented under a hairline,
+// each of which opens to its log. The row is two lines: what the games have
+// in common, then how they went. The games sit indented under a hairline,
 // not in a frame of their own, lined up with the row's content as a game's
 // log is. Goes in a Menu, inside an <li>.
 export function GamesCard({
@@ -18,7 +17,7 @@ export function GamesCard({
   open,
   hideOpponent,
 }: {
-  // What the games have in common, shown before their figures.
+  // What the games have in common, shown above their record.
   label: ReactNode;
   wins: number;
   losses: number;
@@ -30,24 +29,19 @@ export function GamesCard({
   return (
     <details open={open} className="group/games">
       <summary
-        className={`${MENU_ROW} cursor-pointer list-none [&::-webkit-details-marker]:hidden`}
+        className={`${MENU_ROW} cursor-pointer list-none gap-y-2 [&::-webkit-details-marker]:hidden`}
       >
-        {/* The menu cursor, turned down while the games are open. */}
+        {/* The menu cursor, beside the label and turned down while the games
+            are open. */}
         <span
           aria-hidden
           className="invisible inline-block font-mono text-meta text-accent group-hover:visible group-focus-visible:visible group-open/games:visible group-open/games:rotate-90"
         >
           ▶
         </span>
-        {/* What on the left, how it went on the right: the record, the rate,
-            and the meter each hold one width, so they make three columns
-            down the menu. */}
-        <span className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
-          {label}
-          <span className="ml-auto flex items-center gap-2 sm:gap-3">
-            <RecordBadge wins={wins} losses={losses} compact />
-            <WinRateMeter winRate={findWinRate({ wins, losses })} />
-          </span>
+        <span className="min-w-0">{label}</span>
+        <span className="col-start-2">
+          <RecordBar wins={wins} losses={losses} />
         </span>
       </summary>
       <ul className="ml-7 flex flex-col divide-y divide-rule border-t border-rule">

@@ -13,12 +13,12 @@ import { Mark } from "../components/ui/mark";
 import { Menu } from "../components/ui/menu";
 import { Panel } from "../components/ui/panel";
 import { RecordBadge } from "../components/ui/record-badge";
+import { RecordBar } from "../components/ui/record-bar";
 import { StatusList } from "../components/ui/status-list";
 import { Reveal } from "../components/ui/reveal";
 import { Caption, Heading } from "../components/ui/text";
 import { Tabs } from "../components/ui/tabs";
 import { TextBox } from "../components/ui/text-box";
-import { WinRateMeter } from "../components/ui/win-rate-meter";
 
 export const metadata: Metadata = { title: "Styleguide · rotom.gg" };
 
@@ -246,23 +246,14 @@ export default function StyleguidePage() {
       </Section>
 
       <Section title="Record">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap gap-3">
           <RecordBadge wins={5} losses={2} />
-          <WinRateMeter winRate={71} />
-        </div>
-        <div className="flex items-center gap-3">
           <RecordBadge wins={0} losses={3} />
-          <WinRateMeter winRate={0} />
+          <RecordBadge wins={0} losses={0} />
         </div>
-        <RecordBadge wins={0} losses={0} />
-        <div className="flex items-center gap-3">
-          <RecordBadge wins={5} losses={2} compact />
-          <WinRateMeter winRate={71} />
-        </div>
-        <div className="flex items-center gap-3">
-          <RecordBadge wins={0} losses={0} compact />
-          <WinRateMeter winRate={undefined} />
-        </div>
+        <RecordBar wins={5} losses={2} />
+        <RecordBar wins={0} losses={3} />
+        <RecordBar wins={0} losses={0} />
       </Section>
 
       <Section title="Controls">

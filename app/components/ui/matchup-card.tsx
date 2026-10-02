@@ -3,7 +3,8 @@ import { GamesCard } from "./games-card";
 import { SignaturePokemon } from "./signature-pokemon";
 
 // A Matchup as a menu row, shown by the Opponent Archetype's Signature
-// Pokémon, that opens to its games. Goes in a Menu, inside an <li>.
+// Pokémon and its name, that opens to its games. Goes in a Menu, inside an
+// <li>.
 export function MatchupCard({
   matchup,
   open,
@@ -14,10 +15,20 @@ export function MatchupCard({
   return (
     <GamesCard
       label={
-        <SignaturePokemon
-          name={matchup.archetype}
-          signaturePokemon={matchup.signaturePokemon}
-        />
+        <span className="flex min-w-0 items-center gap-2">
+          {/* The name beside them is read instead. */}
+          <span aria-hidden className="flex">
+            <SignaturePokemon
+              name={matchup.archetype}
+              signaturePokemon={matchup.signaturePokemon}
+            />
+          </span>
+          <span
+            className={`min-w-0 truncate ${matchup.archetype === null ? "text-muted" : ""}`}
+          >
+            {matchup.archetype ?? "Unknown archetype"}
+          </span>
+        </span>
       }
       wins={matchup.wins}
       losses={matchup.losses}

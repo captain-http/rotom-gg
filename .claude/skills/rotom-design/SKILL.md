@@ -205,22 +205,24 @@ tone? }` with `tone` one of `ok`, `orange`, `blue`, `purple`.
 - `Reveal index={i}` — a list item that steps in on load.
 - `DeckCard`, `GameCard` — decks and games as menu items in a panel.
 - `GamesCard` — a group of games as a menu row that opens to its
-  `GameCard`s, indented under a hairline. What the games share sits on the
-  left; the compact record, the win rate, and its meter sit on the right, on
-  one line at any width, in three columns down the menu. `MatchupCard`
-  (shown by Signature Pokémon, which its games then leave out) and `DayCard`
-  (shown by date) are its two groupings.
+  `GameCard`s, indented under a hairline. The row is two lines: what the
+  games share as its title, then their `RecordBar`. `MatchupCard` (titled
+  with the archetype's Signature Pokémon and its name, so its games leave
+  the opponent out) and `DayCard` (titled with the date) are its two
+  groupings.
 - `Tabs label tabs` — ways to look at the same things, as links with their
   own URLs, over the panel they switch. The current one wears the `▶`
   cursor.
 - `SignaturePokemon name signaturePokemon` — an archetype as its one or two
   sprites, pixelated in 33px boxes, in a slot always two wide; the
   Substitute when it's unknown. The name is its label and tooltip.
-- `RecordBadge wins losses` — `W 05` / `L 02` as joined halves. A page's own
-  record is large; pass `compact` for one in a row, the size of a `Mark`.
-- `WinRateMeter winRate` — the figure, then a framed meter filled green up
-  to the win rate. The rest of the track stays empty, never red. With no
-  rate yet it's `--%` over an empty track, so a column has no holes.
+- `RecordBadge wins losses` — `W 05` / `L 02` as joined halves: a page's
+  own record.
+- `RecordBar wins losses` — a row's record as a tug of war: a `W 05` mark,
+  a bar split green and red in proportion, an `L 02` mark, then the rate
+  spelled out (`71% win rate`). The marks are the bar's legend, so never
+  show the bar or a percentage without them. With no result yet the bar is
+  an empty `rule` track and the rate reads `No result`.
 
 Reach for a primitive before writing classes. A pattern used on two routes
 becomes a primitive in `app/components/ui/` and gets a section in

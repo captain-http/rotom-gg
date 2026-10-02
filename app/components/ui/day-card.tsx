@@ -18,7 +18,7 @@ export function DayCard({
       label={
         <time
           dateTime={day.date}
-          className="font-mono text-meta tracking-wider whitespace-nowrap uppercase"
+          className="font-mono text-body tracking-wider whitespace-nowrap uppercase"
         >
           {formatDate(day.date, thisYear)}
         </time>
@@ -31,9 +31,8 @@ export function DayCard({
   );
 }
 
-// "Tue 29 Sep", or "29 Sep 2025" outside this year: the year takes the
-// weekday's place, so a date stays short enough to share a phone's row with
-// its figures. The day is padded so a column of dates lines up.
+// "Tue 29 Sep", or "Mon 29 Sep 2025" outside this year. The day is padded so
+// a column of dates lines up.
 function formatDate(date: string, thisYear: string): string {
   const parts = Object.fromEntries(
     new Intl.DateTimeFormat("en-US", {
@@ -47,8 +46,6 @@ function formatDate(date: string, thisYear: string): string {
       .formatToParts(new Date(`${date}T00:00:00Z`))
       .map((part) => [part.type, part.value]),
   );
-  const dayOfMonth = `${parts.day} ${parts.month}`;
-  return parts.year === thisYear
-    ? `${parts.weekday} ${dayOfMonth}`
-    : `${dayOfMonth} ${parts.year}`;
+  const short = `${parts.weekday} ${parts.day} ${parts.month}`;
+  return parts.year === thisYear ? short : `${short} ${parts.year}`;
 }
