@@ -205,18 +205,22 @@ tone? }` with `tone` one of `ok`, `orange`, `blue`, `purple`.
 - `Reveal index={i}` — a list item that steps in on load.
 - `DeckCard`, `GameCard` — decks and games as menu items in a panel.
 - `GamesCard` — a group of games as a menu row that opens to its
-  `GameCard`s, indented under a hairline, with its record. `MatchupCard`
-  (shown by Signature Pokémon) and `DayCard` (shown by date, in a slot as
-  wide as the longest date) are its two groupings.
+  `GameCard`s, indented under a hairline. What the games share sits on the
+  left; the compact record, the win rate, and its meter sit on the right, on
+  one line at any width, in three columns down the menu. `MatchupCard`
+  (shown by Signature Pokémon, which its games then leave out) and `DayCard`
+  (shown by date) are its two groupings.
 - `Tabs label tabs` — ways to look at the same things, as links with their
   own URLs, over the panel they switch. The current one wears the `▶`
   cursor.
 - `SignaturePokemon name signaturePokemon` — an archetype as its one or two
   sprites, pixelated in 33px boxes, in a slot always two wide; the
   Substitute when it's unknown. The name is its label and tooltip.
-- `RecordBadge wins losses` — `W 05` / `L 02` as joined halves.
-- `WinRateMeter winRate` — a framed meter filled green up to the win rate,
-  with the figure beside it. The rest of the track stays empty, never red.
+- `RecordBadge wins losses` — `W 05` / `L 02` as joined halves. A page's own
+  record is large; pass `compact` for one in a row, the size of a `Mark`.
+- `WinRateMeter winRate` — the figure, then a framed meter filled green up
+  to the win rate. The rest of the track stays empty, never red. With no
+  rate yet it's `--%` over an empty track, so a column has no holes.
 
 Reach for a primitive before writing classes. A pattern used on two routes
 becomes a primitive in `app/components/ui/` and gets a section in

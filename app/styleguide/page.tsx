@@ -255,6 +255,14 @@ export default function StyleguidePage() {
           <WinRateMeter winRate={0} />
         </div>
         <RecordBadge wins={0} losses={0} />
+        <div className="flex items-center gap-3">
+          <RecordBadge wins={5} losses={2} compact />
+          <WinRateMeter winRate={71} />
+        </div>
+        <div className="flex items-center gap-3">
+          <RecordBadge wins={0} losses={0} compact />
+          <WinRateMeter winRate={undefined} />
+        </div>
       </Section>
 
       <Section title="Controls">

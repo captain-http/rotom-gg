@@ -22,6 +22,7 @@ export function MatchupCard({
       wins={matchup.wins}
       losses={matchup.losses}
       games={matchup.games}
+      hideOpponent
       open={open}
     />
   );

@@ -6,7 +6,16 @@ import { Caption } from "./text";
 
 // A game as a menu row that opens to its log, printed in mono with a ruled
 // left margin. Goes in a Menu, inside an <li>.
-export function GameCard({ game, open }: { game: Game; open?: boolean }) {
+export function GameCard({
+  game,
+  open,
+  hideOpponent,
+}: {
+  game: Game;
+  open?: boolean;
+  // Under a Matchup, whose row already shows the opponent.
+  hideOpponent?: boolean;
+}) {
   return (
     <details open={open} className="group/game">
       <summary
@@ -22,13 +31,15 @@ export function GameCard({ game, open }: { game: Game; open?: boolean }) {
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <span>Game #{game.id}</span>
           <ResultMark result={game.result} />
-          <span className="flex items-center gap-1">
-            <Caption as="span">vs</Caption>
-            <SignaturePokemon
-              name={game.opponentArchetype}
-              signaturePokemon={game.opponentArchetypeIcons}
-            />
-          </span>
+          {!hideOpponent && (
+            <span className="flex items-center gap-1">
+              <Caption as="span">vs</Caption>
+              <SignaturePokemon
+                name={game.opponentArchetype}
+                signaturePokemon={game.opponentArchetypeIcons}
+              />
+            </span>
+          )}
           <GameFacts game={game} />
         </span>
       </summary>

@@ -16,15 +16,17 @@ export function GamesCard({
   losses,
   games,
   open,
+  hideOpponent,
 }: {
-  // What the games have in common, shown before their record.
+  // What the games have in common, shown before their figures.
   label: ReactNode;
   wins: number;
   losses: number;
   games: Game[];
   open?: boolean;
+  // When the label already shows the games' opponent.
+  hideOpponent?: boolean;
 }) {
-  const winRate = findWinRate({ wins, losses });
   return (
     <details open={open} className="group/games">
       <summary
@@ -37,21 +39,21 @@ export function GamesCard({
         >
           ▶
         </span>
-        {/* The record stays beside the label it's for. The meter sits at the
-            row's far edge, so meters make a column; on a phone it wraps under
-            the record. */}
-        <span className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-          <span className="flex items-center gap-3">
-            {label}
-            <RecordBadge wins={wins} losses={losses} />
+        {/* What on the left, how it went on the right: the record, the rate,
+            and the meter each hold one width, so they make three columns
+            down the menu. */}
+        <span className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+          {label}
+          <span className="ml-auto flex items-center gap-2 sm:gap-3">
+            <RecordBadge wins={wins} losses={losses} compact />
+            <WinRateMeter winRate={findWinRate({ wins, losses })} />
           </span>
-          {winRate !== undefined && <WinRateMeter winRate={winRate} />}
         </span>
       </summary>
       <ul className="ml-7 flex flex-col divide-y divide-rule border-t border-rule">
         {games.map((game) => (
           <li key={game.id}>
-            <GameCard game={game} />
+            <GameCard game={game} hideOpponent={hideOpponent} />
           </li>
         ))}
       </ul>

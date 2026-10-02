@@ -4,19 +4,25 @@
 export function RecordBadge({
   wins,
   losses,
+  compact,
 }: {
   wins: number;
   losses: number;
+  // The size of a Mark, for a record in a row; a page's own record is larger.
+  compact?: boolean;
 }) {
+  const half = compact ? "border px-1" : "border-2 px-2";
   return (
-    <span className="flex font-mono text-body tracking-wider uppercase">
+    <span
+      className={`flex font-mono tracking-wider whitespace-nowrap uppercase ${compact ? "text-meta" : "text-body"}`}
+    >
       <span
-        className={`border-2 px-2 ${wins > 0 ? "border-win bg-win text-win-foreground" : "border-border text-muted"}`}
+        className={`${half} ${wins > 0 ? "border-win bg-win text-win-foreground" : "border-border text-muted"}`}
       >
         W {pad(wins)}
       </span>
       <span
-        className={`border-2 border-l-0 px-2 ${losses > 0 ? "border-loss bg-loss text-loss-foreground" : "border-border text-muted"}`}
+        className={`${half} border-l-0 ${losses > 0 ? "border-loss bg-loss text-loss-foreground" : "border-border text-muted"}`}
       >
         L {pad(losses)}
       </span>

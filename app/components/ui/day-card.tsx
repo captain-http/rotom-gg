@@ -16,16 +16,12 @@ export function DayCard({
   return (
     <GamesCard
       label={
-        // As wide as the longest date, so records line up in a column
-        // whether or not a date carries its year.
-        <span className="inline-grid font-mono text-meta tracking-wider whitespace-nowrap uppercase">
-          <time dateTime={day.date} className="col-start-1 row-start-1">
-            {formatDate(day.date, thisYear)}
-          </time>
-          <span aria-hidden className="invisible col-start-1 row-start-1">
-            Wed 30 Sep 2026
-          </span>
-        </span>
+        <time
+          dateTime={day.date}
+          className="font-mono text-meta tracking-wider whitespace-nowrap uppercase"
+        >
+          {formatDate(day.date, thisYear)}
+        </time>
       }
       wins={day.wins}
       losses={day.losses}
@@ -35,8 +31,9 @@ export function DayCard({
   );
 }
 
-// "Tue 29 Sep", or "Mon 29 Sep 2025" outside this year. The day is padded so
-// a column of dates lines up.
+// "Tue 29 Sep", or "29 Sep 2025" outside this year: the year takes the
+// weekday's place, so a date stays short enough to share a phone's row with
+// its figures. The day is padded so a column of dates lines up.
 function formatDate(date: string, thisYear: string): string {
   const parts = Object.fromEntries(
     new Intl.DateTimeFormat("en-US", {
@@ -50,6 +47,8 @@ function formatDate(date: string, thisYear: string): string {
       .formatToParts(new Date(`${date}T00:00:00Z`))
       .map((part) => [part.type, part.value]),
   );
-  const short = `${parts.weekday} ${parts.day} ${parts.month}`;
-  return parts.year === thisYear ? short : `${short} ${parts.year}`;
+  const dayOfMonth = `${parts.day} ${parts.month}`;
+  return parts.year === thisYear
+    ? `${parts.weekday} ${dayOfMonth}`
+    : `${dayOfMonth} ${parts.year}`;
 }
