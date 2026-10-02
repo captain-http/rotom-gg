@@ -74,11 +74,16 @@ function AsWideAsLoss({ children }: { children: string }) {
   );
 }
 
-function GameFacts({ game }: { game: Game }) {
-  const facts = [
+// What's known of how a game went: "8 turns", "Went second".
+export function listGameFacts(game: Game): string[] {
+  return [
     game.turnCount !== null && `${game.turnCount} turns`,
     game.wentFirst !== null && (game.wentFirst ? "Went first" : "Went second"),
   ].filter((fact) => fact !== false);
+}
+
+function GameFacts({ game }: { game: Game }) {
+  const facts = listGameFacts(game);
   if (facts.length === 0) return null;
 
   // A line breaks between facts, never inside one.

@@ -5,8 +5,8 @@ import { findDeck, findWinRate } from "@/lib/domain/decks";
 import { listDays, listGames, listMatchups } from "@/lib/domain/games";
 import { ButtonLink } from "../../components/ui/button";
 import { DayCard } from "../../components/ui/day-card";
-import { GameCard } from "../../components/ui/game-card";
 import { GlyphLink } from "../../components/ui/glyph-link";
+import { LatestGameCard } from "../../components/ui/latest-game-card";
 import { MatchupCard } from "../../components/ui/matchup-card";
 import { Menu } from "../../components/ui/menu";
 import { Panel } from "../../components/ui/panel";
@@ -84,13 +84,7 @@ export default async function DeckPage({
           />
           {/* Days already opens on the Latest game; a Matchup buries it. */}
           {view === "matchups" && latestGame && (
-            <Panel title="Latest game" flush>
-              <Menu>
-                <li>
-                  <GameCard game={latestGame} />
-                </li>
-              </Menu>
-            </Panel>
+            <LatestGameCard game={latestGame} />
           )}
           <Panel
             title={`Games · ${games.length}${winRate !== undefined ? ` · ${formatWinRate(winRate)}` : ""}`}

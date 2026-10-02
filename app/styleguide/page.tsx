@@ -8,6 +8,7 @@ import { DeckCard } from "../components/ui/deck-card";
 import { Input, Textarea } from "../components/ui/field";
 import { GameCard } from "../components/ui/game-card";
 import { GlyphLink } from "../components/ui/glyph-link";
+import { LatestGameCard } from "../components/ui/latest-game-card";
 import { MatchupCard } from "../components/ui/matchup-card";
 import { Mark } from "../components/ui/mark";
 import { Menu } from "../components/ui/menu";
@@ -304,6 +305,12 @@ export default function StyleguidePage() {
             ))}
           </Menu>
         </Panel>
+      </Section>
+
+      <Section title="Latest game">
+        {games.map((game, index) => (
+          <LatestGameCard key={game.id} game={game} open={index === 1} />
+        ))}
       </Section>
 
       <Section title="Menu · matchups">
