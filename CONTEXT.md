@@ -33,3 +33,7 @@ _Avoid_: Matchup stats, archetype group
 **Day**:
 The games a deck played on one calendar date in the Viewer's timezone, with their record. A game's date is when it was filed; logs carry no date of their own.
 _Avoid_: Session, game day
+
+**Latest game**:
+The game most recently filed on a deck, whenever it was played.
+_Avoid_: Latest match, last game
