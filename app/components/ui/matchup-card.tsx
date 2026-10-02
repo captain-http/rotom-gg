@@ -19,19 +19,22 @@ export function MatchupCard({
   return (
     <GamesCard
       label={
-        <span className="flex min-w-0 items-center gap-2">
-          {/* The name beside them is read instead. */}
-          <span aria-hidden className="flex">
-            <SignaturePokemon
-              name={matchup.archetype}
-              signaturePokemon={matchup.signaturePokemon}
-            />
-          </span>
+        // The name leads, beside the cursor; the sprites end the line, over
+        // the bars' figures.
+        <span className="flex min-w-0 items-center justify-between gap-2">
           <span
             // A long name wraps on a phone: there is no hover to read it by.
             className={`min-w-0 ${matchup.archetype === null ? "text-muted" : ""}`}
           >
             {matchup.archetype ?? "Unknown archetype"}
+          </span>
+          {/* The name beside them is read instead. */}
+          <span aria-hidden className="flex">
+            <SignaturePokemon
+              name={matchup.archetype}
+              signaturePokemon={matchup.signaturePokemon}
+              end
+            />
           </span>
         </span>
       }

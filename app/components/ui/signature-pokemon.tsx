@@ -8,9 +8,12 @@ import * as sprites from "@/lib/domain/signature-pokemon";
 export function SignaturePokemon({
   name,
   signaturePokemon,
+  end,
 }: {
   name: string | null;
   signaturePokemon: string[] | null;
+  // Push the sprites to the slot's far side, when it ends a line.
+  end?: boolean;
 }) {
   const label = name ?? "Unknown archetype";
   return (
@@ -18,7 +21,7 @@ export function SignaturePokemon({
       role="img"
       aria-label={label}
       title={label}
-      className="inline-flex w-12 shrink-0 items-center"
+      className={`inline-flex w-12 shrink-0 items-center ${end ? "justify-end" : ""}`}
     >
       {sprites.listSpriteUrls(signaturePokemon).map((url, index) => (
         <Image

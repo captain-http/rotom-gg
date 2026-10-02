@@ -50,7 +50,7 @@ export function GamesCard({
             counts every game, so it can run ahead of the record when a
             result is unknown. */}
         <span className="flex min-w-0 items-center justify-between gap-3">
-          <span className="min-w-0">{label}</span>
+          <span className="min-w-0 flex-1">{label}</span>
           {totalGames === undefined && (
             <Caption as="span" className="shrink-0 whitespace-nowrap">
               {games.length} {games.length === 1 ? "game" : "games"}

@@ -207,7 +207,7 @@ tone? }` with `tone` one of `ok`, `orange`, `blue`, `purple`.
 - `GamesCard` — a group of games as a menu row that opens to its
   `GameCard`s, indented under a hairline. The row is what the games share
   as its title, then their `RecordBar`. `MatchupCard` (titled with the
-  archetype's Signature Pokémon and its name, so its games leave the
+  archetype's name, its Signature Pokémon at the line's far end, so its games leave the
   opponent out) adds a `ShareBar` under the record; `DayCard` (titled with
   the date) has no share worth showing, so its count ends the title line.
 - `Tabs label tabs` — ways to look at the same things, as links with their
