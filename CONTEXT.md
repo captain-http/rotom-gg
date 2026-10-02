@@ -11,6 +11,10 @@ _Avoid_: Player, user, me
 **Opponent**:
 The other player in a game log; their draws go unnamed.
 
+**Deck**:
+A set of games the Viewer files together under a title of their choosing.
+_Avoid_: List, build
+
 **Archetype**:
 A named family of decks built around the same Pokémon, as tracked by Limitless (e.g. Dragapult Dusknoir).
 _Avoid_: Deck type, meta deck

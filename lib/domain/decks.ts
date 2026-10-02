@@ -63,6 +63,26 @@ export async function listDecks(
 }
 
 /**
+ * Renames a user's deck. Only the title changes: its games and record stay.
+ *
+ * @param input - The owner's Clerk user id, the deck id, and the new title.
+ * @param db - The database or a transaction; defaults to the shared client.
+ * @returns Whether a deck was renamed: false when it doesn't exist or belongs
+ *   to someone else.
+ */
+export async function renameDeck(
+  input: { userId: string; deckId: number; title: string },
+  db: Db = defaultDb,
+): Promise<boolean> {
+  const renamed = await db
+    .update(decks)
+    .set({ title: input.title })
+    .where(and(eq(decks.id, input.deckId), eq(decks.userId, input.userId)))
+    .returning({ id: decks.id });
+  return renamed.length > 0;
+}
+
+/**
  * Deletes a user's deck and, by cascade, all of its games.
  *
  * @param input - The owner's Clerk user id and the deck id.

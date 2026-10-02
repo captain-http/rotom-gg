@@ -174,6 +174,7 @@ export default function StyleguidePage() {
         <p className="flex flex-wrap gap-4">
           <GlyphLink href="/styleguide">&gt; Decks</GlyphLink>
           <GlyphLink href="/styleguide">&lt; Back</GlyphLink>
+          <GlyphLink href="/styleguide">~ Rename deck</GlyphLink>
           <GlyphLink href="/styleguide">x Delete deck</GlyphLink>
         </p>
       </Section>

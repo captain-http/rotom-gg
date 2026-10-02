@@ -62,7 +62,8 @@ pixels. Plex Mono runs wider than a sans, so leave names room to truncate.
 - **Figures line up**: records, counts, and win rates are Departure Mono so
   digits sit in columns.
 - **Links are prefixed with a glyph**, not underlined: `> Decks` forward,
-  `< Decks` back, `+ New` for creating.
+  `< Decks` back, `+ New` for creating, `~ Rename` for changing, `x Delete`
+  for removing.
 
 ## Color: a closed gruvbox palette
 

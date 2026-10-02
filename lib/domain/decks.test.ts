@@ -8,6 +8,7 @@ import {
   findDeck,
   findWinRate,
   listDecks,
+  renameDeck,
 } from "./decks";
 
 const noGames = { wins: 0, losses: 0 };
@@ -91,5 +92,37 @@ test("deleteDeck leaves another user's deck alone", () =>
     expect(await deleteDeck({ userId: "user_red", deckId: deck.id }, db)).toBe(
       false,
     );
+    expect(await listDecks("user_blue", db)).toEqual([{ ...deck, ...noGames }]);
+  }));
+
+test("renameDeck changes the title and keeps the games", () =>
+  withRollback(async (db) => {
+    const deck = await createDeck(
+      { userId: "user_red", title: "Dragapult Dusknoir" },
+      db,
+    );
+    await db.insert(games).values({ deckId: deck.id, log: "", result: "win" });
+
+    expect(
+      await renameDeck(
+        { userId: "user_red", deckId: deck.id, title: "Dragapult Blaziken" },
+        db,
+      ),
+    ).toBe(true);
+    expect(await listDecks("user_red", db)).toEqual([
+      { ...deck, title: "Dragapult Blaziken", wins: 1, losses: 0 },
+    ]);
+  }));
+
+test("renameDeck leaves another user's deck alone", () =>
+  withRollback(async (db) => {
+    const deck = await createDeck({ userId: "user_blue", title: "Deck" }, db);
+
+    expect(
+      await renameDeck(
+        { userId: "user_red", deckId: deck.id, title: "Mine now" },
+        db,
+      ),
+    ).toBe(false);
     expect(await listDecks("user_blue", db)).toEqual([{ ...deck, ...noGames }]);
   }));

@@ -2,7 +2,8 @@ import Link from "next/link";
 import type { ComponentProps } from "react";
 
 // A link that says where it goes with a glyph instead of an underline:
-// "> Decks" forward, "< Decks" back, "+ New" to create, "x Delete" to remove.
+// "> Decks" forward, "< Decks" back, "+ New" to create, "~ Rename" to change,
+// "x Delete" to remove.
 // It lights up yellow under the cursor, like a selected menu line.
 export function GlyphLink({
   className = "",

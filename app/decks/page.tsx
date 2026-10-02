@@ -9,6 +9,7 @@ import { Panel } from "../components/ui/panel";
 import { Heading } from "../components/ui/text";
 import { TextBox } from "../components/ui/text-box";
 import { createDeckAction } from "./actions";
+import { DECK_TITLE_MAX_LENGTH, DECK_TITLE_PATTERN } from "./deck-title";
 
 export default async function DecksPage() {
   const { userId } = await auth.protect();
@@ -22,7 +23,8 @@ export default async function DecksPage() {
         <Input
           name="title"
           required
-          maxLength={100}
+          maxLength={DECK_TITLE_MAX_LENGTH}
+          pattern={DECK_TITLE_PATTERN}
           placeholder="Deck title"
           aria-label="Deck title"
           className="min-w-0 flex-1"

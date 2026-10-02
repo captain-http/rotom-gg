@@ -101,9 +101,10 @@ export default async function DeckPage({
         </div>
       )}
 
-      <GlyphLink href={`/decks/${deck.id}/delete`} className="self-start">
-        x Delete deck
-      </GlyphLink>
+      <div className="flex flex-wrap gap-3">
+        <GlyphLink href={`/decks/${deck.id}/rename`}>~ Rename deck</GlyphLink>
+        <GlyphLink href={`/decks/${deck.id}/delete`}>x Delete deck</GlyphLink>
+      </div>
     </main>
   );
 }

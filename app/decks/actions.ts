@@ -4,9 +4,10 @@ import { auth } from "@clerk/nextjs/server";
 import { refresh } from "next/cache";
 import { z } from "zod";
 import { createDeck } from "@/lib/domain/decks";
+import { DeckTitle } from "./deck-title";
 
 const CreateDeckInput = z.object({
-  title: z.string().trim().min(1).max(100),
+  title: DeckTitle,
 });
 
 export async function createDeckAction(formData: FormData) {
