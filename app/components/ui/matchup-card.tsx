@@ -3,13 +3,17 @@ import { GamesCard } from "./games-card";
 import { SignaturePokemon } from "./signature-pokemon";
 
 // A Matchup as a menu row, shown by the Opponent Archetype's Signature
-// Pokémon and its name, that opens to its games. Goes in a Menu, inside an
-// <li>.
+// Pokémon and its name, that opens to its games. Under its record, its share
+// of the deck's games says how common the archetype is. Goes in a Menu,
+// inside an <li>.
 export function MatchupCard({
   matchup,
+  totalGames,
   open,
 }: {
   matchup: Matchup;
+  // The deck's games, across every Matchup.
+  totalGames: number;
   open?: boolean;
 }) {
   return (
@@ -34,6 +38,7 @@ export function MatchupCard({
       wins={matchup.wins}
       losses={matchup.losses}
       games={matchup.games}
+      totalGames={totalGames}
       hideOpponent
       open={open}
     />

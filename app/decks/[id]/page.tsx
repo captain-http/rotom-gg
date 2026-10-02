@@ -100,7 +100,10 @@ export default async function DeckPage({
               {view === "matchups"
                 ? listMatchups(games).map((matchup, index) => (
                     <Reveal key={matchup.archetype ?? ""} index={index}>
-                      <MatchupCard matchup={matchup} />
+                      <MatchupCard
+                        matchup={matchup}
+                        totalGames={games.length}
+                      />
                     </Reveal>
                   ))
                 : listDays(games, timeZone).map((day, index) => (

@@ -205,12 +205,11 @@ tone? }` with `tone` one of `ok`, `orange`, `blue`, `purple`.
 - `Reveal index={i}` — a list item that steps in on load.
 - `DeckCard`, `GameCard` — decks and games as menu items in a panel.
 - `GamesCard` — a group of games as a menu row that opens to its
-  `GameCard`s, indented under a hairline. The row is two lines: what the
-  games share as its title, with their count at the far end, then their
-  `RecordBar`. `MatchupCard` (titled
-  with the archetype's Signature Pokémon and its name, so its games leave
-  the opponent out) and `DayCard` (titled with the date) are its two
-  groupings.
+  `GameCard`s, indented under a hairline. The row is what the games share
+  as its title, then their `RecordBar`. `MatchupCard` (titled with the
+  archetype's Signature Pokémon and its name, so its games leave the
+  opponent out) adds a `ShareBar` under the record; `DayCard` (titled with
+  the date) has no share worth showing, so its count ends the title line.
 - `Tabs label tabs` — ways to look at the same things, as links with their
   own URLs, over the panel they switch. The current one wears the `▶`
   cursor.
@@ -224,6 +223,10 @@ tone? }` with `tone` one of `ok`, `orange`, `blue`, `purple`.
   spelled out (`71% win rate`). The marks are the bar's legend, so never
   show the bar or a percentage without them. With no result yet the bar is
   an empty `rule` track and the rate reads `No result`.
+- `ShareBar count total` — how much of the whole a row holds: a thin
+  `muted` bar on a `rule` track, then `2 of 6 games`. Goes under a
+  `RecordBar` and ends where it does. No color: it says how often, not how
+  well.
 
 Reach for a primitive before writing classes. A pattern used on two routes
 becomes a primitive in `app/components/ui/` and gets a section in

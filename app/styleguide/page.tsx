@@ -14,6 +14,7 @@ import { Menu } from "../components/ui/menu";
 import { Panel } from "../components/ui/panel";
 import { RecordBadge } from "../components/ui/record-badge";
 import { RecordBar } from "../components/ui/record-bar";
+import { ShareBar } from "../components/ui/share-bar";
 import { StatusList } from "../components/ui/status-list";
 import { Reveal } from "../components/ui/reveal";
 import { Caption, Heading } from "../components/ui/text";
@@ -254,6 +255,10 @@ export default function StyleguidePage() {
         <RecordBar wins={5} losses={2} />
         <RecordBar wins={0} losses={3} />
         <RecordBar wins={0} losses={0} />
+        <div className="flex flex-col gap-1">
+          <RecordBar wins={5} losses={2} alsoFits="12 of 12 games" />
+          <ShareBar count={7} total={12} />
+        </div>
       </Section>
 
       <Section title="Controls">
@@ -306,7 +311,11 @@ export default function StyleguidePage() {
           <Menu>
             {listMatchups(matchupGames).map((matchup, index) => (
               <Reveal key={matchup.archetype ?? ""} index={index}>
-                <MatchupCard matchup={matchup} open={index === 0} />
+                <MatchupCard
+                  matchup={matchup}
+                  totalGames={matchupGames.length}
+                  open={index === 0}
+                />
               </Reveal>
             ))}
           </Menu>
