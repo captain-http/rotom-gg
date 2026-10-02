@@ -3,10 +3,11 @@ import type { ReactNode } from "react";
 import { GameCard } from "./game-card";
 import { MENU_ROW } from "./menu";
 import { RecordBar } from "./record-bar";
+import { Caption } from "./text";
 
 // A group of games — a Matchup, a Day — as a menu row that opens to them,
 // each of which opens to its log. The row is two lines: what the games have
-// in common, then how they went. The games sit indented under a hairline,
+// in common and how many they are, then how they went. The games sit indented under a hairline,
 // not in a frame of their own, lined up with the row's content as a game's
 // log is. Goes in a Menu, inside an <li>.
 export function GamesCard({
@@ -39,7 +40,15 @@ export function GamesCard({
         >
           ▶
         </span>
-        <span className="min-w-0">{label}</span>
+        {/* The count ends the title line as the rate ends the bar's, so the
+            two figures make a column. It counts every game, so it can run
+            ahead of the record when a result is unknown. */}
+        <span className="flex min-w-0 items-center justify-between gap-3">
+          <span className="min-w-0">{label}</span>
+          <Caption as="span" className="shrink-0 whitespace-nowrap">
+            {games.length} {games.length === 1 ? "game" : "games"}
+          </Caption>
+        </span>
         <span className="col-start-2">
           <RecordBar wins={wins} losses={losses} />
         </span>

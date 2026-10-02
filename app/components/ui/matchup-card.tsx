@@ -24,7 +24,8 @@ export function MatchupCard({
             />
           </span>
           <span
-            className={`min-w-0 truncate ${matchup.archetype === null ? "text-muted" : ""}`}
+            // A long name wraps on a phone: there is no hover to read it by.
+            className={`min-w-0 ${matchup.archetype === null ? "text-muted" : ""}`}
           >
             {matchup.archetype ?? "Unknown archetype"}
           </span>

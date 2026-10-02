@@ -206,7 +206,8 @@ tone? }` with `tone` one of `ok`, `orange`, `blue`, `purple`.
 - `DeckCard`, `GameCard` — decks and games as menu items in a panel.
 - `GamesCard` — a group of games as a menu row that opens to its
   `GameCard`s, indented under a hairline. The row is two lines: what the
-  games share as its title, then their `RecordBar`. `MatchupCard` (titled
+  games share as its title, with their count at the far end, then their
+  `RecordBar`. `MatchupCard` (titled
   with the archetype's Signature Pokémon and its name, so its games leave
   the opponent out) and `DayCard` (titled with the date) are its two
   groupings.
